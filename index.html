@@ -308,7 +308,7 @@ body::after{
   <button class="btn btn-audio" id="audioBtn" onclick="toggleAudio()">🔊 Hlas: ZAP</button>
   <button class="btn btn-voice" id="voiceBtn" onclick="toggleVoiceInput()">🎤 Hovor!</button>
   <button class="btn btn-repeat" onclick="doRepeat()">🔁 Znova</button>
-  <button class="btn btn-skip" id="skipBtn" onclick="confirmClick('skipBtn',skipQuestion)">⏭️ Preskočiť</button>
+  <button class="btn btn-skip" id="skipBtn" onclick="confirmClick('skipBtn',skipQuestion)">⏭️ Preskočiť (5)</button>
   <button class="btn btn-reset" id="resetBtn" onclick="confirmClick('resetBtn',resetGame)">🔄 Reset</button>
   <button class="btn btn-end" id="endBtn" onclick="confirmClick('endBtn',endGame)">⏹ Koniec</button>
 </div>
@@ -436,6 +436,8 @@ const STAGES=[
   {n:24,lbl:"🌳 Ochrankyňa Pandory"},{n:28,lbl:"🔥 Finále"},
 ];
 
+const SKIP_LIMIT=5;   // koľkokrát sa dá preskočiť otázku v jednom kvíze
+let skipsLeft=SKIP_LIMIT;
 let questions=[], cur=0, score=0, corr=0, wrong=0, streak=0, bestStreak=0,
     revd=0, answered=false, audioOn=true, spd=0.96, imgIdx=0, speaking=false,
     voiceMode="soft", voiceReady=false, currentVoiceOptions=[];
@@ -450,6 +452,15 @@ const SVG_SQUARE=`<svg viewBox="0 0 24 24" width="30" height="30"><rect x="4" y=
 const SVG_CIRCLE=`<svg viewBox="0 0 24 24" width="30" height="30"><circle cx="12" cy="12" r="9" fill="none" stroke="#67e8f9" stroke-width="2.3"/></svg>`;
 const SVG_RECT=`<svg viewBox="0 0 30 22" width="32" height="24"><rect x="2" y="4" width="26" height="14" rx="1.5" fill="none" stroke="#67e8f9" stroke-width="2.3"/></svg>`;
 const SVG_OCTAGON=`<svg viewBox="0 0 24 24" width="30" height="30"><polygon points="8,3 16,3 21,8 21,16 16,21 8,21 3,16 3,8" fill="none" stroke="#f97316" stroke-width="2.3" stroke-linejoin="round"/></svg>`;
+
+// Strieborná minca so znakom € — ROVNAKÁ NA VŠETKÝCH MOŽNOSTIACH,
+// aby ikona neprezrádzala, ktorá odpoveď je správna.
+const SVG_DOT=`<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="7" fill="none" stroke="#94a3b8" stroke-width="2"/></svg>`;
+const SVG_COIN=`<svg viewBox="0 0 40 40" width="34" height="34"><defs><radialGradient id="cg" cx="38%" cy="32%" r="72%"><stop offset="0" stop-color="#f8fafc"/><stop offset="0.5" stop-color="#cbd5e1"/><stop offset="1" stop-color="#94a3b8"/></radialGradient></defs><circle cx="20" cy="20" r="17" fill="url(#cg)" stroke="#64748b" stroke-width="2"/><circle cx="20" cy="20" r="13" fill="none" stroke="#e2e8f0" stroke-width="1.2" opacity="0.9"/><text x="20" y="27" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#475569" text-anchor="middle">&#8364;</text></svg>`;
+// Neutrálne ikony pre číselné odpovede — tiež rovnaké pre všetky možnosti.
+const SVG_APPLE=`<svg viewBox="0 0 24 24" width="30" height="30"><path d="M12 7c-1-2-3-3-5-2.5C4.5 5.2 3 7.5 3 11c0 5 3.5 9 6 9 1 0 1.5-.5 3-.5s2 .5 3 .5c2.5 0 6-4 6-9 0-3.5-1.5-5.8-4-6.5C15 4 13 5 12 7z" fill="none" stroke="#f87171" stroke-width="1.9" stroke-linejoin="round"/><path d="M12 7c0-2 .8-3.5 2.4-4.4" fill="none" stroke="#4ade80" stroke-width="1.9" stroke-linecap="round"/></svg>`;
+const SVG_NUM=`<svg viewBox="0 0 24 24" width="30" height="30"><path d="M6 8h3M6 12h3M6 16h3M14 8h4M14 12h4M14 16h4" stroke="#67e8f9" stroke-width="2.1" stroke-linecap="round"/></svg>`;
+const SVG_CLOCK=`<svg viewBox="0 0 24 24" width="30" height="30"><circle cx="12" cy="12" r="9" fill="none" stroke="#fbbf24" stroke-width="2.1"/><path d="M12 7v5l3.2 2" fill="none" stroke="#fbbf24" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 function appleTxt(n){
   if(n===1)return "1 jabĺčko";
@@ -538,7 +549,7 @@ function buildMathQuestions(){
         ? `${Math.max(a,b)} je viac ako ${Math.min(a,b)}.`
         : `${Math.min(a,b)} je menej ako ${Math.max(a,b)}.`;
     }
-    addPic(list,"math",q,"🍎",spravna,[["❓",nespravna]],"porovnávanie","ľahšia",vysvetlenie);
+    addPic(list,"math",q,SVG_APPLE,spravna,[[SVG_APPLE,nespravna]],"porovnávanie","ľahšia",vysvetlenie);
   }
   // Geometria — každý tvar RAZ, bez nezmyselného prívlastku "(na papieri)/(na tabuli)".
   for(const x of shapes){
@@ -548,14 +559,14 @@ function buildMathQuestions(){
   // ===== ČÍSELNÝ RAD =====
   const rady=[[1,2,3,4],[2,3,4,5],[5,6,7,8],[7,8,9,10],[10,11,12,13],[3,4,5,6],[12,13,14,15],[6,7,8,9]];
   for(const [a,b,c,d] of rady){
-    addPic(list,"math",`Aké číslo nasleduje v rade ${a}, ${b}, ${c}?`,"🔢",String(d),
-      [["❓",String(d+1)],["❓",String(d-2)]],"číselný rad","ľahšia",
+    addPic(list,"math",`Aké číslo nasleduje v rade ${a}, ${b}, ${c}?`,SVG_NUM,String(d),
+      [[SVG_NUM,String(d+1)],[SVG_NUM,String(d-2)]],"číselný rad","ľahšia",
       `Čísla idú po sebe o jedno viac, takže po ${c} nasleduje ${d}.`);
   }
   const radyDolu=[[10,9,8,7],[8,7,6,5],[6,5,4,3],[15,14,13,12],[12,11,10,9]];
   for(const [a,b,c,d] of radyDolu){
-    addPic(list,"math",`Aké číslo nasleduje v rade ${a}, ${b}, ${c}?`,"🔽",String(d),
-      [["❓",String(d+2)],["❓",String(d-2)]],"číselný rad","stredná",
+    addPic(list,"math",`Aké číslo nasleduje v rade ${a}, ${b}, ${c}?`,SVG_NUM,String(d),
+      [[SVG_NUM,String(d+2)],[SVG_NUM,String(d-2)]],"číselný rad","stredná",
       `Čísla idú po sebe o jedno menej, takže po ${c} nasleduje ${d}.`);
   }
 
@@ -576,15 +587,15 @@ function buildMathQuestions(){
                  [10,5,15],[10,2,12],[5,10,15],[10,10,20],[8,2,10],[6,4,10],[7,3,10],[10,1,11]];
   for(const [a,b,r] of peniaze){
     const eurTxt=n=>n===1?"1 euro":(n>=2&&n<=4?`${n} eurá`:`${n} eur`);
-    addPic(list,"math",`Máš ${eurTxt(a)} a dostaneš ešte ${eurTxt(b)}. Koľko máš spolu?`,"💶",eurTxt(r),
-      [["❓",eurTxt(r+1)],["❓",eurTxt(r-1)]],"peniaze","stredná",
+    addPic(list,"math",`Máš ${eurTxt(a)} a dostaneš ešte ${eurTxt(b)}. Koľko máš spolu?`,SVG_COIN,eurTxt(r),
+      [[SVG_COIN,eurTxt(r+1)],[SVG_COIN,eurTxt(r-1)]],"peniaze","stredná",
       `${a} plus ${b} je ${r}.`);
   }
 
   // ===== DVOJNÁSOBKY (dobrý most k násobeniu) =====
   for(const n of [1,2,3,4,5,6,7,8,9,10]){
-    addPic(list,"math",`Máš ${appleTxt(n)} a dostaneš ešte raz toľko. Koľko máš spolu jabĺčok?`,"🍎",String(n*2),
-      [["❓",String(n*2+1)],["❓",String(n*2-1)]],"dvojnásobky","stredná",
+    addPic(list,"math",`Máš ${appleTxt(n)} a dostaneš ešte raz toľko. Koľko máš spolu jabĺčok?`,SVG_APPLE,String(n*2),
+      [[SVG_APPLE,String(n*2+1)],[SVG_APPLE,String(n*2-1)]],"dvojnásobky","stredná",
       `Dvakrát ${n} je ${n} + ${n} = ${n*2}.`);
   }
 
@@ -592,8 +603,8 @@ function buildMathQuestions(){
   const chyba=[[3,5],[2,6],[4,7],[5,9],[6,10],[7,12],[8,14],[10,15],[9,16],[10,20],[6,13],[4,11]];
   for(const [a,cel] of chyba){
     const b=cel-a;
-    addPic(list,"math",`Máš ${appleTxt(a)}. Koľko jabĺčok musíš pridať, aby si ich mala ${cel}?`,"🍎",String(b),
-      [["❓",String(b+1)],["❓",String(b-1<0?b+2:b-1)]],"chýbajúce číslo","stredná",
+    addPic(list,"math",`Máš ${appleTxt(a)}. Koľko jabĺčok musíš pridať, aby si ich mala ${cel}?`,SVG_APPLE,String(b),
+      [[SVG_APPLE,String(b+1)],[SVG_APPLE,String(b-1<0?b+2:b-1)]],"chýbajúce číslo","stredná",
       `${a} + ${b} = ${cel}, takže pridať treba ${b}.`);
   }
 
@@ -601,16 +612,16 @@ function buildMathQuestions(){
   const hodiny=[[3,"tri"],[5,"päť"],[7,"sedem"],[9,"deväť"],[10,"desať"],[12,"dvanásť"],[6,"šesť"],[8,"osem"]];
   for(const [h,slovom] of hodiny){
     const hTxt=n=>n===1?"1 hodina":(n>=2&&n<=4?`${n} hodiny`:`${n} hodín`);
-    addPic(list,"math",`Malá ručička ukazuje na ${h} a veľká na 12. Koľko je hodín?`,"🕐",hTxt(h),
-      [["❓",hTxt(h===12?1:h+1)],["❓",hTxt(h===1?12:h-1)]],"hodiny","stredná",
+    addPic(list,"math",`Malá ručička ukazuje na ${h} a veľká na 12. Koľko je hodín?`,SVG_CLOCK,hTxt(h),
+      [[SVG_CLOCK,hTxt(h===12?1:h+1)],[SVG_CLOCK,hTxt(h===1?12:h-1)]],"hodiny","stredná",
       `Keď veľká ručička ukazuje na dvanástku, je presne toľko hodín, na koľko ukazuje malá — teda ${slovom}.`);
   }
 
   // ===== ROZKLAD ČÍSLA =====
   const rozklad=[[5,2,3],[6,4,2],[7,3,4],[8,5,3],[9,4,5],[10,6,4],[4,1,3],[6,1,5]];
   for(const [cel,a,b] of rozklad){
-    addPic(list,"math",`Mala si ${appleTxt(cel)} a ${appleTxt(a)} si dala kamarátke. Koľko ti ostalo jabĺčok?`,"🍎",String(b),
-      [["❓",String(b+1)],["❓",String(b-1<0?b+2:b-1)]],"odčítanie","stredná",
+    addPic(list,"math",`Mala si ${appleTxt(cel)} a ${appleTxt(a)} si dala kamarátke. Koľko ti ostalo jabĺčok?`,SVG_APPLE,String(b),
+      [[SVG_APPLE,String(b+1)],[SVG_APPLE,String(b-1<0?b+2:b-1)]],"odčítanie","stredná",
       `${cel} − ${a} = ${b}.`);
   }
 
@@ -665,12 +676,11 @@ function buildGeneralQuestions(){
     ["Keď ti neznámy človek ponúka sladkosť, čo je bezpečné?","🙅","Nezobrať ju bez rodiča",[["🍭","Hneď ju zjesť"],["🎒","Schovať ju"],["🚶","Ísť s ním"]],"Od cudzích ľudí neberieme sladkosti ani darčeky bez rodiča."],
     ["Koho môžeš poprosiť o pomoc v uniforme?","👮","Policajta",[["🐕","Psa"],["🧸","Hračku"],["🌳","Strom"]],"Policajt alebo záchranár v uniforme vie pomôcť v núdzi."],
     ["Čo máš urobiť, keď počuješ sirénu sanitky na ceste?","🛑","Zastaviť a dávať pozor",[["🏃","Vbehnúť na cestu"],["🎧","Nevšímať si to"],["🙈","Zavrieť oči"]],"Siréna znamená, že ide pomoc. Pri ceste zastavíme a dávame pozor."],
-    ["Keď si nie si istá, či je niečo bezpečné, čo spravíš?","❓","Spýtam sa rodiča",[["🎲","Skúsim to naslepo"],["🤫","Nikomu nepoviem"],["🏃","Utečiem"]],"Keď si nie si istá, opýtaj sa rodiča alebo dospelého, ktorému veríš."],
-    ["Keď si nie si istá, či je niečo bezpečné, čo spravíš?","❓","Spýtam sa rodiča",[["🎲","Skúsim to naslepo"],["🤫","Nikomu nepoviem"],["🏃","Utečiem"]],"bezpečnosť","stredná","Keď si nie si istá, opýtaj sa rodiča alebo dospelého, ktorému veríš."],
-    ["Čo spravíš, keď zvoní niekto cudzí na dvere a si doma sama?","🚪","Neotvorím a poviem rodičovi",[["🔓","Hneď otvorím"],["📢","Zakričím kto to je von"],["🤐","Predstieram, že nie som doma navždy"]],"bezpečnosť","stredná","Cudzím ľuďom dvere sami neotvárame — počkáme na rodiča alebo mu zavoláme."],
-    ["Ako sa bezpečne správať pri bazéne alebo pri vode?","🏊","Len keď je pri mne dospelý",[["🌊","Skáčem sama, kde chcem"],["🤿","Potápam sa čo najhlbšie sama"],["🏃","Behám okolo bazéna"]],"bezpečnosť","stredná","Vo vode sme v bezpečí, len keď je nablízku dospelý, ktorý dáva pozor."],
-    ["Čo urobíš, keď v aute nie si pripútaný a auto sa rozbehne?","🔒","Poviem, že sa musím pripútať",[["😴","Zaspím bez pásu"],["🙈","Nič nepoviem"],["🎮","Hrám sa radšej ďalej"]],"bezpečnosť","stredná","Bezpečnostný pás nás chráni pri každej jazde, aj krátkej."],
-    ["Ak ťa niekto na internete/v hre žiada o tvoju fotku alebo adresu, čo spravíš?","🛑","Nepošlem to a poviem rodičovi",[["📷","Hneď to pošlem"],["🤫","Vybavím si to sama"],["😊","Verím každému online"]],"bezpečnosť","stredná","Súkromné veci online zdieľame iba s vedomím rodiča."],
+    ["Keď si nie si istá, či je niečo bezpečné, čo spravíš?","🤔","Spýtam sa rodiča",[["🎲","Skúsim to naslepo"],["🤫","Nikomu nepoviem"],["🏃","Utečiem"]],"Keď si nie si istá, opýtaj sa rodiča alebo dospelého, ktorému veríš."],
+        ["Čo spravíš, keď zvoní niekto cudzí na dvere a si doma sama?","🚪","Neotvorím a poviem rodičovi",[["🔓","Hneď otvorím"],["📢","Zakričím, kto to je"],["🚶","Otvorím a pustím ho dnu"]],"Cudzím ľuďom dvere sami neotvárame — počkáme na rodiča alebo mu hneď zavoláme."],
+    ["Ako sa bezpečne správať pri bazéne alebo pri vode?","🏊","Kúpem sa, len keď je pri mne dospelý",[["🌊","Skáčem sama, kde chcem"],["🤿","Potápam sa čo najhlbšie sama"],["🏃","Behám okolo bazéna"]],"Vo vode sme v bezpečí len vtedy, keď je nablízku dospelý, ktorý dáva pozor."],
+    ["Čo urobíš, keď v aute nie si pripútaná a auto sa rozbehne?","🔒","Poviem, že sa musím pripútať",[["😴","Zaspím bez pásu"],["🙈","Nič nepoviem"],["🎮","Hrám sa radšej ďalej"]],"Bezpečnostný pás nás chráni pri každej jazde — aj pri tej najkratšej."],
+    ["Ak ťa niekto v hre alebo na internete žiada o fotku či adresu, čo spravíš?","🛑","Nepošlem to a poviem rodičovi",[["📷","Hneď to pošlem"],["🤫","Vybavím si to sama"],["😊","Verím každému online"]],"Fotku ani adresu nikdy neposielame cudzím — vždy to najprv povedz rodičovi."],
   ];
   safety.forEach(x=>addPic(list,"gen",x[0],x[1],x[2],x[3],"bezpečnosť","stredná",x[4]));
   const facts=[
@@ -895,7 +905,22 @@ function composeQuiz(){
 }
 
 function buildPuzzle(src){
-  const g=document.getElementById("puzGrid");g.style.backgroundImage=`url("${src}")`;g.style.backgroundSize="contain";g.style.backgroundPosition="center";
+  const g=document.getElementById("puzGrid");
+  g.style.backgroundImage=`url("${src}")`;
+  g.style.backgroundPosition="center";
+  g.style.backgroundSize="cover";
+  // Mriežka sa prispôsobí pomeru strán obrázka, takže sa vyplní presne —
+  // obrázok sa neoreže a zároveň nezostanú prázdne miesta, kde by dielik
+  // odkryl len tmavé pozadie.
+  const probe=new Image();
+  probe.onload=function(){
+    if(!probe.naturalWidth||!probe.naturalHeight)return;
+    let r=probe.naturalWidth/probe.naturalHeight;
+    r=Math.max(0.7,Math.min(2.2,r));          // poistka proti extrémnym rozmerom
+    g.style.aspectRatio=String(r);
+  };
+  probe.onerror=function(){ g.style.aspectRatio="4/3"; };
+  probe.src=src;
   const w=document.getElementById("covWrap");w.innerHTML="";
   for(let i=0;i<TILES;i++){
     const c=i%COLS,r=Math.floor(i/COLS),d=document.createElement("div");
@@ -985,7 +1010,9 @@ function toggleAudio(){
   else{b.textContent="🔇 Hlas: VYP";b.classList.add("off");speechSynthesis.cancel();setNR("");speaking=false;if(!answered)setVoiceReady(true,"🎤 Hlas čítania je vypnutý. Môžeš odpovedať hlasom.");}
 }
 function doRepeat(){
-  if(answered)return;speechSynthesis.cancel();speaking=false;
+  if(answered)return;
+  if(!questions.length||!questions[cur])return;   // kvíz sa ešte načítava
+  speechSynthesis.cancel();speaking=false;
   const q=questions[cur];const opts=[...document.querySelectorAll(".ans-btn")].map(b=>({txt:b.querySelector(".a-txt").textContent}));readFull(q,opts);
 }
 function setSpd(r,el){spd=r;document.querySelectorAll(".speed-row .sp-btn").forEach(b=>b.classList.remove("active"));el.classList.add("active");}
@@ -1087,7 +1114,7 @@ function matchVoiceAnswer(spoken){
 function makeBtn(opt,isMath){
   const b=document.createElement("button");b.className="ans-btn";
   if(isMath){const n=opt.apples||0;const appleStr=n?"🍎".repeat(Math.min(n,10)):"";b.innerHTML=`<span class="a-num">${n}</span><span class="a-apples">${appleStr}</span><span class="a-txt">${opt.txt}</span>`;}
-  else b.innerHTML=`<span class="a-ico">${opt.img||"❓"}</span><span class="a-txt">${opt.txt}</span>`;
+  else b.innerHTML=`<span class="a-ico">${opt.img||SVG_DOT}</span><span class="a-txt">${opt.txt}</span>`;
   return b;
 }
 function showMath(m){
@@ -1221,18 +1248,47 @@ function nextImageIndex(){
 // ─── DOUBLE-CLICK SAFETY ──────────────────────
 const _confirmState={};
 function confirmClick(id,fn){
- const now=Date.now();
- if(_confirmState[id]&&(now-_confirmState[id]<2000)){
-  _confirmState[id]=null;fn();
+ const st=_confirmState[id];
+ const b=document.getElementById(id);
+ // druhé kliknutie do 2 sekúnd → vykonaj akciu
+ if(st&&(Date.now()-st.time<2000)){
+  clearTimeout(st.timer);                 // zruš čakajúce obnovenie textu
+  if(b){b.textContent=st.orig;b.style.opacity="1";}   // vráť pôvodný popis HNEĎ
+  _confirmState[id]=null;
+  fn();
+  return;
+ }
+ // prvé kliknutie → vypýtaj si potvrdenie
+ if(!b){fn();return;}                     // poistka, keby tlačidlo neexistovalo
+ const orig=(st&&st.orig)||b.textContent; // nikdy neulož varovný text ako pôvodný
+ b.textContent="⚠️ Klikni ešte raz!";
+ b.style.opacity="0.7";
+ const timer=setTimeout(()=>{
+  b.textContent=orig;b.style.opacity="1";_confirmState[id]=null;
+ },2000);
+ _confirmState[id]={time:Date.now(),orig:orig,timer:timer};
+}
+// Aktualizuje popis tlačidla podľa zostávajúcich preskočení
+function updSkipBtn(){
+ var b=document.getElementById("skipBtn");
+ if(!b) return;
+ if(skipsLeft>0){
+  b.textContent="⏭️ Preskočiť ("+skipsLeft+")";
+  b.disabled=false; b.style.opacity="1"; b.style.filter="none";
  }else{
-  _confirmState[id]=now;
-  const b=document.getElementById(id);
-  if(b){var orig=b.textContent;b.textContent="⚠️ Klikni ešte raz!";b.style.opacity="0.7";
-   setTimeout(()=>{b.textContent=orig;b.style.opacity="1";_confirmState[id]=null;},2000);}
+  b.textContent="⏭️ Preskočenia minuté";
+  b.disabled=true; b.style.opacity="0.45"; b.style.filter="grayscale(1)";
  }
 }
 function skipQuestion(){
  if(answered) return;
+ if(!questions.length||!questions[cur]) return;   // kvíz sa ešte načítava
+ if(skipsLeft<=0){
+  var vs0=document.getElementById("voiceStat");
+  if(vs0)vs0.textContent="⏭️ Preskočenia si už minula — skús odpovedať.";
+  updSkipBtn();
+  return;
+ }
  speechSynthesis.cancel();speaking=false;stopRecog();
  var cat=questions[cur].cat;
  var usedTxt=new Set(questions.map(function(q){return q.q;}));
@@ -1245,11 +1301,13 @@ function skipQuestion(){
   }
  }
  questions[cur]=pool[Math.floor(Math.random()*pool.length)];
+ skipsLeft--;
+ updSkipBtn();
  renderQ();
 }
 function resetGame(){
   speechSynthesis.cancel();speaking=false;stopRecog();imgIdx=nextImageIndex();questions=composeQuiz();
-  cur=0;score=0;corr=0;wrong=0;streak=0;bestStreak=0;revd=0;wrongByQ=[];answeredLog=[];earnedBadges=new Set();lastPraise=-1;lastEncourage=-1;lastStreakPraise=-1;
+  cur=0;score=0;corr=0;wrong=0;streak=0;bestStreak=0;revd=0;wrongByQ=[];answeredLog=[];earnedBadges=new Set();lastPraise=-1;lastEncourage=-1;lastStreakPraise=-1;skipsLeft=SKIP_LIMIT;updSkipBtn();
   document.getElementById("qNum").textContent=1;document.getElementById("qTot").textContent=questions.length;document.getElementById("endWrap").classList.remove("show");document.getElementById("quizMain").style.display="block";
   buildPuzzle(AVATAR_IMAGES[imgIdx]);updBar();updStats();renderQ();
 }
@@ -1270,7 +1328,7 @@ window.addEventListener("load",()=>{
       });
     }).catch(()=>{});
   }
-  setTimeout(()=>{imgIdx=Math.floor(Math.random()*AVATAR_IMAGES.length);buildPuzzle(AVATAR_IMAGES[imgIdx]);questions=composeQuiz();document.getElementById("qTot").textContent=questions.length;updBar();updStats();renderQ();},300);
+  setTimeout(()=>{imgIdx=Math.floor(Math.random()*AVATAR_IMAGES.length);buildPuzzle(AVATAR_IMAGES[imgIdx]);questions=composeQuiz();document.getElementById("qTot").textContent=questions.length;updBar();updStats();updSkipBtn();renderQ();},300);
 });
 </script>
 </body>
