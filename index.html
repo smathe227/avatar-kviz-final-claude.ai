@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Avatar Tréningový Kvíz pre deti</title>
 <meta name="description" content="Tréningový kvíz pre deti — matematika, svet okolo nás a Avatar.">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="avatar-assets/app-icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="avatar-assets/app-icon-512.png">
 <link rel="apple-touch-icon" href="avatar-assets/app-icon-192.png">
@@ -452,6 +452,7 @@ const SVG_SQUARE=`<svg viewBox="0 0 24 24" width="30" height="30"><rect x="4" y=
 const SVG_CIRCLE=`<svg viewBox="0 0 24 24" width="30" height="30"><circle cx="12" cy="12" r="9" fill="none" stroke="#67e8f9" stroke-width="2.3"/></svg>`;
 const SVG_RECT=`<svg viewBox="0 0 30 22" width="32" height="24"><rect x="2" y="4" width="26" height="14" rx="1.5" fill="none" stroke="#67e8f9" stroke-width="2.3"/></svg>`;
 const SVG_OCTAGON=`<svg viewBox="0 0 24 24" width="30" height="30"><polygon points="8,3 16,3 21,8 21,16 16,21 8,21 3,16 3,8" fill="none" stroke="#f97316" stroke-width="2.3" stroke-linejoin="round"/></svg>`;
+const SVG_PENTAGON=`<svg viewBox="0 0 24 24" width="30" height="30"><polygon points="12,3 21,10 17.5,20 6.5,20 3,10" fill="none" stroke="#67e8f9" stroke-width="2.3" stroke-linejoin="round"/></svg>`;
 
 // Strieborná minca so znakom € — ROVNAKÁ NA VŠETKÝCH MOŽNOSTIACH,
 // aby ikona neprezrádzala, ktorá odpoveď je správna.
@@ -521,13 +522,13 @@ function buildMathQuestions(){
     ["Ktorý tvar nemá žiadny roh?",SVG_CIRCLE,"Kruh",[[SVG_TRIANGLE,"Trojuholník"],[SVG_RECT,"Obdĺžnik"]],"geometria","Kruh je okrúhly a nemá rohy."],
     ["Ktorý tvar má štyri rovnaké strany?",SVG_SQUARE,"Štvorec",[[SVG_CIRCLE,"Kruh"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Štvorec má 4 rovnaké strany."],
     ["Ktorý tvar vyzerá ako dlhé okno?",SVG_RECT,"Obdĺžnik",[[SVG_CIRCLE,"Kruh"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Obdĺžnik má dve dlhšie a dve kratšie strany."],
-    ["Koľko rohov spočítaš na štvorci?","4️⃣","4",[["3️⃣","3"],["0️⃣","0"]],"geometria","Štvorec má 4 rohy."],
-    ["Koľko strán má trojuholník?","3️⃣","3",[["4️⃣","4"],["5️⃣","5"]],"geometria","Slovo trojuholník napovedá: má 3 strany."],
+    ["Koľko rohov spočítaš na štvorci?",SVG_SQUARE,"4",[[SVG_SQUARE,"3"],[SVG_SQUARE,"0"]],"geometria","Štvorec má 4 rohy — po jednom v každom kúte."],
+    ["Koľko strán má trojuholník?",SVG_TRIANGLE,"3",[[SVG_TRIANGLE,"4"],[SVG_TRIANGLE,"5"]],"geometria","Slovo trojuholník napovedá: má 3 strany."],
     ["Ktorý tvar sa kotúľa najľahšie?",SVG_CIRCLE,"Kruh",[[SVG_SQUARE,"Štvorec"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Kruh je okrúhly, preto sa vie kotúľať."],
     ["Ktorý tvar môže byť na dopravnej značke STOP?",SVG_OCTAGON,"Osemuholník",[[SVG_CIRCLE,"Kruh"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Značka STOP má tvar s ôsmimi stranami."],
     ["Ktorý tvar pripomína strechu domčeka?",SVG_TRIANGLE,"Trojuholník",[[SVG_CIRCLE,"Kruh"],[SVG_RECT,"Obdĺžnik"]],"geometria","Strecha na obrázku často vyzerá ako trojuholník."],
     ["Ktorý tvar má dva páry rovnako dlhých strán?",SVG_RECT,"Obdĺžnik",[[SVG_CIRCLE,"Kruh"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Obdĺžnik má protiľahlé strany rovnako dlhé."],
-    ["Ktorý tvar má presne 5 strán?","⬠","Päťuholník",[[SVG_SQUARE,"Štvorec"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Päťuholník má 5 strán — napríklad tvar domčeka s ihlanovou strechou."],
+    ["Ktorý tvar má presne 5 strán?",SVG_PENTAGON,"Päťuholník",[[SVG_SQUARE,"Štvorec"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Päťuholník má 5 strán — napríklad tvar domčeka s ihlanovou strechou."],
     ["Ktorý tvar nemá ani jednu rovnú stranu?",SVG_CIRCLE,"Kruh",[[SVG_RECT,"Obdĺžnik"],[SVG_OCTAGON,"Osemuholník"]],"geometria","Kruh je celý zaoblený, žiadna strana nie je rovná."],
   ];
   // Porovnávanie na konkrétnych tanierikoch — pre dieťa názornejšie než "skupina A/B".
@@ -670,7 +671,7 @@ function buildGeneralQuestions(){
     ["Keď nájdeš lieky alebo tabletky, čo je správne?","🚫","Nedávať si ich do úst",[["🍬","Ochutnať ich"],["🎒","Schovať ich"],["👅","Olízať ich"]],"Lieky môžu byť nebezpečné. Berú sa iba od rodiča alebo lekára."],
     ["Keď zvoní neznámy človek a si doma bez rodiča, čo spravíš?","🚪","Neotvorím dvere",[["🔓","Otvorím hneď"],["📢","Poviem, že som sama"],["🏠","Pozvem ho dnu"]],"Neznámym ľuďom neotvárame, keď nie je pri nás dospelý."],
     ["Ak ti niekto na ihrisku ubližuje, čo je najlepšie?","🗣️","Povedať to dospelému",[["🤐","Mlčať"],["🥊","Biť sa"],["🏃","Utiecť ďaleko sama"]],"Keď nám niekto ubližuje, povieme to rodičovi, učiteľovi alebo inému bezpečnému dospelému."],
-    ["Keď ti kamarát povie, aby si mal nebezpečné tajomstvo, čo spravíš?","👨‍👩‍👧","Poviem to rodičovi",[["🤫","Nikomu nepoviem"],["😟","Budem sa báť sama"],["🎁","Sľúbim za darček"]],"Tajomstvá, pri ktorých sa bojíš alebo je niekto v nebezpečí, treba povedať dospelému."],
+    ["Keď ti kamarát povie, aby si mala nebezpečné tajomstvo, čo spravíš?","👨‍👩‍👧","Poviem to rodičovi",[["🤫","Nikomu nepoviem"],["😟","Budem sa báť sama"],["🎁","Sľúbim za darček"]],"Tajomstvá, pri ktorých sa bojíš alebo je niekto v nebezpečí, treba povedať dospelému."],
     ["Čo spravíš, keď sa porežeš a tečie krv?","🩹","Zavolám dospelého",[["🙈","Schovám ruku"],["🧃","Polejem to džúsom"],["🏃","Bežím po ulici"]],"Pri poranení zavoláme dospelého a ranu ošetríme."],
     ["Ak sa stratíš na výlete, čo je dobrý nápad?","📍","Zostať na viditeľnom mieste",[["🌲","Bežať hlboko do lesa"],["🚗","Sadnúť do cudzieho auta"],["🙈","Schovať sa"]],"Keď sa stratíš, zostaň tam, kde ťa ľahšie nájdu, a popros bezpečného dospelého."],
     ["Keď ti neznámy človek ponúka sladkosť, čo je bezpečné?","🙅","Nezobrať ju bez rodiča",[["🍭","Hneď ju zjesť"],["🎒","Schovať ju"],["🚶","Ísť s ním"]],"Od cudzích ľudí neberieme sladkosti ani darčeky bez rodiča."],
@@ -692,15 +693,15 @@ function buildGeneralQuestions(){
     ["Čo používame pri umývaní rúk?","🧼","Mydlo",[["✏️","Ceruzku"],["🎈","Balón"]],"hygiena","Mydlo pomáha umyť špinu z rúk."],
     ["Ktorá časť tela nám pomáha vidieť?","👀","Oči",[["👂","Uši"],["🦶","Chodidlá"]],"telo","Očami sa pozeráme."],
     ["Kde si zvyčajne čistíme zuby?","🚿","V kúpeľni",[["🌳","V lese"],["🚗","V aute"]],"hygiena","Zuby si čistíme v kúpeľni pri umývadle."],
-    ["Čo má týždeň?","7️⃣","7 dní",[["3️⃣","3 dni"],["1️⃣","1 deň"]],"čas","Týždeň má sedem dní."],
-    ["Ktorý deň býva po pondelku?","2️⃣","Utorok",[["🌙","Nedeľa"],["⭐","Piatok"]],"čas","Po pondelku nasleduje utorok."],
+    ["Koľko dní má týždeň?","📅","7 dní",[["📅","3 dni"],["📅","1 deň"]],"čas","Týždeň má sedem dní."],
+    ["Ktorý deň býva po pondelku?","📅","Utorok",[["📅","Nedeľa"],["📅","Piatok"]],"čas","Po pondelku nasleduje utorok."],
     ["Čo robíme s knihou?","📖","Čítame",[["🥣","Varíme"],["⚽","Kopeme"]],"škola","Knihu čítame alebo si v nej pozeráme obrázky."],
     ["Ktoré ovocie je často žlté a dá sa olúpať?","🍌","Banán",[["🥔","Zemiak"],["🥕","Mrkva"]],"jedlo","Banán má šupku a často je žltý."],
     ["Čo svieti v noci na oblohe, keď nie je zamračené?","⭐","Hviezdy",[["🌈","Dúha"],["🌧️","Dážď"]],"príroda","Hviezdy vidíme najmä v noci."],
     ["Čo použijeme, keď chceme niečo vystrihnúť?","✂️","Nožnice",[["🥄","Lyžicu"],["🧃","Džús"]],"škola","Nožnice strihajú papier."],
     ["Ktoré zviera mňauká?","🐈","Mačka",[["🐄","Krava"],["🐸","Žaba"]],"zvieratá","Mačka robí mňau."],
     ["Akú farbu majú banány, keď sú zrelé?","🟡","Žltú",[["🟣","Fialovú"],["⚫","Čiernu"]],"farby","Zrelý banán je zvyčajne žltý."],
-    ["Koľko farieb má dúha?","🌈","Veľa farieb naraz",[["1️⃣","Iba jednu"],["0️⃣","Žiadnu"]],"farby","Dúha má veľa farieb — červenú, oranžovú, žltú, zelenú, modrú aj fialovú."],
+    ["Koľko farieb má dúha?","🌈","Veľa farieb naraz",[["🌈","Iba jednu"],["🌈","Žiadnu"]],"farby","Dúha má veľa farieb — červenú, oranžovú, žltú, zelenú, modrú aj fialovú."],
     ["Akou farbou svieti semafor, keď môžeš ísť?","🟢","Zelenou",[["🔴","Červenou"],["🟡","Žltou"]],"farby","Na zelenú na semafore môžeme ísť."],
     ["Čím cestujeme po nebi?","✈️","Lietadlom",[["🚲","Bicyklom"],["⛵","Loďou"]],"doprava","Lietadlo lieta vysoko na oblohe."],
     ["Čím cestujeme po vode?","⛵","Loďou",[["🚗","Autom"],["🚆","Vlakom"]],"doprava","Loď alebo čln plávajú po vode."],
@@ -713,12 +714,12 @@ function buildGeneralQuestions(){
     ["Čo si obujeme, keď ideme von?","👟","Topánky",[["🧢","Čiapku"],["🧤","Rukavice"]],"bežný život","Topánky chránia chodidlá vonku."],
     ["Ktoré jedlo býva v miske a je teplé?","🥣","Polievka",[["🍭","Lízanka"],["🍪","Keksík"]],"jedlo","Polievka sa často je z misky lyžicou."],
     ["Čo nám ukáže, koľko je hodín?","⏰","Hodiny",[["🧸","Hračka"],["🌷","Kvet"]],"čas","Hodiny ukazujú čas."],
-    ["Čo robíme, keď niekomu povieme ďakujem?","🙏","Poďakujeme",[["😠","Hneváme sa"],["🏃","Utekáme"]],"správanie","Ďakujem je slušné poďakovanie."],
+    ["Čo povieš, keď ti niekto pomôže?","🙏","Ďakujem",[["😠","Nič nepoviem"],["🏃","Choď preč"]],"správanie","Keď nám niekto pomôže, poďakujeme sa — povieme ďakujem."],
     ["Ktoré ročné obdobie prichádza po zime?","🌸","Jar",[["❄️","Zima"],["🍂","Jeseň"]],"čas","Po zime prichádza jar."],
     ["Ktoré zviera žije vo vode a má plutvy?","🐟","Ryba",[["🐕","Pes"],["🐿️","Veverička"]],"zvieratá","Ryby žijú vo vode a plávajú pomocou plutiev."],
     ["Čo použijeme, keď je vonku dážď?","☔","Dáždnik",[["🕶️","Slnečné okuliare"],["🧣","Šál"]],"bežný život","Dáždnik nás chráni pred dažďom."],
-    ["Koľko prstov máš na jednej ruke?","5️⃣","5",[["4️⃣","4"],["6️⃣","6"]],"telo","Na jednej ruke máme 5 prstov."],
-    ["Ktorá časť dňa je hneď po rannom vstávaní?","🌅","Ráno",[["🌙","Noc"],["🌆","Večer"]],"čas","Po prebudení nasleduje ráno."],
+    ["Koľko prstov máš na jednej ruke?","✋","5",[["✋","4"],["✋","6"]],"telo","Na jednej ruke máme 5 prstov."],
+    ["Ktorá časť dňa je najtmavšia?","🌙","Noc",[["🌅","Ráno"],["☀️","Poludnie"]],"čas","V noci je vonku tma, preto vtedy spíme."],
     ["Čo robí včela?","🐝","Zbiera peľ a robí med",[["🎨","Maľuje obrázky"],["📚","Číta knihy"]],"zvieratá","Včely zbierajú peľ z kvetov a vyrábajú med."],
     ["Kam patria odpadky, ktoré vyhodíme?","🗑️","Do koša",[["🌳","Na trávu"],["🏞️","Do rieky"]],"príroda","Odpadky patria do koša, aby bola príroda čistá."],
     ["Čo použijeme na kreslenie čiar?","✏️","Ceruzku",[["🥾","Čižmu"],["🥄","Lyžicu"]],"škola","Ceruzkou kreslíme a píšeme."],
@@ -735,7 +736,7 @@ function buildGeneralQuestions(){
     ["Kedy najčastejšie sneží?","❄️","V zime",[["🌻","V lete"],["🍁","Na jeseň"]],"ročné obdobia","Sneh padá, keď je vonku mráz — v zime."],
     ["V ktorom období sú prázdniny pri mori najdlhšie?","☀️","V lete",[["🎄","V zime"],["🌱","Na jar"]],"ročné obdobia","Letné prázdniny sú najdlhšie."],
     ["Kedy začínajú kvitnúť prvé kvety?","🌸","Na jar",[["🥶","V zime"],["🍄","Na jeseň"]],"ročné obdobia","Na jar sa príroda prebúdza a kvitne."],
-    ["Koľko ročných období máme počas roka?","4️⃣","Štyri",[["2️⃣","Dve"],["7️⃣","Sedem"]],"ročné obdobia","Jar, leto, jeseň a zima — spolu štyri."],
+    ["Koľko ročných období máme počas roka?","🗓️","Štyri",[["🗓️","Dve"],["🗓️","Sedem"]],"ročné obdobia","Jar, leto, jeseň a zima — spolu štyri."],
 
     ["V ktorej krajine žijeme?","🇸🇰","Na Slovensku",[["🇮🇹","V Taliansku"],["🇪🇬","V Egypte"]],"moja krajina","Naša krajina sa volá Slovensko."],
     ["Ako sa volá hlavné mesto Slovenska?","🏛️","Bratislava",[["🗼","Paríž"],["🎡","Viedeň"]],"moja krajina","Bratislava je hlavné mesto Slovenska."],
@@ -749,13 +750,13 @@ function buildGeneralQuestions(){
 
     ["Čím hráme na klavíri?","🎹","Prstami",[["🦶","Nosom"],["👂","Ušami"]],"hudba a umenie","Na klavíri hráme prstami na klávesoch."],
     ["Čo potrebujeme na maľovanie obrázka?","🎨","Farby a štetec",[["🔧","Skrutkovač"],["🍴","Vidličku"]],"hudba a umenie","Na maľovanie potrebujeme farby a štetec."],
-    ["Čo robíme, keď spievame pieseň?","🎤","Spievame hlasom",[["🖌️","Maľujeme"],["🏃","Behám"]],"hudba a umenie","Pri speve používame hlas. Keď spieva veľa ľudí naraz, voláme to zbor."],
+    ["Čím vydávame zvuk, keď spievame?","🎤","Hlasom",[["👐","Rukami"],["🦶","Nohami"]],"hudba a umenie","Pri speve používame hlas. Keď spieva veľa ľudí naraz, voláme to zbor."],
 
-    ["Čo je viac: 3 alebo 8?","🔢","8",[["3️⃣","3"],["🟰","Sú rovnaké"]],"logika","Číslo 8 je väčšie ako 3."],
-    ["Ktoré číslo nasleduje hneď po čísle 9?","🔟","10",[["8️⃣","8"],["1️⃣","1"]],"logika","Po deviatke nasleduje desiatka."],
+    ["Čo je viac: 3 alebo 8?",SVG_NUM,"8",[[SVG_NUM,"3"],[SVG_NUM,"Sú rovnaké"]],"logika","Číslo 8 je väčšie ako 3."],
+    ["Ktoré číslo nasleduje hneď po čísle 9?",SVG_NUM,"10",[[SVG_NUM,"8"],[SVG_NUM,"1"]],"logika","Po deviatke nasleduje desiatka."],
     ["Ktoré z týchto zvierat NIE JE vták?","🐕","Pes",[["🦉","Sova"],["🦆","Kačka"]],"logika","Pes je cicavec, sova aj kačka sú vtáky."],
     ["Čo do skupiny NEPATRÍ: jablko, hruška, stolička?","🪑","Stolička",[["🍎","Jablko"],["🍐","Hruška"]],"logika","Jablko a hruška sú ovocie, stolička je nábytok."],
-    ["Ktoré zviera je najväčšie?","🐘","Slon",[["🐁","Myš"],["🐈","Mačka"]],"logika","Slon je najväčší z týchto zvierat."],
+    ["Ktoré z týchto zvierat je najväčšie?","🐘","Slon",[["🐁","Myš"],["🐈","Mačka"]],"logika","Slon je z týchto troch zvierat najväčší."],
   ];
   // Každý fakt sa pridá RAZ — bez umelých variantov typu "Vyber správne. / Premysli si odpoveď.",
   // ktoré predtým nafukovali databázu opakovaním tej istej otázky s iným koncom vety.
@@ -770,7 +771,7 @@ function buildAvatarQuestions(){
   const base=[
     ["Kde sa odohráva príbeh Na'vi?","🌍","Na Pandore",[["🏙️","V meste"],["🪐","Na Saturne"]],"svet Avatar","Pandora je mesiac, kde žijú Na'vi."],
     ["Akú farbu majú Na'vi na koži najčastejšie?","🔵","Modrú",[["🟢","Zelenú"],["🔴","Červenú"]],"postavy","Na'vi sú známi modrou pokožkou."],
-    ["Ktorá postava sa volá Jake?","🪖","Jake Sully",[["🐋","Tulkun"],["🦅","Ikran"]],"postavy","Jake Sully je hlavná postava."],
+    ["Ako sa volá otec rodiny Sullyovcov?","🪖","Jake",[["🐋","Tulkun"],["🦅","Ikran"]],"postavy","Jake Sully je hlavná postava."],
     ["Ktorá bojovníčka používa luk a je veľmi odvážna?","🏹","Neytiri",[["🔬","Grace"],["🕷️","Spider"]],"postavy","Neytiri je skúsená bojovníčka Na'vi."],
     ["Ako sa volá bohyňa prírody, ktorú Na'vi uctievajú?","🌳","Eywa",[["🚀","Raketa"],["🏰","Hrad"]],"príroda","Eywa je pre Na'vi duch prírody, ktorý spája všetko živé."],
     ["Na akom tvorovi sa Na'vi učia lietať?","🦅","Na ikranovi",[["🚗","Na aute"],["🚲","Na bicykli"]],"tvory","Ikran je lietajúci tvor z Pandory."],
@@ -790,7 +791,7 @@ function buildAvatarQuestions(){
     ["Ktorý tvor lieta vysoko nad pralesom?","🦅","Ikran",[["🐋","Tulkun"],["🐢","Korytnačka"]],"tvory","Ikran patrí medzi lietajúce tvory."],
     ["Čo je v príbehu silnejšie ako strach?","💙","Rodina a odvaha",[["🍭","Sladkosť"],["🧊","Ľad"]],"hodnoty","Avatar často ukazuje odvahu a rodinu."],
     ["Čo robia rastliny na Pandore, keď sa zotmie?","✨","Samy svietia",[["🥶","Zamrznú"],["🌙","Zmiznú"]],"príroda","Rastliny na Pandore v noci samy svietia — podobne ako svetlušky u nás."],
-    ["Kto je mama detí v rodine Sullyovcov?","💙","Neytiri",[["🔬","Grace"],["🌊","Metkayina"]],"postavy","Neytiri je mama v rodine Sullyovcov."],
+    ["Kto je mama detí v rodine Sullyovcov?","💙","Neytiri",[["🔬","Grace"],["👧","Kiri"]],"postavy","Neytiri je mama v rodine Sullyovcov."],
     ["Majú Jake a Neytiri deti?","👨‍👩‍👧‍👦","Áno, majú synov aj dcéry",[["🚫","Nie, nemajú žiadne"],["1️⃣","Majú iba jedno"]],"postavy","Jake a Neytiri majú veľkú rodinu — synov aj dcéry."],
     ["Čo by urobila dobrá ochrankyňa Pandory?","🌿","Chránila prírodu",[["🗑️","Hádzala odpad"],["🔥","Ničila les"]],"hodnoty","Ochrankyňa Pandory sa stará o prírodu."],
     ["Akým jazykom hovoria Na'vi medzi sebou?","🗣️","Vlastným jazykom Na'vi",[["🇬🇧","Iba po anglicky"],["🤐","Vôbec nehovoria"]],"svet Avatar","Na'vi majú svoj vlastný, špeciálne vytvorený jazyk."],
@@ -810,7 +811,7 @@ function buildAvatarQuestions(){
 
     ["V akom prostredí žije klan, v ktorom vyrastala Neytiri?","🌲","V lese",[["🏜️","Na púšti"],["❄️","Na ľadovci"]],"klany","Neytiri pochádza z lesného klanu, ktorý žije medzi obrovskými stromami."],
     ["Ako sa volá obrovský strom, v ktorom býva lesný klan?","🌳","Strom domova",[["🏢","Mrakodrap"],["⛺","Stan"]],"svet Avatar","Strom domova je obrovský strom, v ktorom žije celý klan."],
-    ["Sú Na'vi vyšší alebo nižší ako ľudia?","📏","Oveľa vyšší",[["🤏","Oveľa nižší"],["🟰","Rovnako vysokí"]],"postavy","Na'vi sú omnoho vyšší než ľudia — dospelý Na'vi je vyšší než dvaja ľudia na sebe by boli malí."],
+    ["Sú Na'vi vyšší alebo nižší ako ľudia?","📏","Oveľa vyšší",[["🤏","Oveľa nižší"],["👥","Rovnako vysokí"]],"postavy","Na'vi sú omnoho vyšší než ľudia — dospelý Na'vi je vyšší než dvaja ľudia na sebe by boli malí."],
     ["Ako Na'vi ukazujú, že si niekoho vážia?","👁️","Povedia „Vidím ťa\"",[["🤛","Udrú ho"],["🙄","Otočia sa chrbtom"]],"hodnoty","„Vidím ťa\" znamená u Na'vi, že vidím tvoje skutočné vnútro."],
     ["Čo robia Na'vi, keď ulovia zviera na jedlo?","🙏","Poďakujú mu a uctia si ho",[["🎉","Oslavujú a smejú sa"],["🗑️","Nechajú ho ležať"]],"hodnoty","Na'vi ďakujú zvieraťu za to, že im dalo potravu."],
     ["Ktoré zvieratá pomáhajú morskému klanu pri love?","🐋","Tulkuny a ďalší morskí tvorovia",[["🐕","Psy"],["🐓","Sliepky"]],"klany","Morský klan Metkayina má blízke priateľstvo s tulkunmi."],
@@ -846,7 +847,7 @@ const DIFF_BY_SKILL={
 // (Napr. "Akú farbu majú Na'vi?" je vizuálna a ľahká, hoci patrí do okruhu "postavy".)
 const DIFF_EASY_HINTS=[
   "Akú farbu majú Na'vi","Kde sa odohráva príbeh","Čo používa Neytiri pri love",
-  "Aké oči majú mnohí Na'vi","Ktorá bojovníčka používa luk","Ktorá postava sa volá Jake",
+  "Aké oči majú mnohí Na'vi","Ktorá bojovníčka používa luk","Ako sa volá otec rodiny Sullyovcov",
   "Ktorý tvor lieta vysoko","Čo svieti na Pandore","Čo Na'vi najviac chránia",
   "Sú Na'vi vyšší alebo nižší","Majú Jake a Neytiri deti","Ktoré prostredie je dôležité",
 ];
@@ -942,6 +943,9 @@ function bestVoice(){
   const scoreVoice=v=>{
     const name=v.name.toLowerCase(), lang=v.lang.toLowerCase();
     let score=0;
+    if(/ling|ttsling|lingsapps|lings/.test(name)&&lang.startsWith("sk"))score+=200;
+    if(/ling|ttsling|lingsapps|lings/.test(name)&&/female|žena/i.test(name))score+=190;
+    if(/ling|ttsling|lingsapps|lings/.test(name))score+=180;
     if(lang.startsWith("sk"))score+=100;
     if(lang.startsWith("cs"))score+=82;
     if(lang.startsWith("en"))score+=20;
@@ -953,9 +957,9 @@ function bestVoice(){
   return [...voices].sort((a,b)=>scoreVoice(b)-scoreVoice(a))[0];
 }
 function voiceConfig(){
-  if(voiceMode==="story")return {pitch:1.08,rate:Math.max(.72,spd*.9),pause:760,optionPause:520};
-  if(voiceMode==="focus")return {pitch:1.0,rate:Math.min(1.25,spd*1.08),pause:360,optionPause:240};
-  return {pitch:1.16,rate:Math.max(.72,spd*.94),pause:620,optionPause:420};
+  if(voiceMode==="story")return {pitch:1.08,rate:Math.max(.72,spd*.9),pause:1000,optionPause:1000};
+  if(voiceMode==="focus")return {pitch:1.0,rate:Math.min(1.25,spd*1.08),pause:1000,optionPause:1000};
+  return {pitch:1.16,rate:Math.max(.72,spd*.94),pause:1000,optionPause:1000};
 }
 function cleanSpeechText(txt){
   return String(txt)
