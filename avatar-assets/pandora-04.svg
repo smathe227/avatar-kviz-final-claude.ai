@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<defs>
+  <linearGradient id="sky4" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#1b1238"/>
+    <stop offset="40%" stop-color="#5b2a6e"/>
+    <stop offset="75%" stop-color="#c2694f"/>
+    <stop offset="100%" stop-color="#f5c451"/>
+  </linearGradient>
+</defs>
+<rect width="800" height="600" fill="url(#sky4)"/>
+<circle cx="400" cy="480" r="90" fill="#fde68a" opacity="0.9"/>
+<!-- floating mountain 1 -->
+<g>
+  <ellipse cx="200" cy="220" rx="130" ry="40" fill="#3b2f63"/>
+  <path d="M90 220 C130 140 270 140 310 220 C260 250 140 250 90 220Z" fill="#4c3a7a"/>
+  <path d="M120 260 L110 340" stroke="#a5f3fc" stroke-width="4" opacity="0.7"/>
+  <path d="M150 260 L145 380" stroke="#a5f3fc" stroke-width="3" opacity="0.6"/>
+</g>
+<!-- floating mountain 2 (bigger, further back) -->
+<g>
+  <ellipse cx="560" cy="150" rx="170" ry="45" fill="#33265a"/>
+  <path d="M420 150 C470 60 650 60 700 150 C640 185 480 185 420 150Z" fill="#43336e"/>
+  <path d="M480 195 L470 300" stroke="#a5f3fc" stroke-width="5" opacity="0.7"/>
+  <path d="M600 195 L610 280" stroke="#a5f3fc" stroke-width="3" opacity="0.5"/>
+</g>
+<!-- small floating rocks -->
+<ellipse cx="650" cy="380" rx="30" ry="10" fill="#2f2450"/>
+<ellipse cx="120" cy="400" rx="22" ry="8" fill="#2f2450"/>
+<!-- clouds -->
+<ellipse cx="300" cy="380" rx="90" ry="18" fill="#f5c451" opacity="0.15"/>
+<ellipse cx="550" cy="420" rx="110" ry="20" fill="#f5c451" opacity="0.12"/>
+<!-- ground silhouette with jungle -->
+<path d="M0 600 C100 520 200 560 300 540 C400 520 500 560 600 540 C700 520 750 550 800 540 L800 600Z" fill="#0c0a1a"/>
+<!-- birds -->
+<path d="M250 250 q10 -8 18 0 q10 -8 18 0" stroke="#0c0a1a" stroke-width="3" fill="none"/>
+<path d="M330 230 q8 -6 14 0 q8 -6 14 0" stroke="#0c0a1a" stroke-width="2.5" fill="none"/>
+</svg>

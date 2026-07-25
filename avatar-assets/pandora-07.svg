@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<defs>
+  <linearGradient id="sea7" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0e7490"/>
+    <stop offset="60%" stop-color="#155e63"/>
+    <stop offset="100%" stop-color="#052e2b"/>
+  </linearGradient>
+</defs>
+<rect width="800" height="600" fill="url(#sea7)"/>
+<!-- light rays -->
+<polygon points="150,0 220,0 300,600 180,600" fill="#e0f2fe" opacity="0.08"/>
+<polygon points="500,0 570,0 660,600 530,600" fill="#e0f2fe" opacity="0.06"/>
+<!-- coral shapes -->
+<g fill="#fb7185" opacity="0.85">
+  <path d="M100 600 C90 500 130 480 120 400 C160 460 150 520 170 600Z"/>
+  <path d="M650 600 C660 480 610 460 630 380 C580 440 590 520 570 600Z"/>
+</g>
+<g fill="#f472b6" opacity="0.8">
+  <circle cx="220" cy="520" r="40"/>
+  <circle cx="270" cy="500" r="26"/>
+  <circle cx="560" cy="540" r="34"/>
+</g>
+<g fill="#34d399" opacity="0.75">
+  <path d="M350 600 C340 540 370 520 360 470 C400 510 390 560 410 600Z"/>
+  <path d="M480 600 C470 550 500 530 495 490 C525 520 520 560 540 600Z"/>
+</g>
+<!-- fish school -->
+<g fill="#67e8f9" opacity="0.85">
+  <path d="M300 250 q14 -7 28 0 q-14 7 -28 0Z"/>
+  <path d="M330 260 l8 -5 v10Z"/>
+  <path d="M340 230 q14 -7 28 0 q-14 7 -28 0Z"/>
+  <path d="M370 240 l8 -5 v10Z"/>
+  <path d="M310 210 q14 -7 28 0 q-14 7 -28 0Z"/>
+  <path d="M340 220 l8 -5 v10Z"/>
+</g>
+<!-- glowing plankton -->
+<g fill="#a5f3fc" opacity="0.7">
+  <circle cx="150" cy="150" r="2.5"/>
+  <circle cx="500" cy="130" r="3"/>
+  <circle cx="600" cy="200" r="2"/>
+  <circle cx="700" cy="160" r="2.5"/>
+  <circle cx="90" cy="250" r="2"/>
+</g>
+</svg>

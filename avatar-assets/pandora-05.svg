@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<defs>
+  <linearGradient id="sky5" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0a1f3d"/>
+    <stop offset="100%" stop-color="#031018"/>
+  </linearGradient>
+  <radialGradient id="backlight" cx="50%" cy="45%" r="55%">
+    <stop offset="0%" stop-color="#5eead4" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#5eead4" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="800" height="600" fill="url(#sky5)"/>
+<circle cx="400" cy="260" r="220" fill="url(#backlight)"/>
+<!-- tall glowing trees behind -->
+<g stroke="#0f2a24" stroke-width="20" fill="none">
+  <path d="M100 600 C110 400 90 300 110 160"/>
+  <path d="M680 600 C670 420 700 320 680 150"/>
+  <path d="M700 600 C710 460 690 380 705 260"/>
+</g>
+<g fill="#34d399" opacity="0.7">
+  <circle cx="110" cy="160" r="6"/>
+  <circle cx="680" cy="150" r="6"/>
+  <circle cx="150" cy="220" r="4"/>
+  <circle cx="640" cy="230" r="4"/>
+</g>
+<!-- archer silhouette (generic humanoid, bow drawn) -->
+<g transform="translate(400,380)">
+  <ellipse cx="0" cy="-150" rx="22" ry="26" fill="#04120e"/>
+  <path d="M-30,-140 C-40,-160 -20,-175 0,-175 C20,-175 40,-160 30,-140" fill="#04120e"/>
+  <path d="M-10,-125 C-40,-110 -60,-60 -55,10 C-50,60 -30,100 -10,130 L10,130 C25,90 35,40 30,-10 C55,-30 75,-70 60,-110 C40,-95 15,-105 -10,-125Z" fill="#04120e"/>
+  <!-- bow -->
+  <path d="M75,-140 C130,-100 130,20 75,60" stroke="#031008" stroke-width="6" fill="none"/>
+  <line x1="75" y1="-140" x2="75" y2="60" stroke="#0a2a20" stroke-width="1.5" opacity="0.7"/>
+  <!-- legs -->
+  <path d="M-10,130 C-20,180 -15,230 -25,270" stroke="#04120e" stroke-width="16" fill="none"/>
+  <path d="M10,130 C18,180 12,230 20,270" stroke="#04120e" stroke-width="16" fill="none"/>
+</g>
+<!-- floating spores -->
+<g fill="#a7f3d0" opacity="0.8">
+  <circle cx="200" cy="200" r="3"/>
+  <circle cx="240" cy="320" r="2"/>
+  <circle cx="560" cy="180" r="3"/>
+  <circle cx="600" cy="300" r="2"/>
+  <circle cx="300" cy="450" r="2"/>
+  <circle cx="520" cy="470" r="3"/>
+</g>
+</svg>

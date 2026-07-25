@@ -128,7 +128,7 @@ body::after{
 .puz-title{font-family:'Nunito',sans-serif;font-size:.92rem;color:#cffafe;margin-bottom:7px}
 .puz-grid{position:relative;width:100%;max-width:420px;
   aspect-ratio:4/3;margin:0 auto;border-radius:14px;overflow:hidden;
-  background:center/cover no-repeat #020617;box-shadow:0 0 0 1px rgba(186,230,253,.24),0 20px 38px rgba(0,0,0,.45)}
+  background:rgb(2,6,23) center/contain no-repeat;box-shadow:0 0 0 1px rgba(186,230,253,.24),0 20px 38px rgba(0,0,0,.45)}
 .overlay{position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(180deg,rgba(103,232,249,.08),rgba(0,0,0,.1) 45%,rgba(2,6,23,.24))}
 .covers{position:absolute;inset:0}
@@ -883,7 +883,7 @@ function composeQuiz(){
 }
 
 function buildPuzzle(src){
-  const g=document.getElementById("puzGrid");g.style.backgroundImage=`url("${src}")`;
+  const g=document.getElementById("puzGrid");g.style.backgroundImage=`url("${src}")`;g.style.backgroundSize="contain";g.style.backgroundPosition="center";
   const w=document.getElementById("covWrap");w.innerHTML="";
   for(let i=0;i<TILES;i++){
     const c=i%COLS,r=Math.floor(i/COLS),d=document.createElement("div");

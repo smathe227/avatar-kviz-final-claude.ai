@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<defs>
+  <linearGradient id="sky8" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#7c3aed"/>
+    <stop offset="45%" stop-color="#f97316"/>
+    <stop offset="100%" stop-color="#fbbf24"/>
+  </linearGradient>
+</defs>
+<rect width="800" height="600" fill="url(#sky8)"/>
+<circle cx="620" cy="420" r="100" fill="#fef3c7" opacity="0.9"/>
+<!-- cloud layers -->
+<ellipse cx="200" cy="480" rx="220" ry="30" fill="#fde68a" opacity="0.35"/>
+<ellipse cx="550" cy="520" rx="260" ry="26" fill="#fde68a" opacity="0.3"/>
+<!-- flying creature with rider silhouette -->
+<g transform="translate(340,220) rotate(-6)">
+  <!-- wings -->
+  <path d="M0,0 C-90,-40 -180,-20 -240,30 C-180,10 -110,20 -50,45 L0,20Z" fill="#1a0f2e"/>
+  <path d="M0,0 C90,-40 180,-20 240,30 C180,10 110,20 50,45 L0,20Z" fill="#1a0f2e"/>
+  <!-- body -->
+  <path d="M-15,10 C-25,40 -20,70 0,90 C20,70 25,40 15,10Z" fill="#1a0f2e"/>
+  <!-- tail -->
+  <path d="M0,85 C10,120 5,150 20,175" stroke="#1a0f2e" stroke-width="8" fill="none"/>
+  <!-- rider -->
+  <ellipse cx="0" cy="20" rx="9" ry="12" fill="#1a0f2e"/>
+  <path d="M-6,28 C-10,45 -6,55 0,60 C6,55 10,45 6,28Z" fill="#1a0f2e"/>
+</g>
+<!-- distant birds -->
+<path d="M120 150 q10 -8 18 0 q10 -8 18 0" stroke="#1a0f2e" stroke-width="3" fill="none" opacity="0.7"/>
+<path d="M600 120 q8 -6 14 0 q8 -6 14 0" stroke="#1a0f2e" stroke-width="2.5" fill="none" opacity="0.6"/>
+<!-- ground silhouette -->
+<path d="M0 600 C120 540 220 570 320 550 C420 530 520 570 620 550 C700 535 760 555 800 545 L800 600Z" fill="#150a28"/>
+</svg>

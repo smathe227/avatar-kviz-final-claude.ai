@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<defs>
+  <linearGradient id="sea1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#082f49"/>
+    <stop offset="50%" stop-color="#075e6e"/>
+    <stop offset="100%" stop-color="#022c22"/>
+  </linearGradient>
+  <radialGradient id="rays" cx="50%" cy="0%" r="80%">
+    <stop offset="0%" stop-color="#a5f3fc" stop-opacity="0.35"/>
+    <stop offset="100%" stop-color="#a5f3fc" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="800" height="600" fill="url(#sea1)"/>
+<rect width="800" height="600" fill="url(#rays)"/>
+<!-- light shafts -->
+<polygon points="250,0 320,0 420,600 300,600" fill="#e0f2fe" opacity="0.06"/>
+<polygon points="480,0 540,0 620,600 500,600" fill="#e0f2fe" opacity="0.05"/>
+<!-- big sea creature silhouette (tulkun-like) -->
+<g transform="translate(400,320)">
+  <ellipse cx="0" cy="0" rx="220" ry="70" fill="#031a1a"/>
+  <path d="M-220,0 C-260,-20 -280,0 -260,20 C-240,10 -230,5 -220,0Z" fill="#031a1a"/>
+  <path d="M220,0 C260,-40 300,-70 280,-100 C250,-70 220,-40 200,-10Z" fill="#031a1a"/>
+  <path d="M-30,-65 C-10,-110 20,-110 40,-65 C20,-75 -10,-75 -30,-65Z" fill="#031a1a"/>
+  <circle cx="180" cy="-8" r="6" fill="#7dd3fc" opacity="0.8"/>
+</g>
+<!-- glowing plankton dots -->
+<g fill="#67e8f9" opacity="0.8">
+  <circle cx="120" cy="150" r="3"/>
+  <circle cx="180" cy="220" r="2"/>
+  <circle cx="260" cy="120" r="4"/>
+  <circle cx="600" cy="180" r="3"/>
+  <circle cx="670" cy="260" r="2"/>
+  <circle cx="720" cy="140" r="3"/>
+  <circle cx="90" cy="400" r="2"/>
+  <circle cx="500" cy="460" r="3"/>
+  <circle cx="650" cy="420" r="2"/>
+</g>
+<!-- small fish silhouettes -->
+<g fill="#0f2e2e">
+  <path d="M120 480 q20 -10 40 0 q-20 10 -40 0Z"/>
+  <path d="M150 500 l10 -6 v12 Z"/>
+  <path d="M660 500 q18 -9 36 0 q-18 9 -36 0Z"/>
+</g>
+</svg>

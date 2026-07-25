@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<defs>
+  <radialGradient id="treeglow" cx="50%" cy="55%" r="60%">
+    <stop offset="0%" stop-color="#c4b5fd" stop-opacity="0.55"/>
+    <stop offset="100%" stop-color="#c4b5fd" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="sky6" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0b0620"/>
+    <stop offset="100%" stop-color="#1b1238"/>
+  </linearGradient>
+</defs>
+<rect width="800" height="600" fill="url(#sky6)"/>
+<circle cx="400" cy="340" r="260" fill="url(#treeglow)"/>
+<!-- big willow-like glowing tree -->
+<path d="M400 600 C395 460 405 380 400 300" stroke="#1a1230" stroke-width="34" fill="none"/>
+<g stroke="#c4b5fd" stroke-width="2.5" fill="none" opacity="0.75">
+  <path d="M400 320 C350 280 320 220 280 160"/>
+  <path d="M400 320 C450 280 480 220 520 160"/>
+  <path d="M400 320 C370 260 380 200 350 130"/>
+  <path d="M400 320 C430 260 420 200 450 130"/>
+  <path d="M400 320 C400 250 400 190 400 110"/>
+</g>
+<!-- hanging glowing tendrils -->
+<g stroke="#a5b4fc" stroke-width="1.5" opacity="0.6">
+  <path d="M280 160 C270 220 260 280 250 340"/>
+  <path d="M520 160 C530 220 540 280 550 340"/>
+  <path d="M350 130 C340 200 330 270 320 340"/>
+  <path d="M450 130 C460 200 470 270 480 340"/>
+  <path d="M400 110 C400 190 400 260 400 340"/>
+</g>
+<!-- glow dots along branches -->
+<g fill="#e9d5ff">
+  <circle cx="280" cy="160" r="4"/>
+  <circle cx="520" cy="160" r="4"/>
+  <circle cx="350" cy="130" r="3.5"/>
+  <circle cx="450" cy="130" r="3.5"/>
+  <circle cx="400" cy="110" r="4"/>
+  <circle cx="250" cy="340" r="3"/>
+  <circle cx="550" cy="340" r="3"/>
+  <circle cx="320" cy="340" r="2.5"/>
+  <circle cx="480" cy="340" r="2.5"/>
+</g>
+<!-- two small figures kneeling beneath tree -->
+<g fill="#0b0620">
+  <ellipse cx="360" cy="560" rx="14" ry="20"/>
+  <ellipse cx="440" cy="560" rx="14" ry="20"/>
+</g>
+<!-- ground mist -->
+<ellipse cx="400" cy="580" rx="260" ry="20" fill="#c4b5fd" opacity="0.15"/>
+</svg>
