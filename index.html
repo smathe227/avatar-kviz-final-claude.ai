@@ -95,6 +95,7 @@ body::after{
 .btn-repeat{background:linear-gradient(135deg,#22c55e,#16a34a)}
 .btn-reset{background:linear-gradient(135deg,#fb923c,#f97316);color:#0f172a}
 .btn-end{background:linear-gradient(135deg,#f97316,#ef4444)}
+.btn-skip{background:linear-gradient(135deg,#fbbf24,#eab308);color:#0f172a}
 
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
 
@@ -307,8 +308,9 @@ body::after{
   <button class="btn btn-audio" id="audioBtn" onclick="toggleAudio()">🔊 Hlas: ZAP</button>
   <button class="btn btn-voice" id="voiceBtn" onclick="toggleVoiceInput()">🎤 Hovor!</button>
   <button class="btn btn-repeat" onclick="doRepeat()">🔁 Znova</button>
-  <button class="btn btn-reset" onclick="resetGame()">🔄 Reset</button>
-  <button class="btn btn-end" onclick="endGame()">⏹ Koniec</button>
+  <button class="btn btn-skip" id="skipBtn" onclick="confirmClick('skipBtn',skipQuestion)">⏭️ Preskočiť</button>
+  <button class="btn btn-reset" id="resetBtn" onclick="confirmClick('resetBtn',resetGame)">🔄 Reset</button>
+  <button class="btn btn-end" id="endBtn" onclick="confirmClick('endBtn',endGame)">⏹ Koniec</button>
 </div>
 
 <!-- SPEED -->
@@ -394,7 +396,7 @@ body::after{
       <div class="end-card" id="endWeak"></div>
       <div class="end-card" id="endAdvice"></div>
       <div class="end-card" id="endCheer"></div>
-      <button class="restart-btn" onclick="resetGame()">🔄 Hrať znova!</button>
+      <button class="restart-btn" id="restartBtn" onclick="confirmClick('restartBtn',resetGame)">🔄 Hrať znova!</button>
     </div>
 
   </div>
@@ -1205,6 +1207,35 @@ function nextImageIndex(){
   // nikdy nedaj dvakrát po sebe ten istý obrázok
   if(AVATAR_IMAGES.length<2)return 0;
   let i;do{i=Math.floor(Math.random()*AVATAR_IMAGES.length);}while(i===imgIdx);return i;
+}
+// ─── DOUBLE-CLICK SAFETY ──────────────────────
+const _confirmState={};
+function confirmClick(id,fn){
+ const now=Date.now();
+ if(_confirmState[id]&&(now-_confirmState[id]<2000)){
+  _confirmState[id]=null;fn();
+ }else{
+  _confirmState[id]=now;
+  const b=document.getElementById(id);
+  if(b){var orig=b.textContent;b.textContent="⚠️ Klikni ešte raz!";b.style.opacity="0.7";
+   setTimeout(()=>{b.textContent=orig;b.style.opacity="1";_confirmState[id]=null;},2000);}
+ }
+}
+function skipQuestion(){
+ if(answered) return;
+ speechSynthesis.cancel();speaking=false;stopRecog();
+ var cat=questions[cur].cat;
+ var usedTxt=new Set(questions.map(function(q){return q.q;}));
+ var pool=QUESTIONS.filter(function(q){return q!==undefined&&q!==null&&q.cat===cat&&!usedTxt.has(q.q);});
+ if(pool.length===0){
+  pool=QUESTIONS.filter(function(q){return q!==undefined&&q!==null&&!usedTxt.has(q.q);});
+  if(pool.length===0){
+   var vs=document.getElementById("voiceStat");if(vs)vs.textContent="🙁 Niet náhradnej otázky.";
+   return;
+  }
+ }
+ questions[cur]=pool[Math.floor(Math.random()*pool.length)];
+ renderQ();
 }
 function resetGame(){
   speechSynthesis.cancel();speaking=false;stopRecog();imgIdx=nextImageIndex();questions=composeQuiz();
