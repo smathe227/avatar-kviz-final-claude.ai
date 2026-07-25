@@ -11,7 +11,7 @@ const CACHE_NAME = "avatar-kviz-" + VERSION;
 const ASSETS = [
   "./",
   "index.html",
-  "manifest.webmanifest",
+  "manifest.json",
   "avatar-assets/app-icon-192.png",
   "avatar-assets/app-icon-512.png",
   "avatar-assets/avatar_01.jpg",
