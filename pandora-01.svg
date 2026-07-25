@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<defs>
+  <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#1b1238"/>
+    <stop offset="45%" stop-color="#073042"/>
+    <stop offset="100%" stop-color="#020617"/>
+  </linearGradient>
+  <radialGradient id="sun1" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#fef3c7"/>
+    <stop offset="60%" stop-color="#fbbf24"/>
+    <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="800" height="600" fill="url(#sky1)"/>
+<circle cx="560" cy="180" r="120" fill="url(#sun1)"/>
+<circle cx="560" cy="180" r="55" fill="#fef9e7"/>
+<!-- distant floating mountains -->
+<ellipse cx="150" cy="420" rx="140" ry="30" fill="#0f172a" opacity="0.6"/>
+<ellipse cx="680" cy="460" rx="110" ry="24" fill="#0f172a" opacity="0.5"/>
+<path d="M60 380 Q150 300 240 380 Q200 420 150 415 Q100 425 60 380Z" fill="#134e4a" opacity="0.7"/>
+<path d="M600 400 Q690 340 760 400 Q720 435 680 430 Q640 438 600 400Z" fill="#134e4a" opacity="0.6"/>
+<!-- silhouette flying creature -->
+<g transform="translate(380,300) rotate(-8)">
+  <path d="M0,0 C-60,-70 -160,-90 -220,-50 C-160,-40 -100,-20 -60,10 C-100,0 -170,10 -210,50 C-150,30 -80,20 -30,15 L-10,40 C-40,60 -80,100 -90,140 C-60,110 -20,80 10,55 C40,80 80,110 110,140 C100,100 60,60 30,40 L50,15 C100,20 170,30 230,50 C190,10 120,0 80,10 C120,-20 180,-40 240,-50 C180,-90 80,-70 20,0 Z" fill="#0b1120"/>
+  <circle cx="-8" cy="-2" r="5" fill="#fca5a5" opacity="0.85"/>
+</g>
+<!-- birds far away -->
+<path d="M100 120 q10 -10 20 0 q10 -10 20 0" stroke="#1e293b" stroke-width="3" fill="none" opacity="0.6"/>
+<path d="M650 90 q8 -8 16 0 q8 -8 16 0" stroke="#1e293b" stroke-width="3" fill="none" opacity="0.5"/>
+</svg>

@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Avatar Tréningový Kvíz pre deti</title>
+<meta name="description" content="Tréningový kvíz pre deti — matematika, svet okolo nás a Avatar.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="avatar-assets/app-icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="avatar-assets/app-icon-512.png">
+<link rel="apple-touch-icon" href="avatar-assets/app-icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Avatar Kvíz">
+<meta name="theme-color" content="#082f49">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+
+:root{
+  --c1:#67e8f9;--c2:#f97316;--c3:#34d399;--c4:#8b5cf6;
+  --c5:#fbbf24;--c6:#f472b6;--dark:#020617;--card:#0f172a;
+  --glow:#7dd3fc;--leaf:#22c55e;--reef:#06b6d4;--ember:#fb7185;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+body{
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  background:
+    linear-gradient(180deg,rgba(2,6,23,.74),rgba(3,7,18,.95)),
+    linear-gradient(135deg,#020617 0%,#073042 42%,#102b2f 70%,#1b1238 100%);
+  color:#fff;
+  padding:8px;
+  overflow-x:hidden;
+  position:relative;
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(2,6,23,.2),rgba(2,6,23,.88)),
+    url("avatar-assets/pandora-04.svg") center/cover no-repeat;
+  opacity:.42;
+}
+body::after{
+  content:"";
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    repeating-linear-gradient(100deg,rgba(125,211,252,.08) 0 1px,transparent 1px 58px),
+    repeating-linear-gradient(20deg,rgba(52,211,153,.06) 0 1px,transparent 1px 74px);
+  animation:pandoraDrift 24s linear infinite;
+}
+@keyframes pandoraDrift{from{background-position:0 0,0 0}to{background-position:140px 80px,-120px 90px}}
+.ambient-vines{position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.55}
+.ambient-vines span{position:absolute;display:block;width:2px;height:180px;
+  background:linear-gradient(180deg,transparent,rgba(125,211,252,.55),rgba(52,211,153,.1),transparent);
+  filter:drop-shadow(0 0 10px rgba(103,232,249,.55));animation:vineFloat 8s ease-in-out infinite}
+.ambient-vines span:nth-child(1){left:8%;top:6%;height:260px;animation-delay:-1s}
+.ambient-vines span:nth-child(2){left:22%;top:18%;height:210px;animation-delay:-4s}
+.ambient-vines span:nth-child(3){right:17%;top:8%;height:280px;animation-delay:-2s}
+.ambient-vines span:nth-child(4){right:7%;top:28%;height:190px;animation-delay:-5s}
+@keyframes vineFloat{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(12px) scaleY(1.06)}}
+@media(prefers-reduced-motion:reduce){
+  body::after,.ambient-vines span,.cov.gone,.btn,.ans-btn,.puz-bar-fill{animation:none!important;transition:none!important}
+}
+
+/* ── HEADER ── */
+.hdr{text-align:center;padding:10px 4px 6px;max-width:700px;margin:0 auto}
+.hdr h1{font-family:'Nunito',sans-serif;font-size:clamp(1.7rem,6vw,2.6rem);
+  color:#ecfeff;text-shadow:0 3px 14px rgba(6,182,212,.75),0 0 34px rgba(52,211,153,.45),0 0 60px rgba(139,92,246,.35)}
+.hdr .sub{font-size:clamp(.8rem,2.5vw,.95rem);color:#bae6fd;font-weight:800;margin-top:3px}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+  max-width:700px;margin:0 auto 8px}
+.pill{background:linear-gradient(180deg,rgba(8,47,73,.86),rgba(15,23,42,.9));border:1.5px solid rgba(125,211,252,.45);
+  border-radius:999px;padding:5px 13px;font-family:'Nunito',sans-serif;
+  font-size:clamp(.78rem,2.5vw,.9rem);color:#e0f2fe;box-shadow:0 0 16px rgba(14,165,233,.14)}
+.pill strong{color:#fef08a}
+
+/* ── CONTROL BUTTONS ── */
+.ctrl-row{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;
+  max-width:700px;margin:0 auto 7px}
+.btn{border:1px solid rgba(224,242,254,.22);border-radius:999px;padding:10px 16px;
+  font-family:'Nunito',sans-serif;font-size:clamp(.82rem,2.8vw,.95rem);
+  cursor:pointer;color:#fff;box-shadow:0 6px 16px rgba(0,0,0,.4);
+  transition:transform .15s,box-shadow .15s,filter .15s;min-width:90px}
+.btn:hover{transform:translateY(-1px);filter:saturate(1.1);box-shadow:0 10px 28px rgba(14,165,233,.24)}
+.btn:active{transform:scale(.96)}
+.btn-audio{background:linear-gradient(135deg,#38bdf8,#6366f1)}
+.btn-audio.off{background:linear-gradient(135deg,#64748b,#475569)}
+.btn-voice{background:linear-gradient(135deg,#f472b6,#a855f7);font-size:1.1rem;min-width:110px}
+.btn-voice.listening{background:linear-gradient(135deg,#ef4444,#f97316);animation:pulse 1s infinite}
+.btn-repeat{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.btn-reset{background:linear-gradient(135deg,#fb923c,#f97316);color:#0f172a}
+.btn-end{background:linear-gradient(135deg,#f97316,#ef4444)}
+
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
+
+/* ── SPEED ROW ── */
+.speed-row{display:flex;align-items:center;gap:6px;justify-content:center;
+  margin-bottom:8px;flex-wrap:wrap}
+.speed-lbl{font-family:'Nunito',sans-serif;font-size:.82rem;color:#94a3b8}
+.sp-btn{border:2px solid var(--c1);border-radius:999px;padding:4px 11px;
+  font-family:'Nunito',sans-serif;font-size:.8rem;cursor:pointer;
+  background:transparent;color:var(--c1);transition:all .18s}
+.sp-btn.active{background:var(--c1);color:#0f172a}
+.voice-mode-row{display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;margin:-2px auto 9px}
+.voice-mode-row .sp-btn{border-color:#34d399;color:#bbf7d0}
+.voice-mode-row .sp-btn.active{background:#34d399;color:#052e16}
+
+/* ── LAYOUT: left + right ── */
+.shell{max-width:980px;margin:0 auto;display:grid;
+  grid-template-columns:1.05fr .95fr;gap:12px}
+@media(max-width:760px){.shell{grid-template-columns:1fr}}
+
+.panel{background:linear-gradient(180deg,rgba(8,47,73,.82),rgba(15,23,42,.92) 52%,rgba(2,6,23,.94));
+  border:1.5px solid rgba(125,211,252,.28);
+  border-radius:22px;box-shadow:0 16px 46px rgba(0,0,0,.72),0 0 34px rgba(6,182,212,.12);overflow:hidden;position:relative}
+.panel::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:22px;
+  background:linear-gradient(120deg,rgba(103,232,249,.14),transparent 35%,rgba(52,211,153,.1) 72%,transparent)}
+.pleft{padding:12px 13px 15px}.pright{padding:12px 14px 16px}
+
+/* ── PUZZLE ── */
+.puz-wrap{background:linear-gradient(180deg,rgba(2,6,23,.62),rgba(8,47,73,.52));border-radius:18px;
+  border:1.5px solid rgba(103,232,249,.42);padding:11px;box-shadow:inset 0 0 24px rgba(6,182,212,.1)}
+.puz-title{font-family:'Nunito',sans-serif;font-size:.92rem;color:#cffafe;margin-bottom:7px}
+.puz-grid{position:relative;width:100%;max-width:420px;
+  aspect-ratio:4/3;margin:0 auto;border-radius:14px;overflow:hidden;
+  background:center/cover no-repeat #020617;box-shadow:0 0 0 1px rgba(186,230,253,.24),0 20px 38px rgba(0,0,0,.45)}
+.overlay{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(103,232,249,.08),rgba(0,0,0,.1) 45%,rgba(2,6,23,.24))}
+.covers{position:absolute;inset:0}
+.cov{position:absolute;
+  background:linear-gradient(135deg,rgba(8,47,73,.98),rgba(6,78,59,.96));
+  border:1px solid rgba(103,232,249,.55);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .35s,transform .35s,filter .35s;cursor:default;box-shadow:inset 0 0 12px rgba(125,211,252,.15)}
+.cov-n{color:#ffffff;font-family:'Nunito',sans-serif;
+  font-size:clamp(8px,2vw,16px);font-weight:900;
+  text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 10px rgba(103,232,249,.65);user-select:none}
+.cov.gone{opacity:0;transform:scale(.82) rotate(3deg);filter:brightness(1.5);pointer-events:none}
+
+.puz-bar-wrap{margin-top:8px;font-size:.82rem;color:#cbd5e1;text-align:center}
+.puz-bar{margin-top:5px;height:12px;border-radius:999px;
+  background:rgba(2,6,23,.8);border:1px solid rgba(148,163,184,.4);overflow:hidden}
+.puz-bar-fill{height:100%;width:0%;
+  background:linear-gradient(90deg,#67e8f9,#34d399,#bef264,#fef08a);
+  transition:width .35s}
+
+/* ── QUIZ RIGHT ── */
+.q-head{display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;margin-bottom:7px}
+.q-badge{background:rgba(2,6,23,.72);border:1.5px solid rgba(103,232,249,.34);
+  border-radius:999px;padding:5px 11px;font-weight:900;font-size:.8rem}
+
+/* question text */
+.q-text{font-family:'Nunito',sans-serif;
+  font-size:clamp(1.05rem,3.5vw,1.55rem);
+  color:#fff;margin:6px 0;line-height:1.3;
+  background:linear-gradient(180deg,rgba(2,6,23,.68),rgba(8,47,73,.58));border-radius:14px;padding:12px 13px;
+  border-left:4px solid var(--c1);box-shadow:0 0 24px rgba(103,232,249,.12)}
+
+/* ── MATH DISPLAY ── */
+.math-box{display:none;background:linear-gradient(180deg,rgba(64,45,10,.72),rgba(2,6,23,.7));
+  border-radius:16px;border:1.5px solid rgba(254,240,138,.45);
+  padding:10px;margin:8px 0;text-align:center}
+.math-row{display:flex;align-items:center;justify-content:center;
+  gap:8px;flex-wrap:wrap;font-family:'Nunito',sans-serif}
+.m-group{display:flex;flex-direction:column;align-items:center;gap:4px}
+.m-num{color:#ffffff;font-size:clamp(2rem,7vw,3rem);font-weight:900;
+  text-shadow:0 2px 8px rgba(0,0,0,.8);line-height:1}
+.m-apples{font-size:clamp(.9rem,3vw,1.3rem);letter-spacing:1px;line-height:1.4;
+  max-width:130px;word-break:break-all;text-align:center}
+.m-sign{color:#fbbf24;font-size:clamp(2rem,7vw,3rem);font-weight:900;
+  text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.m-eq{color:#a5b4fc;font-size:clamp(1.5rem,5vw,2.2rem);font-weight:900}
+
+/* ── ANSWER GRID ── */
+.ans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.ans-grid.two-col{grid-template-columns:repeat(2,1fr)}
+@media(max-width:400px){.ans-grid{grid-template-columns:repeat(2,1fr)}}
+
+.ans-btn{
+  background:linear-gradient(180deg,rgba(8,47,73,.78),rgba(15,23,42,.88));
+  border:2.5px solid rgba(103,232,249,.22);
+  border-radius:16px;padding:10px 7px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;transition:transform .18s,border-color .2s,background .2s,box-shadow .2s;
+  min-height:92px;position:relative;overflow:hidden;
+}
+.ans-btn::after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:2px;background:linear-gradient(90deg,transparent,#67e8f9,#34d399,transparent);opacity:.55}
+.ans-btn:active{transform:scale(.96)}
+.ans-btn:hover:not(:disabled){border-color:var(--c1);background:linear-gradient(180deg,rgba(14,116,144,.5),rgba(15,23,42,.88));box-shadow:0 0 24px rgba(103,232,249,.2)}
+.ans-btn:disabled{cursor:not-allowed}
+.ans-btn.correct{border-color:#86efac;background:linear-gradient(180deg,rgba(34,197,94,.3),rgba(15,23,42,.88));
+  animation:popIn .35s ease;box-shadow:0 0 26px rgba(74,222,128,.32)}
+.ans-btn.wrong{border-color:#fb7185;background:linear-gradient(180deg,rgba(244,63,94,.25),rgba(15,23,42,.88))}
+
+@keyframes popIn{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+
+.a-ico{font-size:clamp(1.8rem,6vw,2.6rem);line-height:1;display:block}
+.a-num{color:#ffffff;font-family:'Nunito',sans-serif;
+  font-size:clamp(1.6rem,6vw,2.4rem);font-weight:900;
+  text-shadow:0 2px 8px rgba(0,0,0,.8);line-height:1}
+.a-apples{font-size:clamp(.7rem,2.5vw,1.05rem);line-height:1.3;
+  max-width:100%;word-break:break-all;text-align:center;display:block}
+.a-txt{font-family:'Nunito',sans-serif;font-size:clamp(.7rem,2.3vw,.88rem);
+  color:#e5e7eb;text-align:center;line-height:1.2;display:block}
+
+/* ── FEEDBACK ── */
+.feedback{min-height:34px;text-align:center;font-family:'Nunito',sans-serif;
+  font-size:clamp(1rem,3.5vw,1.25rem);margin-top:7px;line-height:1.35}
+.feedback small{display:inline-block;margin-top:3px;font-size:.78em;opacity:.9}
+.fb-ok{color:#86efac;text-shadow:0 0 14px rgba(74,222,128,.45)}.fb-bad{color:#fda4af;text-shadow:0 0 12px rgba(251,113,133,.35)}
+
+/* ── NEXT BTN ── */
+.next-btn{display:none;margin:10px auto 0;border:none;border-radius:999px;
+  padding:12px 28px;font-family:'Nunito',sans-serif;
+  background:linear-gradient(135deg,#06b6d4,#22c55e);
+  color:#fff;font-size:clamp(.95rem,3vw,1.1rem);cursor:pointer;
+  box-shadow:0 8px 22px rgba(56,189,248,.4)}
+.next-btn.show{animation:readyPulse 1.7s ease-in-out infinite}
+@keyframes readyPulse{0%,100%{box-shadow:0 8px 22px rgba(56,189,248,.35)}50%{box-shadow:0 10px 30px rgba(52,211,153,.55)}}
+.next-btn.show{display:block}
+
+/* ── VOICE STATUS ── */
+.voice-status{text-align:center;font-size:.8rem;color:#a5b4fc;
+  font-family:'Nunito',sans-serif;min-height:18px;margin-top:4px}
+
+/* ── NOW READING ── */
+.now-rdg{text-align:center;font-size:.78rem;color:#94a3b8;
+  font-family:'Nunito',sans-serif;min-height:16px;margin-top:3px}
+
+/* ── INFO BOX ── */
+.info-box{margin-top:9px;background:linear-gradient(180deg,rgba(2,6,23,.7),rgba(6,78,59,.36));border-radius:16px;
+  border:1.5px solid rgba(52,211,153,.32);padding:9px 12px}
+.info-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.info-ico{font-size:1.9rem}
+.info-txt{font-family:'Nunito',sans-serif;font-size:.88rem;color:#c7d2fe}
+.info-body{font-size:.78rem;color:#94a3b8;line-height:1.45}
+
+/* ── END SCREEN ── */
+.end-wrap{display:none;padding:6px 2px}
+.end-wrap.show{display:block}
+.end-trophy{font-size:4rem;text-align:center;margin:8px 0}
+.end-title{font-family:'Nunito',sans-serif;font-size:clamp(1.4rem,5vw,2rem);
+  text-align:center;color:#fef3c7;margin-bottom:10px}
+.end-card{background:linear-gradient(180deg,rgba(2,6,23,.82),rgba(8,47,73,.62));border-radius:16px;
+  border:1.5px solid rgba(125,211,252,.3);padding:12px 14px;margin-bottom:10px}
+.end-card h3{font-family:'Nunito',sans-serif;font-size:1rem;margin-bottom:6px;
+  display:flex;align-items:center;gap:6px}
+.end-card p{font-size:.85rem;color:#d1d5db;line-height:1.55}
+.end-score-big{font-family:'Nunito',sans-serif;
+  font-size:clamp(1.6rem,6vw,2.4rem);text-align:center;
+  color:#fbbf24;margin:10px 0 6px;text-shadow:0 2px 10px rgba(251,191,36,.5)}
+.restart-btn{display:block;margin:12px auto 0;border:none;border-radius:999px;
+  padding:13px 30px;font-family:'Nunito',sans-serif;
+  background:linear-gradient(135deg,#22c55e,#67e8f9);
+  color:#052e16;font-size:1.1rem;cursor:pointer;
+  box-shadow:0 8px 20px rgba(34,197,94,.35)}
+
+.cat-label{display:inline-block;border-radius:999px;padding:2px 10px;
+  font-family:'Nunito',sans-serif;font-size:.72rem;margin-bottom:5px}
+.cat-math{background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.4)}
+.cat-gen{background:rgba(34,197,94,.2);color:#4ade80;border:1px solid rgba(34,197,94,.4)}
+.cat-ava{background:rgba(78,203,255,.2);color:#38bdf8;border:1px solid rgba(78,203,255,.4)}
+
+
+.learn-box{display:none;margin-top:8px;background:rgba(8,47,73,.86);border:1.5px solid rgba(125,211,252,.45);border-radius:14px;padding:9px 11px;color:#e0f2fe;font-weight:900;line-height:1.35;font-size:.86rem}
+.learn-box.show{display:block}
+.badge-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;min-height:28px;margin-top:7px}
+.mini-badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:4px 9px;background:rgba(251,191,36,.16);border:1px solid rgba(251,191,36,.45);color:#fde68a;font-family:'Nunito',sans-serif;font-size:.72rem}
+.end-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+@media(max-width:520px){.end-grid{grid-template-columns:1fr}}
+.stat-line{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid rgba(148,163,184,.2);padding:5px 0;color:#dbeafe;font-size:.85rem}
+.stat-line:last-child{border-bottom:none}
+.progress-mini{height:8px;border-radius:999px;background:rgba(15,23,42,.9);overflow:hidden;margin-top:5px}
+.progress-mini span{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#38bdf8,#fbbf24)}
+
+/* star row */
+.stars{font-size:2rem;text-align:center;margin:6px 0}
+</style>
+</head>
+<body>
+<div class="ambient-vines" aria-hidden="true">
+  <span></span><span></span><span></span><span></span>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <h1>🌿 Avatar Kvíz: Pandora</h1>
+  <div class="sub">Odpovedaj, zbieraj odznaky a odkry žiarivý svet Pandory.</div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="pill">⭐ Body: <strong id="score">0</strong></div>
+  <div class="pill">❓ Otázka: <strong id="qNum">1</strong> / <strong id="qTot">30</strong></div>
+  <div class="pill">🔥 Séria: <strong id="streakInfo">0</strong></div>
+  <div class="pill">🏅 Rekord: <strong id="bestInfo">0</strong></div>
+  <div class="pill">🖼️ Odkryté: <strong id="revInfo">0/30</strong></div>
+</div>
+
+<!-- CONTROLS -->
+<div class="ctrl-row">
+  <button class="btn btn-audio" id="audioBtn" onclick="toggleAudio()">🔊 Hlas: ZAP</button>
+  <button class="btn btn-voice" id="voiceBtn" onclick="toggleVoiceInput()">🎤 Hovor!</button>
+  <button class="btn btn-repeat" onclick="doRepeat()">🔁 Znova</button>
+  <button class="btn btn-reset" onclick="resetGame()">🔄 Reset</button>
+  <button class="btn btn-end" onclick="endGame()">⏹ Koniec</button>
+</div>
+
+<!-- SPEED -->
+<div class="speed-row">
+  <span class="speed-lbl">🎤 Tempo:</span>
+  <button class="sp-btn" onclick="setSpd(0.82,this)">Pomaly</button>
+  <button class="sp-btn active" id="spdNorm" onclick="setSpd(0.96,this)">Normálne</button>
+  <button class="sp-btn" onclick="setSpd(1.12,this)">Rýchlo</button>
+</div>
+<div class="voice-mode-row">
+  <span class="speed-lbl">🔊 Hlas:</span>
+  <button class="sp-btn active" id="voiceSoft" onclick="setVoiceMode('soft',this)">Jemný</button>
+  <button class="sp-btn" onclick="setVoiceMode('story',this)">Rozprávač</button>
+  <button class="sp-btn" onclick="setVoiceMode('focus',this)">Krátky</button>
+</div>
+
+<!-- SHELL -->
+<div class="shell">
+
+  <!-- LEFT: PUZZLE -->
+  <div class="panel pleft">
+    <div class="puz-wrap">
+      <div class="puz-title">🌌 Pandora obrázok – 30 dielikov</div>
+      <div class="puz-grid" id="puzGrid">
+        <div class="overlay"></div>
+        <div class="covers" id="covWrap"></div>
+      </div>
+      <div class="puz-bar-wrap">
+        Každá správna odpoveď rozžiari ďalší dielik. ✨
+        <div class="puz-bar"><div class="puz-bar-fill" id="puzFill"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: QUIZ -->
+  <div class="panel pright">
+
+    <!-- QUIZ MAIN -->
+    <div id="quizMain">
+      <div class="q-head">
+        <div class="q-badge" id="stageTxt">🌱 Štart!</div>
+        <div class="q-badge" id="catTxt"></div>
+        <div class="q-badge" id="stepTxt">1 / 30</div>
+      </div>
+
+      <div class="q-text" id="qText">Načítavam…</div>
+
+      <!-- MATH BOX -->
+      <div class="math-box" id="mathBox">
+        <div class="math-row" id="mathRow"></div>
+      </div>
+
+      <!-- ANSWERS -->
+      <div class="ans-grid" id="ansGrid"></div>
+
+      <!-- FEEDBACK -->
+      <div class="feedback" id="feedback"></div>
+      <div class="learn-box" id="learnBox"></div>
+      <div class="badge-row" id="badgeRow"></div>
+
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">Ďalej →</button>
+
+      <div class="voice-status" id="voiceStat"></div>
+      <div class="now-rdg" id="nowRdg"></div>
+
+      <!-- INFO BOX -->
+      <div class="info-box">
+        <div class="info-row">
+          <div class="info-ico">🔥</div>
+          <div class="info-txt">Avatar Puzzle Dobrodružstvo</div>
+        </div>
+        <div class="info-body">Klikni na odpoveď, alebo stlač 🎤 a povedz ju nahlas. Po každej odpovedi dostaneš krátke vysvetlenie a na konci presný tréningový prehľad.</div>
+      </div>
+    </div>
+
+    <!-- END SCREEN -->
+    <div class="end-wrap" id="endWrap">
+      <div class="end-trophy" id="endTrophy">🏆</div>
+      <div class="end-title" id="endTitle">Skvelé!</div>
+      <div class="stars" id="endStars"></div>
+      <div class="end-score-big" id="endScore"></div>
+      <div class="end-card" id="endStrong"></div>
+      <div class="end-card" id="endWeak"></div>
+      <div class="end-card" id="endAdvice"></div>
+      <div class="end-card" id="endCheer"></div>
+      <button class="restart-btn" onclick="resetGame()">🔄 Hrať znova!</button>
+    </div>
+
+  </div>
+</div><!-- /shell -->
+
+<script>
+// ════════════════════════════════════════════════
+// AVATAR TRÉNINGOVÝ KVÍZ PRE DETI
+// ════════════════════════════════════════════════
+const AVATAR_IMAGES = [
+  "avatar-assets/pandora-01.svg","avatar-assets/pandora-02.svg","avatar-assets/pandora-03.svg",
+  "avatar-assets/pandora-04.svg","avatar-assets/pandora-05.svg","avatar-assets/pandora-06.svg",
+  "avatar-assets/pandora-07.svg","avatar-assets/pandora-08.svg"
+];
+
+const QUIZ_SIZE=30, QUIZ_MATH=12, QUIZ_GEN=11, QUIZ_AVA=7;
+const TILES=30, COLS=6, ROWS=5;
+const CAT_LABELS={
+  math:'<span class="cat-label cat-math">🔢 Matematika</span>',
+  gen:'<span class="cat-label cat-gen">🌍 Svet okolo nás</span>',
+  ava:'<span class="cat-label cat-ava">🔥 Avatar</span>',
+};
+const CAT_NAMES={math:"Matematika a geometria",gen:"Svet okolo nás",ava:"Avatar film"};
+const STAGES=[
+  {n:1,lbl:"🌱 Začíname"},{n:6,lbl:"🌿 Rozbiehaš sa"},
+  {n:12,lbl:"💙 Na'vi učenka"},{n:18,lbl:"🏹 Pozorná hráčka"},
+  {n:24,lbl:"🌳 Ochrankyňa Pandory"},{n:28,lbl:"🔥 Finále"},
+];
+
+let questions=[], cur=0, score=0, corr=0, wrong=0, streak=0, bestStreak=0,
+    revd=0, answered=false, audioOn=true, spd=0.96, imgIdx=0, speaking=false,
+    voiceMode="soft", voiceReady=false, currentVoiceOptions=[];
+let wrongByQ=[], answeredLog=[], earnedBadges=new Set();
+let bestScore=Number(localStorage.getItem("avatarQuizBestScore")||0);
+let recog=null, recogOn=false;
+
+// Vlastné SVG ikony geometrických tvarov — konzistentné vo všetkých prehliadačoch
+// (na rozdiel od emoji, ktoré sa medzi telefónmi líšia). Farby ladia s paletou appky.
+const SVG_TRIANGLE=`<svg viewBox="0 0 24 24" width="30" height="30"><polygon points="12,3 21,20 3,20" fill="none" stroke="#67e8f9" stroke-width="2.3" stroke-linejoin="round"/></svg>`;
+const SVG_SQUARE=`<svg viewBox="0 0 24 24" width="30" height="30"><rect x="4" y="4" width="16" height="16" rx="1.5" fill="none" stroke="#67e8f9" stroke-width="2.3"/></svg>`;
+const SVG_CIRCLE=`<svg viewBox="0 0 24 24" width="30" height="30"><circle cx="12" cy="12" r="9" fill="none" stroke="#67e8f9" stroke-width="2.3"/></svg>`;
+const SVG_RECT=`<svg viewBox="0 0 30 22" width="32" height="24"><rect x="2" y="4" width="26" height="14" rx="1.5" fill="none" stroke="#67e8f9" stroke-width="2.3"/></svg>`;
+const SVG_OCTAGON=`<svg viewBox="0 0 24 24" width="30" height="30"><polygon points="8,3 16,3 21,8 21,16 16,21 8,21 3,16 3,8" fill="none" stroke="#f97316" stroke-width="2.3" stroke-linejoin="round"/></svg>`;
+
+function appleTxt(n){
+  if(n===1)return "1 jabĺčko";
+  if(n>=2&&n<=4)return `${n} jabĺčka`;
+  return `${n} jabĺčok`;
+}
+function mathWrongAnswers(res){
+  const vals=[];
+  [res-1,res+1,res+2,res-2,res+3,res-3].forEach(v=>{
+    if(v>=0&&v<=20&&v!==res&&!vals.includes(v))vals.push(v);
+  });
+  while(vals.length<2){
+    const v=Math.max(0,Math.min(20,res+vals.length+4));
+    if(v!==res&&!vals.includes(v))vals.push(v);else vals.push((v+1)%21);
+  }
+  return vals.slice(0,2).map(v=>({apples:v,txt:appleTxt(v)}));
+}
+function addMath(list,q,g1,sign,g2,res,skill,diff,explain){
+  list.push({cat:"math",type:"math",q,skill,diff,explain,mathQ:{g1,sign,g2,res},a:{apples:res,txt:appleTxt(res)},w:mathWrongAnswers(res)});
+}
+function addPic(list,cat,q,aImg,aTxt,wrongs,skill,diff,explain){
+  list.push({cat,type:"pic",q,skill,diff,explain,a:{img:aImg,txt:aTxt},w:wrongs.map(x=>({img:x[0],txt:x[1]}))});
+}
+function uniqueByQ(items){const seen=new Set();return items.filter(q=>!seen.has(q.q)&&seen.add(q.q));}
+
+function buildMathQuestions(){
+  const list=[];
+  // Všetky príklady sú s jabĺčkami v druhej osobe, minulý čas v ženskom rode.
+  const addStories=[
+    (a,b)=>`Máš ${appleTxt(a)} a pridáš ešte ${appleTxt(b)}. Koľko máš spolu jabĺčok?`,
+    (a,b)=>`Nazbierala si ${appleTxt(a)} a potom ešte ${appleTxt(b)}. Koľko máš spolu jabĺčok?`,
+    (a,b)=>`V košíku máš ${appleTxt(a)} a pridáš ${appleTxt(b)}. Koľko je v košíku jabĺčok?`,
+    (a,b)=>`Na tanieri máš ${appleTxt(a)} a mamka ti dá ešte ${appleTxt(b)}. Koľko máš jabĺčok?`,
+    (a,b)=>`Dostala si ${appleTxt(a)} a k tomu ešte ${appleTxt(b)}. Koľko máš spolu jabĺčok?`,
+  ];
+  const subStories=[
+    (a,b)=>`Máš ${appleTxt(a)} a odoberieš ${appleTxt(b)}. Koľko ti ostane jabĺčok?`,
+    (a,b)=>`Mala si ${appleTxt(a)} a ${appleTxt(b)} si dala kamarátke. Koľko ti ostalo jabĺčok?`,
+    (a,b)=>`V košíku máš ${appleTxt(a)} a ${appleTxt(b)} vyberieš. Koľko ich v košíku ostane?`,
+    (a,b)=>`Máš ${appleTxt(a)} a ${appleTxt(b)} zješ. Koľko ti ostane jabĺčok?`,
+    (a,b)=>`Nazbierala si ${appleTxt(a)} a ${appleTxt(b)} si rozdala. Koľko ti ostalo jabĺčok?`,
+  ];
+  // Príbehy sa striedajú, aby otázky neboli stále rovnako uvedené.
+  // Rozsah do 20 — dcéra zvláda sčítanie aj odčítanie do dvadsať.
+  let si=0;
+  for(let a=1;a<=10;a++)for(let b=1;b<=10;b++){
+    const res=a+b; if(res>20) continue;
+    addMath(list,addStories[si++%addStories.length](a,b),a,"+",b,res,"sčítanie",res<=10?"ľahšia":"stredná",`Spojíme dve skupiny: ${a} + ${b} = ${res}.`);
+  }
+  let ti=0;
+  for(let a=4;a<=20;a++)for(let b=1;b<=Math.min(10,a);b++){
+    const res=a-b;
+    addMath(list,subStories[ti++%subStories.length](a,b),a,"−",b,res,"odčítanie",a<=12?"ľahšia":"stredná",`Odoberieme menšiu časť: ${a} − ${b} = ${res}.`);
+    if(list.length>=150)break;
+  }
+  const shapes=[
+    ["Ktorý tvar má tri rovné strany?",SVG_TRIANGLE,"Trojuholník",[[SVG_SQUARE,"Štvorec"],[SVG_CIRCLE,"Kruh"]],"geometria","Trojuholník má vždy 3 strany."],
+    ["Ktorý tvar nemá žiadny roh?",SVG_CIRCLE,"Kruh",[[SVG_TRIANGLE,"Trojuholník"],[SVG_RECT,"Obdĺžnik"]],"geometria","Kruh je okrúhly a nemá rohy."],
+    ["Ktorý tvar má štyri rovnaké strany?",SVG_SQUARE,"Štvorec",[[SVG_CIRCLE,"Kruh"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Štvorec má 4 rovnaké strany."],
+    ["Ktorý tvar vyzerá ako dlhé okno?",SVG_RECT,"Obdĺžnik",[[SVG_CIRCLE,"Kruh"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Obdĺžnik má dve dlhšie a dve kratšie strany."],
+    ["Koľko rohov spočítaš na štvorci?","4️⃣","4",[["3️⃣","3"],["0️⃣","0"]],"geometria","Štvorec má 4 rohy."],
+    ["Koľko strán má trojuholník?","3️⃣","3",[["4️⃣","4"],["5️⃣","5"]],"geometria","Slovo trojuholník napovedá: má 3 strany."],
+    ["Ktorý tvar sa kotúľa najľahšie?",SVG_CIRCLE,"Kruh",[[SVG_SQUARE,"Štvorec"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Kruh je okrúhly, preto sa vie kotúľať."],
+    ["Ktorý tvar môže byť na dopravnej značke STOP?",SVG_OCTAGON,"Osemuholník",[[SVG_CIRCLE,"Kruh"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Značka STOP má tvar s ôsmimi stranami."],
+    ["Ktorý tvar pripomína strechu domčeka?",SVG_TRIANGLE,"Trojuholník",[[SVG_CIRCLE,"Kruh"],[SVG_RECT,"Obdĺžnik"]],"geometria","Strecha na obrázku často vyzerá ako trojuholník."],
+    ["Ktorý tvar má dva páry rovnako dlhých strán?",SVG_RECT,"Obdĺžnik",[[SVG_CIRCLE,"Kruh"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Obdĺžnik má protiľahlé strany rovnako dlhé."],
+    ["Ktorý tvar má presne 5 strán?","⬠","Päťuholník",[[SVG_SQUARE,"Štvorec"],[SVG_TRIANGLE,"Trojuholník"]],"geometria","Päťuholník má 5 strán — napríklad tvar domčeka s ihlanovou strechou."],
+    ["Ktorý tvar nemá ani jednu rovnú stranu?",SVG_CIRCLE,"Kruh",[[SVG_RECT,"Obdĺžnik"],[SVG_OCTAGON,"Osemuholník"]],"geometria","Kruh je celý zaoblený, žiadna strana nie je rovná."],
+  ];
+  // Porovnávanie na konkrétnych tanierikoch — pre dieťa názornejšie než "skupina A/B".
+  const compare=[[5,2,"VIAC"],[1,6,"MENEJ"],[3,8,"VIAC"],[9,4,"MENEJ"],
+                 [7,7,"VIAC"],[2,10,"MENEJ"],[6,3,"VIAC"],[4,4,"MENEJ"],
+                 [8,5,"VIAC"],[3,9,"MENEJ"],[10,6,"VIAC"],[2,7,"MENEJ"]];
+  for(const [a,b,mode] of compare){
+    const q=`Na červenom tanieriku máš ${appleTxt(a)}, na modrom ${appleTxt(b)}. Na ktorom je ${mode} jabĺčok?`;
+    let spravna, nespravna, vysvetlenie;
+    if(a===b){
+      spravna="Na oboch je rovnako";
+      nespravna=mode==="VIAC"?"Na červenom je viac":"Na modrom je menej";
+      vysvetlenie=`Obidva tanieriky majú ${a} — sú rovnaké.`;
+    } else {
+      const cerv = mode==="VIAC" ? a>b : a<b;
+      spravna = cerv ? "Na červenom" : "Na modrom";
+      nespravna = cerv ? "Na modrom" : "Na červenom";
+      vysvetlenie = mode==="VIAC"
+        ? `${Math.max(a,b)} je viac ako ${Math.min(a,b)}.`
+        : `${Math.min(a,b)} je menej ako ${Math.max(a,b)}.`;
+    }
+    addPic(list,"math",q,"🍎",spravna,[["❓",nespravna]],"porovnávanie","ľahšia",vysvetlenie);
+  }
+  // Geometria — každý tvar RAZ, bez nezmyselného prívlastku "(na papieri)/(na tabuli)".
+  for(const x of shapes){
+    addPic(list,"math",x[0],x[1],x[2],x[3],x[4],"stredná",x[5]);
+  }
+
+  // ===== ČÍSELNÝ RAD =====
+  const rady=[[1,2,3,4],[2,3,4,5],[5,6,7,8],[7,8,9,10],[10,11,12,13],[3,4,5,6],[12,13,14,15],[6,7,8,9]];
+  for(const [a,b,c,d] of rady){
+    addPic(list,"math",`Aké číslo nasleduje v rade ${a}, ${b}, ${c}?`,"🔢",String(d),
+      [["❓",String(d+1)],["❓",String(d-2)]],"číselný rad","ľahšia",
+      `Čísla idú po sebe o jedno viac, takže po ${c} nasleduje ${d}.`);
+  }
+  const radyDolu=[[10,9,8,7],[8,7,6,5],[6,5,4,3],[15,14,13,12],[12,11,10,9]];
+  for(const [a,b,c,d] of radyDolu){
+    addPic(list,"math",`Aké číslo nasleduje v rade ${a}, ${b}, ${c}?`,"🔽",String(d),
+      [["❓",String(d+2)],["❓",String(d-2)]],"číselný rad","stredná",
+      `Čísla idú po sebe o jedno menej, takže po ${c} nasleduje ${d}.`);
+  }
+
+  // ===== PÁRNE / NEPÁRNE =====
+  for(const n of [2,4,6,8,10,12,14,16]){
+    addPic(list,"math",`Je číslo ${n} párne alebo nepárne?`,"👥","Párne",
+      [["🙋","Nepárne"]],"párne a nepárne","ľahšia",
+      `${n} sa dá rozdeliť na dve rovnaké skupiny po ${n/2}, preto je párne.`);
+  }
+  for(const n of [1,3,5,7,9,11,13,15]){
+    addPic(list,"math",`Je číslo ${n} párne alebo nepárne?`,"🙋","Nepárne",
+      [["👥","Párne"]],"párne a nepárne","ľahšia",
+      `${n} sa nedá rozdeliť na dve úplne rovnaké skupiny — vždy jedno zvýši. Preto je nepárne.`);
+  }
+
+  // ===== PENIAZE =====
+  const peniaze=[[1,1,2],[2,1,3],[2,2,4],[5,1,6],[5,2,7],[2,5,7],[1,5,6],[5,5,10],[2,3,5],[1,2,3],
+                 [10,5,15],[10,2,12],[5,10,15],[10,10,20],[8,2,10],[6,4,10],[7,3,10],[10,1,11]];
+  for(const [a,b,r] of peniaze){
+    const eurTxt=n=>n===1?"1 euro":(n>=2&&n<=4?`${n} eurá`:`${n} eur`);
+    addPic(list,"math",`Máš ${eurTxt(a)} a dostaneš ešte ${eurTxt(b)}. Koľko máš spolu?`,"💶",eurTxt(r),
+      [["❓",eurTxt(r+1)],["❓",eurTxt(r-1)]],"peniaze","stredná",
+      `${a} plus ${b} je ${r}.`);
+  }
+
+  // ===== DVOJNÁSOBKY (dobrý most k násobeniu) =====
+  for(const n of [1,2,3,4,5,6,7,8,9,10]){
+    addPic(list,"math",`Máš ${appleTxt(n)} a dostaneš ešte raz toľko. Koľko máš spolu jabĺčok?`,"🍎",String(n*2),
+      [["❓",String(n*2+1)],["❓",String(n*2-1)]],"dvojnásobky","stredná",
+      `Dvakrát ${n} je ${n} + ${n} = ${n*2}.`);
+  }
+
+  // ===== CHÝBAJÚCI SČÍTANEC =====
+  const chyba=[[3,5],[2,6],[4,7],[5,9],[6,10],[7,12],[8,14],[10,15],[9,16],[10,20],[6,13],[4,11]];
+  for(const [a,cel] of chyba){
+    const b=cel-a;
+    addPic(list,"math",`Máš ${appleTxt(a)}. Koľko jabĺčok musíš pridať, aby si ich mala ${cel}?`,"🍎",String(b),
+      [["❓",String(b+1)],["❓",String(b-1<0?b+2:b-1)]],"chýbajúce číslo","stredná",
+      `${a} + ${b} = ${cel}, takže pridať treba ${b}.`);
+  }
+
+  // ===== HODINY (celé hodiny) =====
+  const hodiny=[[3,"tri"],[5,"päť"],[7,"sedem"],[9,"deväť"],[10,"desať"],[12,"dvanásť"],[6,"šesť"],[8,"osem"]];
+  for(const [h,slovom] of hodiny){
+    const hTxt=n=>n===1?"1 hodina":(n>=2&&n<=4?`${n} hodiny`:`${n} hodín`);
+    addPic(list,"math",`Malá ručička ukazuje na ${h} a veľká na 12. Koľko je hodín?`,"🕐",hTxt(h),
+      [["❓",hTxt(h===12?1:h+1)],["❓",hTxt(h===1?12:h-1)]],"hodiny","stredná",
+      `Keď veľká ručička ukazuje na dvanástku, je presne toľko hodín, na koľko ukazuje malá — teda ${slovom}.`);
+  }
+
+  // ===== ROZKLAD ČÍSLA =====
+  const rozklad=[[5,2,3],[6,4,2],[7,3,4],[8,5,3],[9,4,5],[10,6,4],[4,1,3],[6,1,5]];
+  for(const [cel,a,b] of rozklad){
+    addPic(list,"math",`Mala si ${appleTxt(cel)} a ${appleTxt(a)} si dala kamarátke. Koľko ti ostalo jabĺčok?`,"🍎",String(b),
+      [["❓",String(b+1)],["❓",String(b-1<0?b+2:b-1)]],"odčítanie","stredná",
+      `${cel} − ${a} = ${b}.`);
+  }
+
+  return uniqueByQ(list).slice(0,320);
+}
+
+function buildGeneralQuestions(){
+  const list=[];
+  const opposites=[
+    ["mäkký","tvrdý","🪨",[["☁️","mäkký"],["🧸","plyšový"]]],
+    ["tichý","hlasný","📣",[["🤫","tichý"],["🌙","nočný"]]],
+    ["suchý","mokrý","💧",[["🏜️","suchý"],["☀️","slnečný"]]],
+    ["prázdny","plný","🧺",[["🕳️","prázdny"],["🪶","ľahký"]]],
+    ["úzky","široký","🛣️",[["🪡","úzky"],["📏","rovný"]]],
+    ["krátky","dlhý","🐍",[["✂️","krátky"],["🔴","červený"]]],
+    ["nízky","vysoký","🏢",[["🧱","nízky"],["⬜","hranatý"]]],
+    ["ďaleko","blízko","🏠",[["🌄","ďaleko"],["🧭","sever"]]],
+    ["zatvorený","otvorený","📖",[["🚪","zatvorený"],["🔒","zamknutý"]]],
+    ["veselý","smutný","😢",[["😄","veselý"],["😮","prekvapený"]]],
+    ["ľahký","ťažký","🏋️",[["🎈","ľahký"],["🟡","žltý"]]],
+    ["špinavý","čistý","✨",[["🧹","špinavý"],["🟤","hnedý"]]],
+    ["kyslý","sladký","🍯",[["🍋","kyslý"],["🥒","zelený"]]],
+    ["rýchly","pomalý","🐢",[["🏎️","rýchly"],["🦘","skákavý"]]],
+    ["teplý","studený","🧊",[["☀️","teplý"],["🔥","horúci"]]],
+    ["tmavý","svetlý","💡",[["🌑","tmavý"],["🌫️","hmlistý"]]],
+    ["hore","dole","⬇️",[["⬆️","hore"],["➡️","vpravo"]]],
+    ["pred","za","↩️",[["➡️","pred"],["⬆️","hore"]]],
+    ["začiatok","koniec","🏁",[["▶️","začiatok"],["⏸️","pauza"]]],
+    ["ráno","večer","🌆",[["🌅","ráno"],["☀️","obed"]]],
+  ];
+  const stems=["Vyber opačné slovo k slovu","Ktoré slovo je protiklad k slovu"];
+  for(const stem of stems){
+    for(const [word,ans,img,w] of opposites){
+      addPic(list,"gen",`${stem} ${word.toUpperCase()}?`,img,ans,w,"protiklady","stredná",`Opak slova ${word} je ${ans}.`);
+    }
+  }
+  const safety=[
+    ["Keď sa stratíš vonku, koho je najlepšie poprosiť o pomoc?","👩‍👧‍👦","Mamku s deťmi alebo policajta",[["🚗","Človeka, ktorý zastaví autom"],["🐈","Mačku"],["🚶","Nikoho, budem hľadať sama"]],"Keď sa stratíš, hľadaj bezpečného dospelého — rodiča s deťmi, policajta alebo pracovníka v obchode."],
+    ["Keď sa stratíš v obchode, kam máš ísť?","🏪","K pokladni alebo pracovníkovi",[["🚪","Von na ulicu"],["🧸","Schovať sa medzi hračky"],["🍬","K sladkostiam"]],"V obchode pomôže pokladník alebo pracovník s menovkou."],
+    ["Čo máš spraviť, keď ti cudzí človek ponúka odvoz autom?","🙅","Povedať nie a ísť preč",[["🚗","Sadnúť si do auta"],["🍭","Zobrať sladkosť"],["🤫","Nikomu to nepovedať"]],"Do auta k cudziemu človeku nenastupujeme bez dovolenia rodiča."],
+    ["Keď sa ťa cudzí človek pýta na adresu, čo je bezpečné?","🤐","Nepovedať ju",[["🏠","Povedať presnú adresu"],["🔑","Ukázať kľúče"],["📱","Dať mu mobil"]],"Súkromné údaje hovoríme iba rodičom alebo dôveryhodnej osobe."],
+    ["Ak nájdeš stratený mobil alebo peňaženku, čo spravíš?","👨‍👩‍👧","Dáš to dospelému, ktorému veríš",[["🎒","Necháš si to"],["🗑️","Vyhodíš to"],["🏃","Utečieš s tým"]],"Nájdenú vec dáme rodičovi, učiteľovi alebo pracovníkovi."],
+    ["Keď chceš prejsť cez cestu, čo spravíš najprv?","👀","Pozriem sa na obe strany",[["🏃","Rýchlo prebehnem"],["🙈","Zavriem oči"],["🎮","Pozerám do mobilu"]],"Pred cestou zastavíme a pozrieme sa doľava aj doprava."],
+    ["Čo znamená červená na semafore pre chodcov?","🔴","Stoj",[["🟢","Choď"],["🏃","Bež"],["👋","Mávaj"]],"Na červenú stojíme a čakáme na zelenú."],
+    ["Ak sa doma niečo začne páliť alebo dymiť, čo spravíš?","📣","Zavolám dospelého",[["🧯","Hrám sa s ohňom"],["🚪","Schovám sa"],["🪟","Otvorím všetko sama"]],"Pri dyme alebo ohni hneď voláme dospelého a ideme do bezpečia."],
+    ["Keď nájdeš lieky alebo tabletky, čo je správne?","🚫","Nedávať si ich do úst",[["🍬","Ochutnať ich"],["🎒","Schovať ich"],["👅","Olízať ich"]],"Lieky môžu byť nebezpečné. Berú sa iba od rodiča alebo lekára."],
+    ["Keď zvoní neznámy človek a si doma bez rodiča, čo spravíš?","🚪","Neotvorím dvere",[["🔓","Otvorím hneď"],["📢","Poviem, že som sama"],["🏠","Pozvem ho dnu"]],"Neznámym ľuďom neotvárame, keď nie je pri nás dospelý."],
+    ["Ak ti niekto na ihrisku ubližuje, čo je najlepšie?","🗣️","Povedať to dospelému",[["🤐","Mlčať"],["🥊","Biť sa"],["🏃","Utiecť ďaleko sama"]],"Keď nám niekto ubližuje, povieme to rodičovi, učiteľovi alebo inému bezpečnému dospelému."],
+    ["Keď ti kamarát povie, aby si mal nebezpečné tajomstvo, čo spravíš?","👨‍👩‍👧","Poviem to rodičovi",[["🤫","Nikomu nepoviem"],["😟","Budem sa báť sama"],["🎁","Sľúbim za darček"]],"Tajomstvá, pri ktorých sa bojíš alebo je niekto v nebezpečí, treba povedať dospelému."],
+    ["Čo spravíš, keď sa porežeš a tečie krv?","🩹","Zavolám dospelého",[["🙈","Schovám ruku"],["🧃","Polejem to džúsom"],["🏃","Bežím po ulici"]],"Pri poranení zavoláme dospelého a ranu ošetríme."],
+    ["Ak sa stratíš na výlete, čo je dobrý nápad?","📍","Zostať na viditeľnom mieste",[["🌲","Bežať hlboko do lesa"],["🚗","Sadnúť do cudzieho auta"],["🙈","Schovať sa"]],"Keď sa stratíš, zostaň tam, kde ťa ľahšie nájdu, a popros bezpečného dospelého."],
+    ["Keď ti neznámy človek ponúka sladkosť, čo je bezpečné?","🙅","Nezobrať ju bez rodiča",[["🍭","Hneď ju zjesť"],["🎒","Schovať ju"],["🚶","Ísť s ním"]],"Od cudzích ľudí neberieme sladkosti ani darčeky bez rodiča."],
+    ["Koho môžeš poprosiť o pomoc v uniforme?","👮","Policajta",[["🐕","Psa"],["🧸","Hračku"],["🌳","Strom"]],"Policajt alebo záchranár v uniforme vie pomôcť v núdzi."],
+    ["Čo máš urobiť, keď počuješ sirénu sanitky na ceste?","🛑","Zastaviť a dávať pozor",[["🏃","Vbehnúť na cestu"],["🎧","Nevšímať si to"],["🙈","Zavrieť oči"]],"Siréna znamená, že ide pomoc. Pri ceste zastavíme a dávame pozor."],
+    ["Keď si nie si istá, či je niečo bezpečné, čo spravíš?","❓","Spýtam sa rodiča",[["🎲","Skúsim to naslepo"],["🤫","Nikomu nepoviem"],["🏃","Utečiem"]],"Keď si nie si istá, opýtaj sa rodiča alebo dospelého, ktorému veríš."],
+    ["Keď si nie si istá, či je niečo bezpečné, čo spravíš?","❓","Spýtam sa rodiča",[["🎲","Skúsim to naslepo"],["🤫","Nikomu nepoviem"],["🏃","Utečiem"]],"bezpečnosť","stredná","Keď si nie si istá, opýtaj sa rodiča alebo dospelého, ktorému veríš."],
+    ["Čo spravíš, keď zvoní niekto cudzí na dvere a si doma sama?","🚪","Neotvorím a poviem rodičovi",[["🔓","Hneď otvorím"],["📢","Zakričím kto to je von"],["🤐","Predstieram, že nie som doma navždy"]],"bezpečnosť","stredná","Cudzím ľuďom dvere sami neotvárame — počkáme na rodiča alebo mu zavoláme."],
+    ["Ako sa bezpečne správať pri bazéne alebo pri vode?","🏊","Len keď je pri mne dospelý",[["🌊","Skáčem sama, kde chcem"],["🤿","Potápam sa čo najhlbšie sama"],["🏃","Behám okolo bazéna"]],"bezpečnosť","stredná","Vo vode sme v bezpečí, len keď je nablízku dospelý, ktorý dáva pozor."],
+    ["Čo urobíš, keď v aute nie si pripútaný a auto sa rozbehne?","🔒","Poviem, že sa musím pripútať",[["😴","Zaspím bez pásu"],["🙈","Nič nepoviem"],["🎮","Hrám sa radšej ďalej"]],"bezpečnosť","stredná","Bezpečnostný pás nás chráni pri každej jazde, aj krátkej."],
+    ["Ak ťa niekto na internete/v hre žiada o tvoju fotku alebo adresu, čo spravíš?","🛑","Nepošlem to a poviem rodičovi",[["📷","Hneď to pošlem"],["🤫","Vybavím si to sama"],["😊","Verím každému online"]],"bezpečnosť","stredná","Súkromné veci online zdieľame iba s vedomím rodiča."],
+  ];
+  safety.forEach(x=>addPic(list,"gen",x[0],x[1],x[2],x[3],"bezpečnosť","stredná",x[4]));
+  const facts=[
+    ["Čo potrebuje rastlina, aby rástla?","💧","Vodu",[["🧱","Tehlu"],["🧦","Ponožku"]],"príroda","Rastliny potrebujú vodu, svetlo a zeminu."],
+    ["Ktorý predmet otvorí dvere so zámkom?","🔑","Kľúč",[["🥄","Lyžica"],["⚽","Lopta"]],"domácnosť","Kľúč pasuje do zámku a dvere otvorí."],
+    ["Ktoré zviera znáša vajíčka na farme?","🐔","Sliepka",[["🐄","Krava"],["🐕","Pes"]],"zvieratá","Sliepka znáša vajíčka."],
+    ["Čím si chránime oči pred slnkom?","🕶️","Slnečnými okuliarmi",[["🧤","Rukavicami"],["🧦","Ponožkami"]],"bežný život","Okuliare tienia oči pred silným svetlom."],
+    ["Ktorý dopravný prostriedok jazdí po koľajniciach?","🚆","Vlak",[["✈️","Lietadlo"],["🚲","Bicykel"]],"doprava","Vlak jazdí po koľajniciach."],
+    ["Čo používame pri umývaní rúk?","🧼","Mydlo",[["✏️","Ceruzku"],["🎈","Balón"]],"hygiena","Mydlo pomáha umyť špinu z rúk."],
+    ["Ktorá časť tela nám pomáha vidieť?","👀","Oči",[["👂","Uši"],["🦶","Chodidlá"]],"telo","Očami sa pozeráme."],
+    ["Kde si zvyčajne čistíme zuby?","🚿","V kúpeľni",[["🌳","V lese"],["🚗","V aute"]],"hygiena","Zuby si čistíme v kúpeľni pri umývadle."],
+    ["Čo má týždeň?","7️⃣","7 dní",[["3️⃣","3 dni"],["1️⃣","1 deň"]],"čas","Týždeň má sedem dní."],
+    ["Ktorý deň býva po pondelku?","2️⃣","Utorok",[["🌙","Nedeľa"],["⭐","Piatok"]],"čas","Po pondelku nasleduje utorok."],
+    ["Čo robíme s knihou?","📖","Čítame",[["🥣","Varíme"],["⚽","Kopeme"]],"škola","Knihu čítame alebo si v nej pozeráme obrázky."],
+    ["Ktoré ovocie je často žlté a dá sa olúpať?","🍌","Banán",[["🥔","Zemiak"],["🥕","Mrkva"]],"jedlo","Banán má šupku a často je žltý."],
+    ["Čo svieti v noci na oblohe, keď nie je zamračené?","⭐","Hviezdy",[["🌈","Dúha"],["🌧️","Dážď"]],"príroda","Hviezdy vidíme najmä v noci."],
+    ["Čo použijeme, keď chceme niečo vystrihnúť?","✂️","Nožnice",[["🥄","Lyžicu"],["🧃","Džús"]],"škola","Nožnice strihajú papier."],
+    ["Ktoré zviera mňauká?","🐈","Mačka",[["🐄","Krava"],["🐸","Žaba"]],"zvieratá","Mačka robí mňau."],
+    ["Akú farbu majú banány, keď sú zrelé?","🟡","Žltú",[["🟣","Fialovú"],["⚫","Čiernu"]],"farby","Zrelý banán je zvyčajne žltý."],
+    ["Koľko farieb má dúha?","🌈","Veľa farieb naraz",[["1️⃣","Iba jednu"],["0️⃣","Žiadnu"]],"farby","Dúha má veľa farieb — červenú, oranžovú, žltú, zelenú, modrú aj fialovú."],
+    ["Akou farbou svieti semafor, keď môžeš ísť?","🟢","Zelenou",[["🔴","Červenou"],["🟡","Žltou"]],"farby","Na zelenú na semafore môžeme ísť."],
+    ["Čím cestujeme po nebi?","✈️","Lietadlom",[["🚲","Bicyklom"],["⛵","Loďou"]],"doprava","Lietadlo lieta vysoko na oblohe."],
+    ["Čím cestujeme po vode?","⛵","Loďou",[["🚗","Autom"],["🚆","Vlakom"]],"doprava","Loď alebo čln plávajú po vode."],
+    ["Čo potrebuje bicykel, aby sa mohol pohybovať?","🦵","Šliapanie nohami",[["⛽","Benzín"],["🔋","Batériu"]],"doprava","Bicykel poháňame vlastnými nohami cez pedále."],
+    ["Kde v domácnosti uchovávame jedlo studené?","🧊","V chladničke",[["🛁","Vo vani"],["📺","V televízore"]],"domácnosť","Chladnička udržiava jedlo čerstvé a studené."],
+    ["Čím upratujeme podlahu doma?","🧹","Metlou alebo vysávačom",[["🖌️","Štetcom na maľovanie"],["🔨","Kladivom"]],"domácnosť","Na upratovanie podlahy používame metlu alebo vysávač."],
+    ["Kde si doma zvyčajne varíme jedlo?","🍳","V kuchyni",[["🛌","V spálni"],["🚪","Na chodbe"]],"domácnosť","Varenie prebieha v kuchyni, kde máme sporák."],
+    ["Akú farbu má tráva na lúke?","🟢","Zelenú",[["🔴","Červenú"],["⚫","Čiernu"]],"farby","Tráva býva zelená."],
+    ["Kde rastú listy?","🌳","Na strome",[["🚲","Na bicykli"],["🍽️","Na tanieri"]],"príroda","Listy rastú na rastlinách a stromoch."],
+    ["Čo si obujeme, keď ideme von?","👟","Topánky",[["🧢","Čiapku"],["🧤","Rukavice"]],"bežný život","Topánky chránia chodidlá vonku."],
+    ["Ktoré jedlo býva v miske a je teplé?","🥣","Polievka",[["🍭","Lízanka"],["🍪","Keksík"]],"jedlo","Polievka sa často je z misky lyžicou."],
+    ["Čo nám ukáže, koľko je hodín?","⏰","Hodiny",[["🧸","Hračka"],["🌷","Kvet"]],"čas","Hodiny ukazujú čas."],
+    ["Čo robíme, keď niekomu povieme ďakujem?","🙏","Poďakujeme",[["😠","Hneváme sa"],["🏃","Utekáme"]],"správanie","Ďakujem je slušné poďakovanie."],
+    ["Ktoré ročné obdobie prichádza po zime?","🌸","Jar",[["❄️","Zima"],["🍂","Jeseň"]],"čas","Po zime prichádza jar."],
+    ["Ktoré zviera žije vo vode a má plutvy?","🐟","Ryba",[["🐕","Pes"],["🐿️","Veverička"]],"zvieratá","Ryby žijú vo vode a plávajú pomocou plutiev."],
+    ["Čo použijeme, keď je vonku dážď?","☔","Dáždnik",[["🕶️","Slnečné okuliare"],["🧣","Šál"]],"bežný život","Dáždnik nás chráni pred dažďom."],
+    ["Koľko prstov máš na jednej ruke?","5️⃣","5",[["4️⃣","4"],["6️⃣","6"]],"telo","Na jednej ruke máme 5 prstov."],
+    ["Ktorá časť dňa je hneď po rannom vstávaní?","🌅","Ráno",[["🌙","Noc"],["🌆","Večer"]],"čas","Po prebudení nasleduje ráno."],
+    ["Čo robí včela?","🐝","Zbiera peľ a robí med",[["🎨","Maľuje obrázky"],["📚","Číta knihy"]],"zvieratá","Včely zbierajú peľ z kvetov a vyrábajú med."],
+    ["Kam patria odpadky, ktoré vyhodíme?","🗑️","Do koša",[["🌳","Na trávu"],["🏞️","Do rieky"]],"príroda","Odpadky patria do koša, aby bola príroda čistá."],
+    ["Čo použijeme na kreslenie čiar?","✏️","Ceruzku",[["🥾","Čižmu"],["🥄","Lyžicu"]],"škola","Ceruzkou kreslíme a píšeme."],
+    ["Ktoré zviera má chobot?","🐘","Slon",[["🦊","Líška"],["🐇","Zajac"]],"zvieratá","Slon má dlhý chobot."],
+    ["Čo si dáme na hlavu, keď fúka a je zima?","🧢","Čiapku",[["🧦","Ponožku"],["👟","Topánku"]],"bežný život","Čiapka hreje hlavu."],
+
+    ["Ako sa cíti človek, ktorý sa smeje a skáče od radosti?","😄","Šťastne",[["😢","Smutne"],["😠","Nahnevane"]],"emócie","Smiech a skákanie ukazujú radosť."],
+    ["Čo je dobré urobiť, keď je kamarát smutný?","🤗","Utešiť ho a spýtať sa, čo sa stalo",[["😆","Vysmiať sa mu"],["🙈","Odísť preč"]],"emócie","Keď je niekto smutný, pomôže záujem a milé slovo."],
+    ["Ako sa volá pocit, keď sa niečoho bojíme?","😨","Strach",[["😴","Ospalosť"],["🤩","Nadšenie"]],"emócie","Strach je pocit, ktorý nás varuje pred nebezpečenstvom."],
+    ["Čo pomáha, keď sa nahneváš?","🌬️","Zhlboka sa nadýchnuť a upokojiť",[["👊","Udrieť niekoho"],["📣","Kričať na všetkých"]],"emócie","Pomalý dych pomáha upokojiť hnev."],
+    ["Ako sa cíti človek, keď sa mu niečo podarí?","🏅","Hrdo",[["😔","Sklamane"],["😰","Vystrašene"]],"emócie","Keď sa nám niečo podarí, cítime hrdosť."],
+
+    ["V ktorom ročnom období padá zo stromov lístie?","🍂","Na jeseň",[["🌷","Na jar"],["🏖️","V lete"]],"ročné obdobia","Na jeseň stromy zhadzujú listy."],
+    ["Kedy najčastejšie sneží?","❄️","V zime",[["🌻","V lete"],["🍁","Na jeseň"]],"ročné obdobia","Sneh padá, keď je vonku mráz — v zime."],
+    ["V ktorom období sú prázdniny pri mori najdlhšie?","☀️","V lete",[["🎄","V zime"],["🌱","Na jar"]],"ročné obdobia","Letné prázdniny sú najdlhšie."],
+    ["Kedy začínajú kvitnúť prvé kvety?","🌸","Na jar",[["🥶","V zime"],["🍄","Na jeseň"]],"ročné obdobia","Na jar sa príroda prebúdza a kvitne."],
+    ["Koľko ročných období máme počas roka?","4️⃣","Štyri",[["2️⃣","Dve"],["7️⃣","Sedem"]],"ročné obdobia","Jar, leto, jeseň a zima — spolu štyri."],
+
+    ["V ktorej krajine žijeme?","🇸🇰","Na Slovensku",[["🇮🇹","V Taliansku"],["🇪🇬","V Egypte"]],"moja krajina","Naša krajina sa volá Slovensko."],
+    ["Ako sa volá hlavné mesto Slovenska?","🏛️","Bratislava",[["🗼","Paríž"],["🎡","Viedeň"]],"moja krajina","Bratislava je hlavné mesto Slovenska."],
+    ["Akým jazykom hovoríme doma na Slovensku?","🗣️","Po slovensky",[["🇬🇧","Po anglicky"],["🇫🇷","Po francúzsky"]],"moja krajina","Náš materinský jazyk je slovenčina."],
+    ["Ako sa volajú vysoké hory na severe Slovenska?","🏔️","Tatry",[["🌋","Sopky"],["🏜️","Duny"]],"moja krajina","Tatry sú naše najvyššie hory."],
+
+    ["Čo sa objaví na oblohe po daždi, keď svieti slnko?","🌈","Dúha",[["⛄","Snehuliak"],["🌵","Kaktus"]],"počasie","Dúha vznikne, keď slnko presvieti dažďové kvapky."],
+    ["Čo počujeme počas búrky po blesku?","⛈️","Hrmenie",[["🎵","Hudbu"],["🔔","Zvonček"]],"počasie","Po blesku prichádza zvuk — hrom."],
+    ["Čo robí vietor s listami na strome?","🍃","Hýbe nimi",[["🧊","Zmrazí ich"],["🎨","Namaľuje ich"]],"počasie","Vietor je pohybujúci sa vzduch, ktorý hýbe listami."],
+    ["Ako sa volajú biele útvary na oblohe, z ktorých prší?","☁️","Oblaky",[["🪨","Skaly"],["🎈","Balóny"]],"počasie","Z oblakov padá dážď alebo sneh."],
+
+    ["Čím hráme na klavíri?","🎹","Prstami",[["🦶","Nosom"],["👂","Ušami"]],"hudba a umenie","Na klavíri hráme prstami na klávesoch."],
+    ["Čo potrebujeme na maľovanie obrázka?","🎨","Farby a štetec",[["🔧","Skrutkovač"],["🍴","Vidličku"]],"hudba a umenie","Na maľovanie potrebujeme farby a štetec."],
+    ["Čo robíme, keď spievame pieseň?","🎤","Spievame hlasom",[["🖌️","Maľujeme"],["🏃","Behám"]],"hudba a umenie","Pri speve používame hlas. Keď spieva veľa ľudí naraz, voláme to zbor."],
+
+    ["Čo je viac: 3 alebo 8?","🔢","8",[["3️⃣","3"],["🟰","Sú rovnaké"]],"logika","Číslo 8 je väčšie ako 3."],
+    ["Ktoré číslo nasleduje hneď po čísle 9?","🔟","10",[["8️⃣","8"],["1️⃣","1"]],"logika","Po deviatke nasleduje desiatka."],
+    ["Ktoré z týchto zvierat NIE JE vták?","🐕","Pes",[["🦉","Sova"],["🦆","Kačka"]],"logika","Pes je cicavec, sova aj kačka sú vtáky."],
+    ["Čo do skupiny NEPATRÍ: jablko, hruška, stolička?","🪑","Stolička",[["🍎","Jablko"],["🍐","Hruška"]],"logika","Jablko a hruška sú ovocie, stolička je nábytok."],
+    ["Ktoré zviera je najväčšie?","🐘","Slon",[["🐁","Myš"],["🐈","Mačka"]],"logika","Slon je najväčší z týchto zvierat."],
+  ];
+  // Každý fakt sa pridá RAZ — bez umelých variantov typu "Vyber správne. / Premysli si odpoveď.",
+  // ktoré predtým nafukovali databázu opakovaním tej istej otázky s iným koncom vety.
+  for(const x of facts){
+    addPic(list,"gen",x[0],x[1],x[2],x[3],x[4],"stredná",x[5]);
+  }
+  return uniqueByQ(list).slice(0,175);
+}
+
+function buildAvatarQuestions(){
+  const list=[];
+  const base=[
+    ["Kde sa odohráva príbeh Na'vi?","🌍","Na Pandore",[["🏙️","V meste"],["🪐","Na Saturne"]],"svet Avatar","Pandora je mesiac, kde žijú Na'vi."],
+    ["Akú farbu majú Na'vi na koži najčastejšie?","🔵","Modrú",[["🟢","Zelenú"],["🔴","Červenú"]],"postavy","Na'vi sú známi modrou pokožkou."],
+    ["Ktorá postava sa volá Jake?","🪖","Jake Sully",[["🐋","Tulkun"],["🦅","Ikran"]],"postavy","Jake Sully je hlavná postava."],
+    ["Ktorá bojovníčka používa luk a je veľmi odvážna?","🏹","Neytiri",[["🔬","Grace"],["🕷️","Spider"]],"postavy","Neytiri je skúsená bojovníčka Na'vi."],
+    ["Ako sa volá bohyňa prírody, ktorú Na'vi uctievajú?","🌳","Eywa",[["🚀","Raketa"],["🏰","Hrad"]],"príroda","Eywa je pre Na'vi duch prírody, ktorý spája všetko živé."],
+    ["Na akom tvorovi sa Na'vi učia lietať?","🦅","Na ikranovi",[["🚗","Na aute"],["🚲","Na bicykli"]],"tvory","Ikran je lietajúci tvor z Pandory."],
+    ["Ktoré prostredie je dôležité v druhom filme?","🌊","More",[["🏜️","Púšť"],["🏙️","Veľkomesto"]],"film","Druhý film trávi veľa času pri vode."],
+    ["Ako sa volá veľký morský tvor podobný veľrybe?","🐋","Tulkun",[["🐬","Delfín"],["🦈","Žralok"]],"tvory","Tulkun je veľký inteligentný morský tvor."],
+    ["Ktorý klan žije pri vode?","🌊","Metkayina",[["🏔️","Horský klan"],["🏙️","Mestský klan"]],"klany","Metkayina je morský klan."],
+    ["Čo Na'vi najviac chránia?","🌿","Prírodu a domov",[["🧱","Tehly"],["📺","Televízor"]],"hodnoty","Na'vi si vážia prírodu a svoj domov."],
+    ["Čo svieti na Pandore počas noci?","✨","Rastliny",[["🕯️","Sviečky"],["🔌","Káble"]],"príroda","Mnohé rastliny na Pandore žiaria."],
+    ["Ako sa volá dievča spojené s prírodou a Eywou?","🔵","Kiri",[["🪖","Jake"],["🐋","Tulkun"]],"postavy","Kiri cíti silné spojenie s Eywou."],
+    ["Ako sa volá ľudský chlapec medzi Na'vi?","🕷️","Spider",[["🦅","Ikran"],["🌳","Eywa"]],"postavy","Spider je ľudský chlapec, ktorý žije blízko Na'vi."],
+    ["Čím sa Na'vi prepájajú s tvormi?","🧬","Vrkočom",[["🔑","Kľúčom"],["📱","Mobilom"]],"svet Avatar","Na'vi používajú špeciálne spojenie cez vrkoč."],
+    ["Ktorá rodina je v príbehu veľmi dôležitá?","👨‍👩‍👧‍👦","Sullyovci",[["🍎","Jablká"],["🚲","Cyklisti"]],"postavy","Rodina Sullyovcov je stred príbehu."],
+    ["Aké oči majú mnohí Na'vi?","🟡","Žlté",[["⚪","Biele"],["🟢","Zelené"]],"postavy","Na'vi majú často žlté oči."],
+    ["Čo používa Neytiri pri love?","🏹","Luk",[["🥄","Lyžicu"],["📚","Knihu"]],"postavy","Neytiri vie výborne používať luk."],
+    ["Je Pandora na Zemi alebo ďaleko vo vesmíre?","🌘","Ďaleko vo vesmíre",[["🏙️","Na Zemi v meste"],["🏝️","Na Zemi na ostrove"]],"svet Avatar","Pandora je veľmi ďaleko od Zeme — ľudia tam museli letieť vesmírnou loďou."],
+    ["Čo sa učia deti pri morskom klane?","🌊","Plávať a dýchať pokojne",[["🚀","Lietať raketou"],["🏎️","Šoférovať auto"]],"film","Pri mori je dôležité plávanie a pokojný dych."],
+    ["Ktorý tvor lieta vysoko nad pralesom?","🦅","Ikran",[["🐋","Tulkun"],["🐢","Korytnačka"]],"tvory","Ikran patrí medzi lietajúce tvory."],
+    ["Čo je v príbehu silnejšie ako strach?","💙","Rodina a odvaha",[["🍭","Sladkosť"],["🧊","Ľad"]],"hodnoty","Avatar často ukazuje odvahu a rodinu."],
+    ["Čo robia rastliny na Pandore, keď sa zotmie?","✨","Samy svietia",[["🥶","Zamrznú"],["🌙","Zmiznú"]],"príroda","Rastliny na Pandore v noci samy svietia — podobne ako svetlušky u nás."],
+    ["Kto je mama detí v rodine Sullyovcov?","💙","Neytiri",[["🔬","Grace"],["🌊","Metkayina"]],"postavy","Neytiri je mama v rodine Sullyovcov."],
+    ["Majú Jake a Neytiri deti?","👨‍👩‍👧‍👦","Áno, majú synov aj dcéry",[["🚫","Nie, nemajú žiadne"],["1️⃣","Majú iba jedno"]],"postavy","Jake a Neytiri majú veľkú rodinu — synov aj dcéry."],
+    ["Čo by urobila dobrá ochrankyňa Pandory?","🌿","Chránila prírodu",[["🗑️","Hádzala odpad"],["🔥","Ničila les"]],"hodnoty","Ochrankyňa Pandory sa stará o prírodu."],
+    ["Akým jazykom hovoria Na'vi medzi sebou?","🗣️","Vlastným jazykom Na'vi",[["🇬🇧","Iba po anglicky"],["🤐","Vôbec nehovoria"]],"svet Avatar","Na'vi majú svoj vlastný, špeciálne vytvorený jazyk."],
+    ["Koľko prstov má Na'vi na ruke?","✋","4 prsty",[["🖐️","5 prstov"],["👆","3 prsty"]],"postavy","Na'vi majú na rukách len 4 prsty, nie 5 ako ľudia."],
+    ["Čo je zvláštne na niektorých horách na Pandore?","🏔️","Vznášajú sa vo vzduchu",[["🌋","Chrlia oheň"],["🧊","Sú z ľadu"]],"príroda","Na Pandore sú hory, ktoré sa vznášajú vysoko vo vzduchu."],
+    ["Prečo je pre ľudí vzduch na Pandore nebezpečný?","😷","Nedá sa ním bez masky dýchať",[["🥶","Je príliš studený"],["🍃","Príliš voňavý"]],"svet Avatar","Vzduch na Pandore nie je pre ľudské pľúca dýchateľný bez pomôcky."],
+    ["Čo je avatar v tomto príbehu?","🧬","Telo Na'vi, ktoré človek vie ovládať",[["🎮","Postavička v počítačovej hre"],["📷","Obrázok na mobile"]],"svet Avatar","Avatar je telo Na'vi, ktoré človek vie ovládať svojimi myšlienkami."],
+    ["Čím bol Jake predtým, než prišiel na Pandoru?","🎖️","Vojakom",[["👨‍🍳","Kuchárom"],["🎨","Maliarom"]],"postavy","Jake Sully bol predtým vojak."],
+    ["Čo cíti Neytiri k prírode a tvorom Pandory?","💚","Veľkú úctu a lásku",[["😠","Strach"],["😴","Nezáujem"]],"hodnoty","Neytiri a Na'vi si veľmi vážia všetky živé bytosti okolo seba."],
+    ["Kým bol otec Neytiri v klane?","👑","Náčelníkom — vodcom klanu",[["🧑‍🚀","Astronautom"],["👨‍🏫","Učiteľom v meste"]],"klany","Otec Neytiri bol náčelník — ten, kto celý klan vedie."],
+    ["Na čom jazdia Na'vi po zemi, keď sa chcú rýchlo presunúť?","🐎","Na zvierati podobnom koňovi",[["🚙","Na aute"],["🛴","Na kolobežke"]],"tvory","Na'vi jazdia na veľkom zvierati podobnom koňovi — má však šesť nôh."],
+    ["Čím sú na Pandore stromy navzájom pospájané?","🌐","Koreňmi pod zemou",[["📱","Mobilmi"],["🔌","Káblami"]],"svet Avatar","Korene stromov na Pandore sú pospájané ako veľká sieť pod zemou."],
+    ["Prečo si ľudia stavajú základne na Pandore?","⛏️","Kvôli vzácnym surovinám",[["🎡","Kvôli zábavnému parku"],["🏖️","Kvôli dovolenke"]],"svet Avatar","Ľudia prišli na Pandoru najmä kvôli vzácnym nerastom pod povrchom."],
+    ["Ako sa Na'vi starajú o svojich najmenších členov rodiny?","🤱","S veľkou láskou a ochranou",[["🙅","Nechajú ich samých"],["😐","Bez záujmu"]],"hodnoty","Rodina a deti sú pre Na'vi veľmi dôležité a chránené."],
+    ["Čo musí Jake urobiť, aby sa stal súčasťou klanu Na'vi?","🏆","Dokázať svoju odvahu a naučiť sa ich spôsob života",[["💰","Zaplatiť peniaze"],["📝","Napísať test"]],"postavy","Jake si musel zaslúžiť dôveru klanu odvahou a učením sa."],
+    ["Aký je vzťah medzi Na'vi a zvieratami, na ktorých jazdia?","🤝","Hlboké priateľstvo a puto",[["😨","Strach jeden z druhého"],["🤷","Žiadny vzťah"]],"hodnoty","Na'vi a ich zvieratá si vytvárajú celoživotné puto plné dôvery."],
+
+    ["V akom prostredí žije klan, v ktorom vyrastala Neytiri?","🌲","V lese",[["🏜️","Na púšti"],["❄️","Na ľadovci"]],"klany","Neytiri pochádza z lesného klanu, ktorý žije medzi obrovskými stromami."],
+    ["Ako sa volá obrovský strom, v ktorom býva lesný klan?","🌳","Strom domova",[["🏢","Mrakodrap"],["⛺","Stan"]],"svet Avatar","Strom domova je obrovský strom, v ktorom žije celý klan."],
+    ["Sú Na'vi vyšší alebo nižší ako ľudia?","📏","Oveľa vyšší",[["🤏","Oveľa nižší"],["🟰","Rovnako vysokí"]],"postavy","Na'vi sú omnoho vyšší než ľudia — dospelý Na'vi je vyšší než dvaja ľudia na sebe by boli malí."],
+    ["Ako Na'vi ukazujú, že si niekoho vážia?","👁️","Povedia „Vidím ťa\"",[["🤛","Udrú ho"],["🙄","Otočia sa chrbtom"]],"hodnoty","„Vidím ťa\" znamená u Na'vi, že vidím tvoje skutočné vnútro."],
+    ["Čo robia Na'vi, keď ulovia zviera na jedlo?","🙏","Poďakujú mu a uctia si ho",[["🎉","Oslavujú a smejú sa"],["🗑️","Nechajú ho ležať"]],"hodnoty","Na'vi ďakujú zvieraťu za to, že im dalo potravu."],
+    ["Ktoré zvieratá pomáhajú morskému klanu pri love?","🐋","Tulkuny a ďalší morskí tvorovia",[["🐕","Psy"],["🐓","Sliepky"]],"klany","Morský klan Metkayina má blízke priateľstvo s tulkunmi."],
+    ["Čo vedia Na'vi z morského klanu lepšie ako lesní Na'vi?","🏊","Plávať a potápať sa",[["✈️","Lietať v rakete"],["🎿","Lyžovať"]],"klany","Morský klan žije pri vode, preto vedia výborne plávať a potápať sa."],
+    ["Prečo sú stromy na Pandore pre Na'vi posvätné?","🌿","Sú živé a spájajú celý svet",[["💰","Dajú sa predať"],["🔥","Dobre horia"]],"príroda","Stromy sú pre Na'vi živými bytosťami, cez ktoré prúdi Eywa."],
+    ["Čo sa vznáša vo vzduchu okolo posvätného stromu?","🌱","Malé svietiace semienka",[["🍿","Popcorn"],["🧊","Kúsky ľadu"]],"príroda","Okolo posvätného stromu sa vznášajú jemné svietiace semienka."],
+    ["Čo je pre Na'vi najdôležitejšie zo všetkého?","👨‍👩‍👧‍👦","Rodina a klan",[["💎","Drahé kamene"],["🏆","Vyhrávať súťaže"]],"hodnoty","Pre Na'vi je rodina a súdržnosť klanu to najcennejšie."],
+    ["Čo sa deti Na'vi učia od malička?","🏹","Loviť, plávať a chrániť prírodu",[["💻","Programovať"],["🚗","Šoférovať"]],"postavy","Malí Na'vi sa učia žiť v súlade s prírodou Pandory."],
+  ];
+  // Bez umelých variantov ("Spomeň si na film." atď.) — každý fakt je samostatná otázka.
+  for(const x of base){
+    addPic(list,"ava",x[0],x[1],x[2],x[3],x[4],"stredná",x[5]);
+  }
+  return uniqueByQ(list).slice(0,125);
+}
+// ===== NÁROČNOSŤ PODĽA OKRUHU =====
+// Predtým mali všetky otázky zo sveta aj Avatara rovnakú náročnosť "stredná" a úroveň
+// "výzva" neexistovala vôbec — trojstupňové vyvažovanie preto v skutočnosti nefungovalo.
+const DIFF_BY_SKILL={
+  // ľahšie — okamžite viditeľné, konkrétne veci
+  "farby":"ľahšia","zvieratá":"ľahšia","telo":"ľahšia","hygiena":"ľahšia",
+  "bežný život":"ľahšia","jedlo":"ľahšia","škola":"ľahšia","domácnosť":"ľahšia",
+  "správanie":"ľahšia","bezpečnosť":"ľahšia",
+  // stredné — treba si spomenúť alebo krátko premyslieť
+  "protiklady":"stredná","čas":"stredná","doprava":"stredná","príroda":"stredná",
+  "ročné obdobia":"stredná","počasie":"stredná","emócie":"stredná",
+  "hudba a umenie":"stredná","moja krajina":"stredná",
+  "postavy":"stredná","tvory":"stredná","film":"stredná",
+  // výzva — vyžaduje uvažovanie alebo hlbšiu znalosť príbehu
+  "logika":"výzva","svet Avatar":"výzva","klany":"výzva","hodnoty":"výzva",
+};
+// Jednotlivé otázky, ktoré sú zjavne ľahšie/ťažšie, než napovedá ich okruh.
+// (Napr. "Akú farbu majú Na'vi?" je vizuálna a ľahká, hoci patrí do okruhu "postavy".)
+const DIFF_EASY_HINTS=[
+  "Akú farbu majú Na'vi","Kde sa odohráva príbeh","Čo používa Neytiri pri love",
+  "Aké oči majú mnohí Na'vi","Ktorá bojovníčka používa luk","Ktorá postava sa volá Jake",
+  "Ktorý tvor lieta vysoko","Čo svieti na Pandore","Čo Na'vi najviac chránia",
+  "Sú Na'vi vyšší alebo nižší","Majú Jake a Neytiri deti","Ktoré prostredie je dôležité",
+];
+const DIFF_HARD_HINTS=[
+  "Koľko prstov má Na'vi","Čo je avatar v tomto príbehu","Prečo je pre ľudí vzduch",
+  "Prečo si ľudia stavajú základne","Čím sa Na'vi prepájajú s tvormi",
+  "Čo do skupiny NEPATRÍ","Ktoré z týchto zvierat NIE JE vták",
+];
+function assignDifficulty(q){
+  if(q.cat==="math"){
+    // matematika si drží vlastnú logiku podľa veľkosti čísel,
+    // najväčšie príklady posunieme na "výzvu"
+    const res=q.mathQ?q.mathQ.res:null;
+    if(res!==null&&res>15)return "výzva";
+    if(q.skill==="číselný rad"||q.skill==="chýbajúce číslo"||q.skill==="hodiny")return "výzva";
+    if(q.skill==="dvojnásobky"||q.skill==="peniaze")return "stredná";
+    return q.diff||"stredná";
+  }
+  if(DIFF_EASY_HINTS.some(h=>q.q.startsWith(h)))return "ľahšia";
+  if(DIFF_HARD_HINTS.some(h=>q.q.startsWith(h)))return "výzva";
+  return DIFF_BY_SKILL[q.skill]||q.diff||"stredná";
+}
+function buildQuestionBank(){
+  const all=[...buildMathQuestions(),...buildGeneralQuestions(),...buildAvatarQuestions()];
+  all.forEach(q=>{q.diff=assignDifficulty(q);});
+  return all;
+}
+const QUESTIONS=buildQuestionBank();
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function takeBalanced(pool,count){
+  const groups={"ľahšia":[],"stredná":[],"výzva":[]};
+  pool.forEach(q=>(groups[q.diff]||groups["stredná"]).push(q));
+  const targets=count===12?{"ľahšia":4,"stredná":6,"výzva":2}:count===11?{"ľahšia":3,"stredná":6,"výzva":2}:{"ľahšia":2,"stredná":4,"výzva":1};
+  let picked=[];
+  Object.keys(targets).forEach(k=>picked.push(...shuffle(groups[k]).slice(0,targets[k])));
+  if(picked.length<count){
+    const rest=shuffle(pool.filter(q=>!picked.includes(q)));
+    picked.push(...rest.slice(0,count-picked.length));
+  }
+  return picked.slice(0,count);
+}
+function takeGeneral(count){
+  const safety=shuffle(poolBySkill("gen","bezpečnosť")).slice(0,2);
+  const restPool=QUESTIONS.filter(q=>q.cat==="gen"&&q.skill!=="bezpečnosť"&&!safety.includes(q));
+  return [...safety,...takeBalanced(restPool,count-safety.length)].slice(0,count);
+}
+function poolBySkill(cat,skill){return QUESTIONS.filter(q=>q.cat===cat&&q.skill===skill);}
+function composeQuiz(){
+  const byCat={math:[],gen:[],ava:[]};
+  QUESTIONS.forEach(q=>byCat[q.cat].push(q));
+  const picked=[...takeBalanced(byCat.math,QUIZ_MATH),...takeGeneral(QUIZ_GEN),...takeBalanced(byCat.ava,QUIZ_AVA)];
+  const queues={math:shuffle(picked.filter(q=>q.cat==="math")),gen:shuffle(picked.filter(q=>q.cat==="gen")),ava:shuffle(picked.filter(q=>q.cat==="ava"))};
+  const pattern=["math","gen","math","ava","gen","math","gen","ava","math","gen","math","ava","gen","math","gen","ava","math","gen","math","gen","ava","math","gen","math","ava","gen","math","gen","math","ava"];
+  return pattern.map(cat=>queues[cat].shift()).filter(Boolean);
+}
+
+function buildPuzzle(src){
+  const g=document.getElementById("puzGrid");g.style.backgroundImage=`url("${src}")`;
+  const w=document.getElementById("covWrap");w.innerHTML="";
+  for(let i=0;i<TILES;i++){
+    const c=i%COLS,r=Math.floor(i/COLS),d=document.createElement("div");
+    d.className="cov";d.style.cssText=`width:${100/COLS}%;height:${100/ROWS}%;left:${c/COLS*100}%;top:${r/ROWS*100}%`;
+    const n=document.createElement("span");n.className="cov-n";n.textContent=i+1;d.appendChild(n);w.appendChild(d);
+  }
+}
+function revealTile(){const c=document.querySelector(".cov:not(.gone)");if(c){c.classList.add("gone");revd++;updBar();}}
+function updBar(){document.getElementById("revInfo").textContent=`${revd}/${TILES}`;document.getElementById("puzFill").style.width=(revd/TILES*100)+"%";}
+function updStats(){
+  document.getElementById("score").textContent=score;
+  document.getElementById("streakInfo").textContent=streak;
+  document.getElementById("bestInfo").textContent=Math.max(bestScore,score);
+}
+
+function bestVoice(){
+  const voices=speechSynthesis.getVoices();
+  if(!voices.length)return null;
+  const scoreVoice=v=>{
+    const name=v.name.toLowerCase(), lang=v.lang.toLowerCase();
+    let score=0;
+    if(lang.startsWith("sk"))score+=100;
+    if(lang.startsWith("cs"))score+=82;
+    if(lang.startsWith("en"))score+=20;
+    if(/natural|neural|online|premium|enhanced|google|microsoft/.test(name))score+=18;
+    if(/female|woman|žena|zira|hazel|moira|victoria|fiona|karen|samantha|tessa|helena/.test(name))score+=10;
+    if(/compact|basic/.test(name))score-=8;
+    return score;
+  };
+  return [...voices].sort((a,b)=>scoreVoice(b)-scoreVoice(a))[0];
+}
+function voiceConfig(){
+  if(voiceMode==="story")return {pitch:1.08,rate:Math.max(.72,spd*.9),pause:760,optionPause:520};
+  if(voiceMode==="focus")return {pitch:1.0,rate:Math.min(1.25,spd*1.08),pause:360,optionPause:240};
+  return {pitch:1.16,rate:Math.max(.72,spd*.94),pause:620,optionPause:420};
+}
+function cleanSpeechText(txt){
+  return String(txt)
+    .replace(/[🌿🌌🔥⭐❓🖼️🔊🎤🔁🔄⏹🎨✨🌱💙🏹🌳🏆🥈🎉💪📊🎯👨‍👩‍👧🏅🔢🌍🟢🔴🟡⚫⚪⬜🔺▭⬣🍎]/g,"")
+    .replace(/Na'vi/g,"Návi")
+    .replace(/Jake Sully/g,"Džejk Sali")
+    .replace(/Eywa/g,"Ejva")
+    .replace(/Ikran/g,"Ikran")
+    .replace(/Metkayina/g,"Metkajina")
+    .replace(/Tulkun/g,"Tulkun")
+    .replace(/Pandora/g,"Pandora")
+    .replace(/\+/g," plus ")
+    .replace(/−|-/g," mínus ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+function spk(txt,cb){
+  if(!audioOn){if(cb)cb();return;}
+  speechSynthesis.cancel();const cfg=voiceConfig();const u=new SpeechSynthesisUtterance(cleanSpeechText(txt));u.rate=cfg.rate;u.pitch=cfg.pitch;u.volume=1;
+  const v=bestVoice();if(v){u.voice=v;u.lang=v.lang;}else u.lang="sk-SK";
+  u.onend=()=>cb&&cb();u.onerror=()=>cb&&cb();speechSynthesis.speak(u);
+}
+function ms(n){return new Promise(r=>setTimeout(r,n));}
+function setNR(t){document.getElementById("nowRdg").textContent=t;}
+function setVoiceReady(ready,msg){
+  voiceReady=ready;
+  const b=document.getElementById("voiceBtn");
+  if(!b)return;
+  b.disabled=!ready;
+  b.classList.toggle("off",!ready);
+  if(!recogOn)b.textContent=ready?"🎤 Odpovedz":"🎤 Počkaj…";
+  if(msg)document.getElementById("voiceStat").textContent=msg;
+}
+async function readFull(q,opts){
+  currentVoiceOptions=opts;
+  if(!audioOn){setVoiceReady(true,"🎤 Stlač Odpovedz a povedz odpoveď alebo číslo možnosti.");return;}
+  setVoiceReady(false,"🎧 Najprv si vypočuj otázku a odpovede.");
+  speaking=true;const cfg=voiceConfig();setNR("🎙️ Čítam otázku…");
+  const intro=voiceMode==="story" ? "Poďme do Pandory. " : "";
+  await new Promise(r=>spk(intro+q.q,r));await ms(cfg.pause);
+  for(let i=0;i<opts.length;i++){
+    if(!audioOn||!speaking)break;
+    const label=voiceMode==="focus" ? `${i+1}. ${opts[i].txt}` : `Možnosť ${i+1}: ${opts[i].txt}`;
+    setNR(`🎙️ ${label}`);await new Promise(r=>spk(label,r));await ms(cfg.optionPause);
+  }
+  setNR("");speaking=false;
+  if(!answered)setVoiceReady(true,"🎤 Teraz stlač Odpovedz a povedz napríklad „možnosť jedna“.");
+}
+function toggleAudio(){
+  audioOn=!audioOn;const b=document.getElementById("audioBtn");
+  if(audioOn){b.textContent="🔊 Hlas: ZAP";b.classList.remove("off");}
+  else{b.textContent="🔇 Hlas: VYP";b.classList.add("off");speechSynthesis.cancel();setNR("");speaking=false;if(!answered)setVoiceReady(true,"🎤 Hlas čítania je vypnutý. Môžeš odpovedať hlasom.");}
+}
+function doRepeat(){
+  if(answered)return;speechSynthesis.cancel();speaking=false;
+  const q=questions[cur];const opts=[...document.querySelectorAll(".ans-btn")].map(b=>({txt:b.querySelector(".a-txt").textContent}));readFull(q,opts);
+}
+function setSpd(r,el){spd=r;document.querySelectorAll(".speed-row .sp-btn").forEach(b=>b.classList.remove("active"));el.classList.add("active");}
+function setVoiceMode(mode,el){
+  voiceMode=mode;
+  document.querySelectorAll(".voice-mode-row .sp-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  if(!answered){
+    speechSynthesis.cancel();speaking=false;setNR("");
+    const q=questions[cur];
+    if(q){
+      const opts=[...document.querySelectorAll(".ans-btn")].map(b=>({txt:b.querySelector(".a-txt").textContent}));
+      readFull(q,opts);
+    }
+  }
+}
+
+function setupRecog(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;
+  const r=new SR();r.lang="sk-SK";r.continuous=false;r.interimResults=false;
+  r.onresult=e=>{const txt=e.results[0][0].transcript.toLowerCase().trim();document.getElementById("voiceStat").textContent=`🎤 Počul som: „${txt}"`;matchVoiceAnswer(txt);stopRecog();};
+  r.onerror=()=>{document.getElementById("voiceStat").textContent="😕 Nerozumela som, skús znova.";stopRecog();if(!answered)setVoiceReady(true);};
+  r.onend=()=>{stopRecog();if(!answered)setVoiceReady(true);};
+  return r;
+}
+function toggleVoiceInput(){
+  if(answered)return;
+  if(speaking||!voiceReady){document.getElementById("voiceStat").textContent="🎧 Počkaj, kým dočítam otázku a odpovede.";return;}
+  if(!recog)recog=setupRecog();
+  if(!recog){document.getElementById("voiceStat").textContent="😕 Hlasové zadávanie nie je dostupné v tomto prehliadači.";return;}
+  if(recogOn){stopRecog();return;}recogOn=true;const b=document.getElementById("voiceBtn");b.classList.add("listening");b.textContent="🔴 Počúvam…";document.getElementById("voiceStat").textContent="🎤 Hovor odpoveď…";try{recog.start();}catch(e){stopRecog();}
+}
+function stopRecog(){recogOn=false;const b=document.getElementById("voiceBtn");if(b){b.classList.remove("listening");if(!answered)b.textContent=voiceReady?"🎤 Odpovedz":"🎤 Počkaj…";}try{recog&&recog.stop();}catch(e){}}
+function normSpeech(s){
+  return cleanSpeechText(s).toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9\s]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+function spokenOptionIndex(spoken){
+  const s=normSpeech(spoken);
+  const numbers=[
+    ["1","jedna","prva","prvu","prve","moznost jedna","moznost prva"],
+    ["2","dva","druha","druhu","druhe","moznost dva","moznost druha"],
+    ["3","tri","tretia","tretiu","tretie","moznost tri","moznost tretia"],
+    ["4","styri","stvrta","stvrte","moznost styri","moznost stvrta"]
+  ];
+  for(let i=0;i<numbers.length;i++)if(numbers[i].some(w=>s===w||s.includes(w)))return i;
+  return -1;
+}
+// Slovenské slovné číslovky 0-20 → číslo. Používa sa na priame rozpoznanie
+// vysloveného počtu (napr. "štyri") pri matematických otázkach, kde by
+// porovnávanie slov v texte zlyhávalo (všetky možnosti obsahujú "jabĺčka").
+const SLOVAK_NUMBER_WORDS={
+  "nula":0,"jeden":1,"jedna":1,"jedno":1,"dva":2,"dve":2,"tri":3,"styri":4,
+  "pat":5,"sest":6,"sedem":7,"osem":8,"devat":9,"desat":10,
+  "jedenast":11,"dvanast":12,"trinast":13,"strnast":14,"pytnast":15,"pytnast":15,
+  "patnast":15,"sestnast":16,"sedemnast":17,"osemnast":18,"devatnast":19,"dvadsat":20
+};
+function parseSpokenNumber(spoken){
+  const s=normSpeech(spoken);
+  // priama číslica v reči (napr. rozpoznávač niekedy vráti "4" namiesto "štyri")
+  const digitMatch=s.match(/\b([0-9]|1[0-9]|20)\b/);
+  if(digitMatch)return parseInt(digitMatch[1],10);
+  const words=s.split(/\s+/);
+  for(const w of words){if(SLOVAK_NUMBER_WORDS[w]!==undefined)return SLOVAK_NUMBER_WORDS[w];}
+  return null;
+}
+function matchVoiceAnswer(spoken){
+  const q=questions[cur];
+  const btns=[...document.querySelectorAll(".ans-btn")];
+  const idx=spokenOptionIndex(spoken);
+  if(idx>=0&&btns[idx]){
+    const txt=btns[idx].querySelector(".a-txt").textContent;
+    const opt=currentVoiceOptions.find(o=>o.txt===txt)||[{...q.a,correct:true},...q.w.map(x=>({...x,correct:false}))].find(o=>o.txt===txt);
+    if(opt){pickAnswer(btns[idx],opt,opt.correct,q);return;}
+  }
+  const opts=currentVoiceOptions.length?currentVoiceOptions:[{...q.a,correct:true},...q.w.map(o=>({...o,correct:false}))];
+  // Pri matematických otázkach skús najprv priame rozpoznanie vysloveného čísla —
+  // spoľahlivejšie ako porovnávanie slov, keďže všetky možnosti obsahujú "jabĺčka".
+  if(q.type==="math"){
+    const n=parseSpokenNumber(spoken);
+    if(n!==null){
+      const matchOpt=opts.find(o=>o.apples===n);
+      if(matchOpt){const matched=btns.find(b=>b.querySelector(".a-txt").textContent===matchOpt.txt);if(matched){pickAnswer(matched,matchOpt,matchOpt.correct,q);return;}}
+    }
+  }
+  const spokenNorm=normSpeech(spoken);let best=null,bestScore=0;
+  opts.forEach(o=>{
+    const words=normSpeech(o.txt).split(/\s+/).filter(w=>w.length>1);
+    const s=words.filter(w=>spokenNorm.includes(w)||w.includes(spokenNorm)).length;
+    if(s>bestScore){bestScore=s;best=o;}
+  });
+  if(best&&bestScore>0){const matched=btns.find(b=>b.querySelector(".a-txt").textContent===best.txt);if(matched)pickAnswer(matched,best,best.correct,q);}
+  else document.getElementById("voiceStat").textContent="😕 Nerozumela som, klikni na odpoveď.";
+}
+
+function makeBtn(opt,isMath){
+  const b=document.createElement("button");b.className="ans-btn";
+  if(isMath){const n=opt.apples||0;const appleStr=n?"🍎".repeat(Math.min(n,10)):"";b.innerHTML=`<span class="a-num">${n}</span><span class="a-apples">${appleStr}</span><span class="a-txt">${opt.txt}</span>`;}
+  else b.innerHTML=`<span class="a-ico">${opt.img||"❓"}</span><span class="a-txt">${opt.txt}</span>`;
+  return b;
+}
+function showMath(m){
+  const box=document.getElementById("mathBox");box.style.display="block";const apStr=n=>"🍎".repeat(Math.min(n,10));
+  document.getElementById("mathRow").innerHTML=`<div class="m-group"><span class="m-num">${m.g1}</span><span class="m-apples">${apStr(m.g1)}</span></div><span class="m-sign">${m.sign}</span><div class="m-group"><span class="m-num">${m.g2}</span><span class="m-apples">${apStr(m.g2)}</span></div><span class="m-eq">= ?</span>`;
+}
+function hideMath(){document.getElementById("mathBox").style.display="none";}
+function getStage(n){let s=STAGES[0];for(const st of STAGES)if(n>=st.n)s=st;return s;}
+function showLearning(text){const box=document.getElementById("learnBox");box.innerHTML=`💡 ${text}`;box.classList.add("show");}
+function clearLearning(){const box=document.getElementById("learnBox");box.textContent="";box.classList.remove("show");document.getElementById("badgeRow").innerHTML="";}
+function addBadge(label){
+  if(earnedBadges.has(label))return;earnedBadges.add(label);
+  const row=document.getElementById("badgeRow");const b=document.createElement("span");b.className="mini-badge";b.textContent=label;row.appendChild(b);
+}
+function maybeBadges(q,isCorrect){
+  if(!isCorrect)return;
+  if(streak===3)addBadge("🔥 3 za sebou");
+  if(streak===5)addBadge("🏅 5 za sebou");
+  const catCorrect=answeredLog.filter(x=>x.cat===q.cat&&x.ok).length;
+  if(catCorrect===3&&q.cat==="math")addBadge("🔢 Počtárka");
+  if(catCorrect===3&&q.cat==="gen")addBadge("🌍 Znalkyňa sveta");
+  if(catCorrect===3&&q.cat==="ava")addBadge("💙 Fanúšička Pandory");
+}
+
+function renderQ(){
+  answered=false;speaking=false;voiceReady=false;currentVoiceOptions=[];stopRecog();clearLearning();setVoiceReady(false,"");const q=questions[cur];
+  document.getElementById("stageTxt").textContent=getStage(cur+1).lbl;
+  document.getElementById("catTxt").innerHTML=CAT_LABELS[q.cat]||"";
+  document.getElementById("stepTxt").textContent=`${cur+1} / ${questions.length}`;
+  document.getElementById("qText").textContent=q.q;
+  document.getElementById("feedback").textContent="";document.getElementById("feedback").className="feedback";
+  document.getElementById("nextBtn").className="next-btn";document.getElementById("voiceStat").textContent="";setNR("");
+  document.getElementById("qNum").textContent=cur+1;document.getElementById("qTot").textContent=questions.length;updStats();
+  const isMath=q.type==="math";if(isMath)showMath(q.mathQ);else hideMath();
+  const opts=shuffle([{...q.a,correct:true},...q.w.map(x=>({...x,correct:false}))]);
+  const grid=document.getElementById("ansGrid");grid.innerHTML="";grid.className="ans-grid"+(opts.length>3?" two-col":"");
+  opts.forEach(opt=>{const b=makeBtn(opt,isMath);b.addEventListener("click",()=>pickAnswer(b,opt,opt.correct,q));grid.appendChild(b);});
+  readFull(q,opts);
+}
+// ===== STRIEDAJÚCE SA POCHVALY A POVZBUDENIA (ženský rod) =====
+const PRAISE=[
+  "Správne! Si šikovná!",
+  "Gratulujem, to bolo správne!",
+  "Paráda! Len tak ďalej!",
+  "Super, odpovedala si správne!",
+  "Výborne! Ide ti to!",
+  "Bravo! Presne tak!",
+  "Skvelá práca!",
+  "Máš to! Si múdra!",
+  "Perfektne! Pokračuj takto!",
+  "Áno! Trafila si to!",
+  "Šikovné dievča! Správne!",
+  "To je ono! Výborne!"
+];
+const PRAISE_STREAK=[
+  "Fantastické! Už niekoľko správnych za sebou!",
+  "Wow! Ide ti to jedna radosť!",
+  "Úžasná séria! Si veľká šikovníčka!",
+  "Neuveriteľné! Jedna správna za druhou!"
+];
+const ENCOURAGE=[
+  "Nevadí, nič sa nestalo.",
+  "To nič, ideme ďalej!",
+  "Hlavu hore, nabudúce to vyjde!",
+  "Nevadí, na budúce to zodpovieš už správne.",
+  "To sa stáva, skúsime ďalšiu!",
+  "Nič si z toho nerob, poďme ďalej!",
+  "Neboj sa, učíme sa aj z chýb.",
+  "Hlavu hore! Ďalšia otázka čaká.",
+  "To nevadí, dôležité je skúšať ďalej.",
+  "Nesmúť, každý sa občas pomýli."
+];
+let lastPraise=-1, lastEncourage=-1, lastStreakPraise=-1;
+function pickMsg(pool,lastRef){
+  if(pool.length<2) return {txt:pool[0],idx:0};
+  let i;
+  do { i=Math.floor(Math.random()*pool.length); } while(i===lastRef);
+  return {txt:pool[i],idx:i};
+}
+
+function pickAnswer(btn,opt,isCorrect,q){
+  if(answered)return;answered=true;speaking=false;voiceReady=false;speechSynthesis.cancel();stopRecog();setVoiceReady(false,"");setNR("");
+  document.querySelectorAll(".ans-btn").forEach(b=>{b.disabled=true;if(b.querySelector(".a-txt").textContent===q.a.txt)b.classList.add("correct");});
+  const fb=document.getElementById("feedback");
+  answeredLog.push({cat:q.cat,skill:q.skill,ok:isCorrect,q:q.q});
+  if(isCorrect){
+    btn.classList.add("correct");score+=10;corr++;streak++;bestStreak=Math.max(bestStreak,streak);
+    // pri sérii 3+ správnych použi silnejšiu pochvalu
+    const useStreak = streak>=3;
+    const m=pickMsg(useStreak?PRAISE_STREAK:PRAISE, useStreak?lastStreakPraise:lastPraise);
+    if(useStreak) lastStreakPraise=m.idx; else lastPraise=m.idx;
+    fb.innerHTML=`⭐ ${m.txt} ⭐`;fb.className="feedback fb-ok";
+    revealTile();showLearning(q.explain);maybeBadges(q,true);
+    if(audioOn)spk(`${m.txt} ${q.explain}`);
+  }else{
+    btn.classList.add("wrong");wrong++;streak=0;wrongByQ.push({q:q.q,cat:q.cat,skill:q.skill,yourAns:opt.txt,correct:q.a.txt,explain:q.explain});
+    const m=pickMsg(ENCOURAGE,lastEncourage);lastEncourage=m.idx;
+    fb.innerHTML=`💛 ${m.txt}<br><small>Správne je: ${q.a.txt}</small>`;fb.className="feedback fb-bad";
+    showLearning(q.explain);
+    if(audioOn)spk(`${m.txt} Správna odpoveď je ${q.a.txt}. ${q.explain}`);
+  }
+  updStats();document.getElementById("nextBtn").className="next-btn show";
+}
+function nextQ(){cur++;if(cur>=questions.length){showEnd();return;}renderQ();}
+
+function pct(n,d){return d?Math.round(n/d*100):0;}
+function showEnd(){
+  speechSynthesis.cancel();speaking=false;stopRecog();document.getElementById("quizMain").style.display="none";document.getElementById("endWrap").classList.add("show");
+  const total=questions.length,p=pct(corr,total);bestScore=Math.max(bestScore,score);localStorage.setItem("avatarQuizBestScore",String(bestScore));updStats();
+  let stars="⭐",trophy="🌟",title="Dobrý tréning";
+  if(p>=90){stars="⭐⭐⭐";trophy="🏆";title="Fantastické!";}else if(p>=75){stars="⭐⭐";trophy="🥈";title="Veľmi dobrá práca";}else if(p>=55){stars="⭐";trophy="🎉";title="Pekný pokus";}else{trophy="💪";title="Ešte potrénujeme";}
+  document.getElementById("endTrophy").textContent=trophy;document.getElementById("endTitle").textContent=title;document.getElementById("endStars").textContent=stars;
+  document.getElementById("endScore").textContent=`${score} bodov · ${corr}/${total} správnych (${p}%) · najdlhšia séria ${bestStreak}`;
+  const catTot={math:0,gen:0,ava:0},catOk={math:0,gen:0,ava:0},skills={};
+  answeredLog.forEach(x=>{catTot[x.cat]++;if(x.ok)catOk[x.cat]++;const key=x.skill||CAT_NAMES[x.cat];skills[key]=skills[key]||{ok:0,total:0};skills[key].total++;if(x.ok)skills[key].ok++;});
+  const catHtml=["math","gen","ava"].map(c=>{const v=pct(catOk[c],catTot[c]);return `<div class="stat-line"><span>${CAT_NAMES[c]}</span><strong>${catOk[c]}/${catTot[c]} (${v}%)</strong></div><div class="progress-mini"><span style="width:${v}%"></span></div>`;}).join("");
+  document.getElementById("endStrong").innerHTML=`<h3>📊 Výsledok podľa oblastí</h3>${catHtml}`;
+  const skillRows=Object.entries(skills).filter(([,s])=>s.ok<s.total).sort((a,b)=>pct(a[1].ok,a[1].total)-pct(b[1].ok,b[1].total)).slice(0,5).map(([name,s])=>`<div class="stat-line"><span>${name}</span><strong>${s.ok}/${s.total}</strong></div>`).join("");
+  document.getElementById("endWeak").innerHTML=`<h3>🎯 Čo trénovať najbližšie</h3>${skillRows||"<p>Všetko vyšlo výborne.</p>"}`;
+  const wrongList=wrongByQ.slice(0,4).map(w=>`• ${w.q}<br><strong>Správne:</strong> ${w.correct}. ${w.explain}`).join("<br><br>");
+  document.getElementById("endAdvice").innerHTML=`<h3>👨‍👩‍👧 Rady pre rodiča</h3><p>${wrongList||"Bez chýb. Nabudúce skúste rýchlejší hlas alebo nech dieťa odpovedá nahlas."}</p>`;
+  const badgeText=earnedBadges.size?[...earnedBadges].join(" · "):"Dnes bez odznaku, ale tréning sa počíta.";
+  document.getElementById("endCheer").innerHTML=`<h3>🏅 Odznaky</h3><p style="font-size:1rem;font-weight:900;color:#fbbf24">${badgeText}</p>`;
+  if(audioOn)setTimeout(()=>spk(`Hotovo. ${title}. Máš ${corr} správnych odpovedí z ${total}.`),500);
+}
+function nextImageIndex(){
+  // nikdy nedaj dvakrát po sebe ten istý obrázok
+  if(AVATAR_IMAGES.length<2)return 0;
+  let i;do{i=Math.floor(Math.random()*AVATAR_IMAGES.length);}while(i===imgIdx);return i;
+}
+function resetGame(){
+  speechSynthesis.cancel();speaking=false;stopRecog();imgIdx=nextImageIndex();questions=composeQuiz();
+  cur=0;score=0;corr=0;wrong=0;streak=0;bestStreak=0;revd=0;wrongByQ=[];answeredLog=[];earnedBadges=new Set();lastPraise=-1;lastEncourage=-1;lastStreakPraise=-1;
+  document.getElementById("qNum").textContent=1;document.getElementById("qTot").textContent=questions.length;document.getElementById("endWrap").classList.remove("show");document.getElementById("quizMain").style.display="block";
+  buildPuzzle(AVATAR_IMAGES[imgIdx]);updBar();updStats();renderQ();
+}
+function endGame(){speechSynthesis.cancel();speaking=false;stopRecog();showEnd();}
+
+if(speechSynthesis.onvoiceschanged!==undefined)speechSynthesis.onvoiceschanged=()=>{};
+window.addEventListener("load",()=>{
+  if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+    navigator.serviceWorker.register("service-worker.js").then(reg=>{
+      // po nahratí novej verzie na GitHub sa appka sama obnoví
+      reg.update().catch(()=>{});
+      reg.addEventListener("updatefound",()=>{
+        const nw=reg.installing;
+        if(!nw)return;
+        nw.addEventListener("statechange",()=>{
+          if(nw.state==="activated"&&navigator.serviceWorker.controller)location.reload();
+        });
+      });
+    }).catch(()=>{});
+  }
+  setTimeout(()=>{imgIdx=Math.floor(Math.random()*AVATAR_IMAGES.length);buildPuzzle(AVATAR_IMAGES[imgIdx]);questions=composeQuiz();document.getElementById("qTot").textContent=questions.length;updBar();updStats();renderQ();},300);
+});
+</script>
+</body>
+</html>
