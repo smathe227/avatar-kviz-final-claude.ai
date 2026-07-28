@@ -100,6 +100,9 @@ body::after{
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
 
 /* ── SPEED ROW ── */
+.btn-cfg{background:linear-gradient(135deg,#334155,#1e293b);margin:0 auto 6px;display:block}
+.cfg-wrap{max-height:0;overflow:hidden;opacity:0;transition:max-height .28s ease,opacity .22s ease}
+.cfg-wrap.open{max-height:260px;opacity:1}
 .speed-row{display:flex;align-items:center;gap:6px;justify-content:center;
   margin-bottom:8px;flex-wrap:wrap}
 .speed-lbl{font-family:'Nunito',sans-serif;font-size:.82rem;color:#94a3b8}
@@ -114,7 +117,14 @@ body::after{
 /* ── LAYOUT: left + right ── */
 .shell{max-width:980px;margin:0 auto;display:grid;
   grid-template-columns:1.05fr .95fr;gap:12px}
-@media(max-width:760px){.shell{grid-template-columns:1fr}}
+
+@media(max-width:760px){
+  .shell{grid-template-columns:1fr}
+  /* Na telefóne musí byť otázka a odpovede hneď na očiach.
+     Puzzle (odmena) sa presúva pod kvíz, aby sa nemuselo skrolovať. */
+  .pright{order:1}
+  .pleft{order:2}
+}
 
 .panel{background:linear-gradient(180deg,rgba(8,47,73,.82),rgba(15,23,42,.92) 52%,rgba(2,6,23,.94));
   border:1.5px solid rgba(125,211,252,.28);
@@ -274,6 +284,7 @@ body::after{
 .mini-badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:4px 9px;background:rgba(251,191,36,.16);border:1px solid rgba(251,191,36,.45);color:#fde68a;font-family:'Nunito',sans-serif;font-size:.72rem}
 .end-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 @media(max-width:520px){.end-grid{grid-template-columns:1fr}}
+.hint-small{font-size:.78rem;opacity:.65;margin-top:6px;font-style:italic}
 .stat-line{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid rgba(148,163,184,.2);padding:5px 0;color:#dbeafe;font-size:.85rem}
 .stat-line:last-child{border-bottom:none}
 .progress-mini{height:8px;border-radius:999px;background:rgba(15,23,42,.9);overflow:hidden;margin-top:5px}
@@ -281,6 +292,29 @@ body::after{
 
 /* star row */
 .stars{font-size:2rem;text-align:center;margin:6px 0}
+
+/* ── MALÉ TELEFÓNY — musí byť na konci, aby prebilo základné pravidlá ── */
+@media(max-width:420px){
+  /* Na malých telefónoch šetríme každý pixel, aby odpovede zostali na obrazovke */
+  #mathBox{padding:5px 8px}
+  #mathBox .m-apple{font-size:.85rem}
+  /* Nápoveda ZOSTÁVA viditeľná — je pod odpoveďami, takže ich nevytláča,
+     a práve v nej sa dieťa dozvie o hlasovom príkaze „ďalej“. */
+  .info-box{padding:9px 11px;font-size:.8rem}
+  /* Nižšie tlačidlá odpovedí — inak sa pri matematike nezmestia na obrazovku */
+  .ans-btn{min-height:70px;padding:7px 6px;gap:3px;border-radius:14px}
+  /* Namiesto pevných dvoch stĺpcov nech sa zmestí toľko, koľko sa reálne dá —
+     tri odpovede tak zostanú v jednom riadku a nepretečú pod okraj. */
+  .ans-grid{grid-template-columns:repeat(auto-fit,minmax(92px,1fr))!important;gap:7px}
+  .a-ico{font-size:1.5rem}
+  .a-txt{font-size:.86rem}
+  .q-head{margin-bottom:4px}
+  .hdr h1{font-size:1.25rem}
+  .hdr .sub{font-size:.72rem}
+  .btn{padding:8px 12px;font-size:.8rem}
+  .pill{padding:4px 9px;font-size:.72rem}
+  .puz-title{font-size:.85rem}
+}
 </style>
 </head>
 <body>
@@ -309,11 +343,11 @@ body::after{
   <button class="btn btn-voice" id="voiceBtn" onclick="toggleVoiceInput()">🎤 Hovor!</button>
   <button class="btn btn-repeat" onclick="doRepeat()">🔁 Znova</button>
   <button class="btn btn-skip" id="skipBtn" onclick="confirmClick('skipBtn',skipQuestion)">⏭️ Preskočiť (5)</button>
-  <button class="btn btn-reset" id="resetBtn" onclick="confirmClick('resetBtn',resetGame)">🔄 Reset</button>
-  <button class="btn btn-end" id="endBtn" onclick="confirmClick('endBtn',endGame)">⏹ Koniec</button>
 </div>
 
 <!-- SPEED -->
+<button class="btn btn-cfg" id="cfgBtn" onclick="toggleCfg()">⚙️ Nastavenia</button>
+<div id="cfgWrap" class="cfg-wrap">
 <div class="speed-row">
   <span class="speed-lbl">🎤 Tempo:</span>
   <button class="sp-btn" onclick="setSpd(0.82,this)">Pomaly</button>
@@ -326,6 +360,11 @@ body::after{
   <button class="sp-btn" onclick="setVoiceMode('story',this)">Rozprávač</button>
   <button class="sp-btn" onclick="setVoiceMode('focus',this)">Krátky</button>
 </div>
+<div class="ctrl-row" style="margin-top:6px">
+  <button class="btn btn-reset" id="resetBtn" onclick="confirmClick('resetBtn',resetGame)">🔄 Reset</button>
+  <button class="btn btn-end" id="endBtn" onclick="confirmClick('endBtn',endGame)">⏹ Koniec</button>
+</div>
+</div><!-- /cfgWrap -->
 
 <!-- SHELL -->
 <div class="shell">
@@ -382,7 +421,7 @@ body::after{
           <div class="info-ico">🔥</div>
           <div class="info-txt">Avatar Puzzle Dobrodružstvo</div>
         </div>
-        <div class="info-body">Klikni na odpoveď, alebo stlač 🎤 a povedz ju nahlas. Po každej odpovedi dostaneš krátke vysvetlenie a na konci presný tréningový prehľad.</div>
+        <div class="info-body">Klikni na odpoveď, alebo stlač 🎤 a povedz ju nahlas. Po vysvetlení stačí povedať <strong>„ďalej“</strong> a pokračuje ďalšia otázka — klikať netreba. Na konci dostaneš presný tréningový prehľad.</div>
       </div>
     </div>
 
@@ -632,32 +671,44 @@ function buildMathQuestions(){
 function buildGeneralQuestions(){
   const list=[];
   const opposites=[
-    ["mäkký","tvrdý","🪨",[["☁️","mäkký"],["🧸","plyšový"]]],
-    ["tichý","hlasný","📣",[["🤫","tichý"],["🌙","nočný"]]],
-    ["suchý","mokrý","💧",[["🏜️","suchý"],["☀️","slnečný"]]],
-    ["prázdny","plný","🧺",[["🕳️","prázdny"],["🪶","ľahký"]]],
-    ["úzky","široký","🛣️",[["🪡","úzky"],["📏","rovný"]]],
-    ["krátky","dlhý","🐍",[["✂️","krátky"],["🔴","červený"]]],
-    ["nízky","vysoký","🏢",[["🧱","nízky"],["⬜","hranatý"]]],
-    ["ďaleko","blízko","🏠",[["🌄","ďaleko"],["🧭","sever"]]],
-    ["zatvorený","otvorený","📖",[["🚪","zatvorený"],["🔒","zamknutý"]]],
-    ["veselý","smutný","😢",[["😄","veselý"],["😮","prekvapený"]]],
-    ["ľahký","ťažký","🏋️",[["🎈","ľahký"],["🟡","žltý"]]],
-    ["špinavý","čistý","✨",[["🧹","špinavý"],["🟤","hnedý"]]],
-    ["kyslý","sladký","🍯",[["🍋","kyslý"],["🥒","zelený"]]],
-    ["rýchly","pomalý","🐢",[["🏎️","rýchly"],["🦘","skákavý"]]],
-    ["teplý","studený","🧊",[["☀️","teplý"],["🔥","horúci"]]],
-    ["tmavý","svetlý","💡",[["🌑","tmavý"],["🌫️","hmlistý"]]],
-    ["hore","dole","⬇️",[["⬆️","hore"],["➡️","vpravo"]]],
-    ["pred","za","↩️",[["➡️","pred"],["⬆️","hore"]]],
-    ["začiatok","koniec","🏁",[["▶️","začiatok"],["⏸️","pauza"]]],
-    ["ráno","večer","🌆",[["🌅","ráno"],["☀️","obed"]]],
+    // [slovo, opak, ikona, dve NESPRÁVNE možnosti]
+    // Nesprávne možnosti zámerne NEOBSAHUJÚ pôvodné slovo — inak by ho dieťa
+    // hneď vylúčilo a z troch možností by zostali reálne dve.
+    ["mäkký","tvrdý","🪨",[["🧸","plyšový"],["🔵","guľatý"]]],
+    ["tichý","hlasný","📣",[["🌙","nočný"],["🐌","pomalý"]]],
+    ["suchý","mokrý","💧",[["☀️","slnečný"],["🌾","zlatý"]]],
+    ["prázdny","plný","🧺",[["🪶","ľahký"],["🟢","zelený"]]],
+    ["úzky","široký","🛣️",[["📏","rovný"],["🔺","špicatý"]]],
+    ["krátky","dlhý","🐍",[["🔴","červený"],["🌀","krivý"]]],
+    ["nízky","vysoký","🏢",[["⬜","hranatý"],["🟡","žltý"]]],
+    ["ďaleko","blízko","🏠",[["🧭","na sever"],["⬆️","hore"]]],
+    ["zatvorený","otvorený","📖",[["🔒","zamknutý"],["🆕","nový"]]],
+    ["veselý","smutný","😢",[["😮","prekvapený"],["😴","ospalý"]]],
+    ["ľahký","ťažký","🏋️",[["🟡","žltý"],["🟣","fialový"]]],
+    ["špinavý","čistý","✨",[["🟤","hnedý"],["🧊","studený"]]],
+    ["kyslý","sladký","🍯",[["🥒","zelený"],["🌶️","štipľavý"]]],
+    ["rýchly","pomalý","🐢",[["🦘","skákavý"],["🔊","hlasný"]]],
+    ["teplý","studený","🧊",[["🔥","horúci"],["💨","veterný"]]],
+    ["tmavý","svetlý","💡",[["🌫️","hmlistý"],["⭐","hviezdny"]]],
+    ["hore","dole","⬇️",[["➡️","vpravo"],["⬅️","vľavo"]]],
+    ["pred","za","↩️",[["⬆️","hore"],["🔽","dole"]]],
+    ["začiatok","koniec","🏁",[["⏸️","pauza"],["🔁","opakovanie"]]],
+    ["ráno","večer","🌆",[["☀️","obed"],["🌃","polnoc"]]],
+    // ── nové dvojice namiesto zdvojovania tých istých ──
+    ["starý","mladý","🧒",[["👴","dedko"],["📗","zelený"]]],
+    ["veľký","malý","🐜",[["🐘","obrovský"],["🟠","oranžový"]]],
+    ["silný","slabý","🪶",[["💪","svalnatý"],["🔵","modrý"]]],
+    ["blízky","vzdialený","🔭",[["🏃","rýchly"],["🟥","červený"]]],
+    ["prvý","posledný","🏁",[["🥇","víťazný"],["🔟","desiaty"]]],
+    ["hlboký","plytký","🏖️",[["🌊","vlnitý"],["🐟","rybí"]]],
+    ["ostrý","tupý","🥄",[["🔪","kuchynský"],["⚫","čierny"]]],
+    ["hladný","sýty","🍽️",[["🥕","mrkvový"],["😀","usmiaty"]]],
+    ["hore nohami","správne otočený","🙃",[["🔄","točiaci sa"],["📐","šikmý"]]],
+    ["nový","starý","📻",[["🆕","čerstvý"],["🟩","zelený"]]],
   ];
-  const stems=["Vyber opačné slovo k slovu","Ktoré slovo je protiklad k slovu"];
-  for(const stem of stems){
-    for(const [word,ans,img,w] of opposites){
-      addPic(list,"gen",`${stem} ${word.toUpperCase()}?`,img,ans,w,"protiklady","stredná",`Opak slova ${word} je ${ans}.`);
-    }
+  // Jedna formulácia — bez zdvojovania. Príkaz končí bodkou, nie otáznikom.
+  for(const [word,ans,img,w] of opposites){
+    addPic(list,"gen",`Čo je opak slova ${word.toUpperCase()}?`,img,ans,w,"protiklady","stredná",`Opak slova ${word} je ${ans}.`);
   }
   const safety=[
     ["Keď sa stratíš vonku, koho je najlepšie poprosiť o pomoc?","👩‍👧‍👦","Mamku s deťmi alebo policajta",[["🚗","Človeka, ktorý zastaví autom"],["🐈","Mačku"],["🚶","Nikoho, budem hľadať sama"]],"Keď sa stratíš, hľadaj bezpečného dospelého — rodiča s deťmi, policajta alebo pracovníka v obchode."],
@@ -909,7 +960,7 @@ function buildPuzzle(src){
   const g=document.getElementById("puzGrid");
   g.style.backgroundImage=`url("${src}")`;
   g.style.backgroundPosition="center";
-  g.style.backgroundSize="cover";
+  g.style.backgroundSize="contain";g.style.backgroundPosition="center";
   // Mriežka sa prispôsobí pomeru strán obrázka, takže sa vyplní presne —
   // obrázok sa neoreže a zároveň nezostanú prázdne miesta, kde by dielik
   // odkryl len tmavé pozadie.
@@ -1037,25 +1088,81 @@ function setVoiceMode(mode,el){
 function setupRecog(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;
   const r=new SR();r.lang="sk-SK";r.continuous=false;r.interimResults=false;
-  r.onresult=e=>{const txt=e.results[0][0].transcript.toLowerCase().trim();document.getElementById("voiceStat").textContent=`🎤 Počul som: „${txt}"`;matchVoiceAnswer(txt);stopRecog();};
+  r.onresult=e=>{
+    const txt=e.results[0][0].transcript.toLowerCase().trim();
+    document.getElementById("voiceStat").textContent=`🎤 Počul som: „${txt}\u201c`;
+    if(answered){
+      // otázka je zodpovedaná — čakáme na povel na ďalšiu
+      stopRecog();
+      if(isNextCommand(txt)){ speechSynthesis.cancel(); speaking=false; nextQ(); }
+      else { document.getElementById("voiceStat").textContent='😕 Povedz „ďalej\u201c, ak chceš pokračovať.'; }
+      return;
+    }
+    matchVoiceAnswer(txt);
+    stopRecog();
+  };
   r.onerror=()=>{document.getElementById("voiceStat").textContent="😕 Nerozumela som, skús znova.";stopRecog();if(!answered)setVoiceReady(true);};
-  r.onend=()=>{stopRecog();if(!answered)setVoiceReady(true);};
+  r.onend=()=>{
+    const bolaZodpovedana=answered;
+    stopRecog();
+    if(!answered){setVoiceReady(true);return;}
+    // ešte stále čakáme na „ďalej“ — obnov počúvanie (s malou pauzou)
+    if(bolaZodpovedana)setTimeout(()=>{if(answered&&!recogOn)listenForNext();},400);
+  };
   return r;
 }
+function toggleCfg(){
+  const w=document.getElementById("cfgWrap");
+  const b=document.getElementById("cfgBtn");
+  const otvorene=w.classList.toggle("open");
+  b.textContent=otvorene?"⚙️ Skryť nastavenia":"⚙️ Nastavenia";
+}
 function toggleVoiceInput(){
-  if(answered)return;
+  if(answered){ if(recogOn)stopRecog(); else listenForNext(); return; }
   if(speaking||!voiceReady){document.getElementById("voiceStat").textContent="🎧 Počkaj, kým dočítam otázku a odpovede.";return;}
   if(!recog)recog=setupRecog();
   if(!recog){document.getElementById("voiceStat").textContent="😕 Hlasové zadávanie nie je dostupné v tomto prehliadači.";return;}
   if(recogOn){stopRecog();return;}recogOn=true;const b=document.getElementById("voiceBtn");b.classList.add("listening");b.textContent="🔴 Počúvam…";document.getElementById("voiceStat").textContent="🎤 Hovor odpoveď…";try{recog.start();}catch(e){stopRecog();}
 }
-function stopRecog(){recogOn=false;const b=document.getElementById("voiceBtn");if(b){b.classList.remove("listening");if(!answered)b.textContent=voiceReady?"🎤 Odpovedz":"🎤 Počkaj…";}try{recog&&recog.stop();}catch(e){}}
+function stopRecog(){
+  recogOn=false;
+  const b=document.getElementById("voiceBtn");
+  if(b){
+    b.classList.remove("listening");
+    if(answered){ b.disabled=false; b.classList.remove("off"); b.textContent="🎤 Povedz „ďalej\u201c"; }
+    else b.textContent=voiceReady?"🎤 Odpovedz":"🎤 Počkaj…";
+  }
+  try{recog&&recog.stop();}catch(e){}
+}
 function normSpeech(s){
   return cleanSpeechText(s).toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .replace(/[^a-z0-9\s]/g," ")
     .replace(/\s+/g," ")
     .trim();
+}
+// ── HLASOVÝ PRÍKAZ NA POSUN ĎALEJ ──────────────────────────
+// normSpeech odstraňuje diakritiku, takže "ďalej" príde ako "dalej".
+const NEXT_WORDS=["dalej","dalsia","dalsiu","dalsie","dalsia otazka","pokracuj",
+                  "pokracujeme","pokracovat","ideme dalej","ideme","next","hotovo"];
+function isNextCommand(spoken){
+  const s=normSpeech(spoken);
+  if(!s)return false;
+  return NEXT_WORDS.some(w=>s===w||s.split(" ").includes(w)||s.includes(w));
+}
+// Spustí počúvanie na príkaz "ďalej" po zodpovedaní otázky.
+function listenForNext(){
+  if(!answered)return;
+  if(!recog)recog=setupRecog();
+  if(!recog)return;                       // prehliadač to nepodporuje
+  if(recogOn)return;                      // už počúvame
+  recogOn=true;
+  const b=document.getElementById("voiceBtn");
+  if(b){b.disabled=false;b.classList.remove("off");b.classList.add("listening");
+        b.textContent="🔴 Povedz „ďalej\u201c";}
+  const vs=document.getElementById("voiceStat");
+  if(vs)vs.textContent="🎤 Povedz „ďalej\u201c a pokračujeme.";
+  try{recog.start();}catch(e){recogOn=false;}
 }
 function spokenOptionIndex(spoken){
   const s=normSpeech(spoken);
@@ -1162,13 +1269,13 @@ function renderQ(){
 const PRAISE=[
   "Správne! Si šikovná!",
   "Gratulujem, to bolo správne!",
-  "Paráda! Len tak ďalej!",
+  "Paráda! Ide ti to skvele!",
   "Super, odpovedala si správne!",
   "Výborne! Ide ti to!",
   "Bravo! Presne tak!",
   "Skvelá práca!",
   "Máš to! Si múdra!",
-  "Perfektne! Pokračuj takto!",
+  "Perfektne! Presne takto!",
   "Áno! Trafila si to!",
   "Šikovné dievča! Správne!",
   "To je ono! Výborne!"
@@ -1181,14 +1288,14 @@ const PRAISE_STREAK=[
 ];
 const ENCOURAGE=[
   "Nevadí, nič sa nestalo.",
-  "To nič, ideme ďalej!",
+  "To nič, nevadí!",
   "Hlavu hore, nabudúce to vyjde!",
   "Nevadí, na budúce to zodpovieš už správne.",
-  "To sa stáva, skúsime ďalšiu!",
-  "Nič si z toho nerob, poďme ďalej!",
+  "To sa stáva, nič sa nedeje.",
+  "Nič si z toho nerob!",
   "Neboj sa, učíme sa aj z chýb.",
-  "Hlavu hore! Ďalšia otázka čaká.",
-  "To nevadí, dôležité je skúšať ďalej.",
+  "Hlavu hore, zvládneš to!",
+  "To nevadí, dôležité je skúšať.",
   "Nesmúť, každý sa občas pomýli."
 ];
 let lastPraise=-1, lastEncourage=-1, lastStreakPraise=-1;
@@ -1212,15 +1319,28 @@ function pickAnswer(btn,opt,isCorrect,q){
     if(useStreak) lastStreakPraise=m.idx; else lastPraise=m.idx;
     fb.innerHTML=`⭐ ${m.txt} ⭐`;fb.className="feedback fb-ok";
     revealTile();showLearning(q.explain);maybeBadges(q,true);
+    listenForNext();                       // počúvaj hneď, netreba čakať na vysvetlenie
     if(audioOn)spk(`${m.txt} ${q.explain}`);
   }else{
     btn.classList.add("wrong");wrong++;streak=0;wrongByQ.push({q:q.q,cat:q.cat,skill:q.skill,yourAns:opt.txt,correct:q.a.txt,explain:q.explain});
     const m=pickMsg(ENCOURAGE,lastEncourage);lastEncourage=m.idx;
     fb.innerHTML=`💛 ${m.txt}<br><small>Správne je: ${q.a.txt}</small>`;fb.className="feedback fb-bad";
     showLearning(q.explain);
+    listenForNext();                       // počúvaj hneď, netreba čakať na vysvetlenie
     if(audioOn)spk(`${m.txt} Správna odpoveď je ${q.a.txt}. ${q.explain}`);
   }
   updStats();document.getElementById("nextBtn").className="next-btn show";
+  // Na menších telefónoch je spätná väzba aj tlačidlo Ďalej pod okrajom obrazovky.
+  // Jemne doroluj, nech dieťa hneď vidí, či odpovedalo správne, a ako pokračovať.
+  setTimeout(()=>{
+    const nb=document.getElementById("nextBtn");
+    const fb=document.getElementById("feedback");
+    if(!nb||!fb)return;
+    const r=nb.getBoundingClientRect();
+    if(r.bottom>window.innerHeight-8){
+      fb.scrollIntoView({behavior:"smooth",block:"center"});
+    }
+  },120);
 }
 function nextQ(){cur++;if(cur>=questions.length){showEnd();return;}renderQ();}
 
@@ -1236,7 +1356,17 @@ function showEnd(){
   answeredLog.forEach(x=>{catTot[x.cat]++;if(x.ok)catOk[x.cat]++;const key=x.skill||CAT_NAMES[x.cat];skills[key]=skills[key]||{ok:0,total:0};skills[key].total++;if(x.ok)skills[key].ok++;});
   const catHtml=["math","gen","ava"].map(c=>{const v=pct(catOk[c],catTot[c]);return `<div class="stat-line"><span>${CAT_NAMES[c]}</span><strong>${catOk[c]}/${catTot[c]} (${v}%)</strong></div><div class="progress-mini"><span style="width:${v}%"></span></div>`;}).join("");
   document.getElementById("endStrong").innerHTML=`<h3>📊 Výsledok podľa oblastí</h3>${catHtml}`;
-  const skillRows=Object.entries(skills).filter(([,s])=>s.ok<s.total).sort((a,b)=>pct(a[1].ok,a[1].total)-pct(b[1].ok,b[1].total)).slice(0,5).map(([name,s])=>`<div class="stat-line"><span>${name}</span><strong>${s.ok}/${s.total}</strong></div>`).join("");
+  // Slabinu vyhlásime len tam, kde bola aspoň jedna chyba a zároveň dosť otázok
+  // na to, aby to nebola náhoda. Jedna nesprávna odpoveď z jednej otázky
+  // ešte nič nevypovedá — rodiča by to len pomýlilo.
+  const chybne=Object.entries(skills).filter(([,s])=>s.ok<s.total);
+  const dostDat=chybne.filter(([,s])=>s.total>=2);
+  const zoradene=(dostDat.length?dostDat:chybne)
+    .sort((a,b)=>(pct(a[1].ok,a[1].total)-pct(b[1].ok,b[1].total)) || (b[1].total-a[1].total))
+    .slice(0,5);
+  const malaVzorka=dostDat.length===0&&chybne.length>0;
+  const skillRows=zoradene.map(([name,s])=>`<div class="stat-line"><span>${name}</span><strong>${s.ok}/${s.total}</strong></div>`).join("")
+    +(malaVzorka?'<p class="hint-small">Z jednej otázky sa toho veľa vyčítať nedá — ber to len ako tip.</p>':"");
   document.getElementById("endWeak").innerHTML=`<h3>🎯 Čo trénovať najbližšie</h3>${skillRows||"<p>Všetko vyšlo výborne.</p>"}`;
   const wrongList=wrongByQ.slice(0,4).map(w=>`• ${w.q}<br><strong>Správne:</strong> ${w.correct}. ${w.explain}`).join("<br><br>");
   document.getElementById("endAdvice").innerHTML=`<h3>👨‍👩‍👧 Rady pre rodiča</h3><p>${wrongList||"Bez chýb. Nabudúce skúste rýchlejší hlas alebo nech dieťa odpovedá nahlas."}</p>`;
@@ -1320,14 +1450,18 @@ function endGame(){speechSynthesis.cancel();speaking=false;stopRecog();showEnd()
 if(speechSynthesis.onvoiceschanged!==undefined)speechSynthesis.onvoiceschanged=()=>{};
 window.addEventListener("load",()=>{
   if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+    // Zapamätáme si, či stránku už riadil service worker EŠTE PRED registráciou.
+    // Pri úplne prvom otvorení žiadny nie je — vtedy sa stránka nesmie znovunačítať,
+    // inak by dieťa prišlo o rozohranú otázku hneď po spustení.
+    const uzBolRiadeny = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.register("service-worker.js").then(reg=>{
-      // po nahratí novej verzie na GitHub sa appka sama obnoví
       reg.update().catch(()=>{});
       reg.addEventListener("updatefound",()=>{
         const nw=reg.installing;
         if(!nw)return;
         nw.addEventListener("statechange",()=>{
-          if(nw.state==="activated"&&navigator.serviceWorker.controller)location.reload();
+          // znovunačítaj LEN pri skutočnej aktualizácii, nie pri prvej inštalácii
+          if(nw.state==="activated" && uzBolRiadeny) location.reload();
         });
       });
     }).catch(()=>{});

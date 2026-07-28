@@ -14,6 +14,8 @@ const ASSETS = [
   "manifest.webmanifest",
   "avatar-assets/app-icon-192.png",
   "avatar-assets/app-icon-512.png",
+  "avatar-assets/app-icon-192-maskable.png",
+  "avatar-assets/app-icon-512-maskable.png",
   "avatar-assets/avatar_01.jpg",
   "avatar-assets/avatar_02.jpg",
   "avatar-assets/avatar_03.jpg",

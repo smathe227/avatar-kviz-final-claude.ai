@@ -1,7 +1,7 @@
 {
   "name": "Avatar Kvíz pre deti 🌟",
   "short_name": "Avatar Kvíz",
-  "description": "Zábavný kvíz o Avatar filme pre deti s 2000 otázkami",
+  "description": "Tréningový kvíz pre deti — matematika, svet okolo nás a Avatar.",
   "lang": "sk",
   "start_url": "index.html",
   "scope": "./",
