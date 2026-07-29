@@ -5,7 +5,7 @@
 //     Vďaka tomu sa po nahratí novej verzie na GitHub appka vždy aktualizuje.
 //   • Obrázky, ikony     → NAJPRV CACHE (menia sa zriedka, načítajú sa okamžite).
 // ════════════════════════════════════════════════
-const VERSION = "v11";
+const VERSION = "v12";
 const CACHE_NAME = "avatar-kviz-" + VERSION;
 
 const ASSETS = [

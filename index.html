@@ -493,6 +493,11 @@ body.hotovo .ctrl-row,body.hotovo #cfgWrap,body.hotovo .pill-vedlajsi{display:no
   <button class="sp-btn" onclick="setVoiceMode('story',this)">Rozprávač</button>
   <button class="sp-btn" onclick="setVoiceMode('focus',this)">Krátky</button>
 </div>
+<div class="voice-mode-row mic-mode-row">
+  <span class="speed-lbl">🎤 Mikrofón:</span>
+  <button class="sp-btn" id="micAuto" onclick="setAutoMic(true,this)">Zapne sa sám</button>
+  <button class="sp-btn" id="micRucne" onclick="setAutoMic(false,this)">Na stlačenie</button>
+</div>
 <div class="ctrl-row" style="margin-top:6px">
   <button class="btn btn-reset" id="resetBtn" onclick="confirmClick('resetBtn',resetGame)">🔄 Reset</button>
   <button class="btn btn-end" id="endBtn" onclick="confirmClick('endBtn',endGame)">⏹ Koniec</button>
@@ -558,7 +563,7 @@ body.hotovo .ctrl-row,body.hotovo #cfgWrap,body.hotovo .pill-vedlajsi{display:no
           <div class="info-ico">🔥</div>
           <div class="info-txt">Avatar Puzzle Dobrodružstvo</div>
         </div>
-        <div class="info-body">Klikni na odpoveď alebo ju povedz nahlas cez 🎤. Po vysvetlení stačí povedať <strong>„ďalej“</strong>.</div>
+        <div class="info-body">Keď hlas dočíta možnosti, mikrofón sa zapne sám — stačí povedať odpoveď (alebo „možnosť dva“). Dá sa aj kliknúť. Po vysvetlení povedz <strong>„ďalej“</strong>.</div>
       </div>
     </div>
 
@@ -625,6 +630,26 @@ let questions=[], cur=0, score=0, corr=0, wrong=0, streak=0, bestStreak=0,
 let wrongByQ=[], answeredLog=[], earnedBadges=new Set();
 let bestScore=Number(localStorage.getItem("avatarQuizBestScore")||0);
 let recog=null, recogOn=false;
+// Koľkokrát sa mikrofón po dočítaní zapol sám bez toho, aby dieťa niečo povedalo.
+// Po druhom prázdnom pokuse už čakáme na stlačenie tlačidla, aby mikrofón
+// nebežal donekonečna.
+let autoMicPokusy=0;
+let autoMic=localStorage.getItem("avatarQuizAutoMic")!=="0";
+let micPovoleny=true;        // kým prehliadač mikrofón nezamietne
+/* ČÍSLO ČÍTANIA („epocha").
+   Čítanie otázky je asynchrónny cyklus: prečítaj otázku, počkaj, prečítaj
+   možnosť 1, počkaj… Keď dieťa klikne na odpoveď v polovici čítania a appka
+   prejde na ďalšiu otázku, štartoval sa druhý taký cyklus, kým prvý ešte
+   žil. Oba potom striedavo rušili utterancie toho druhého (spk() začína
+   cancelom), takže hlas pár sekúnd drmolil „možnosť jedna, možnosť dva,
+   možnosť tri". Každé čítanie si preto zapamätá svoje číslo a keď medzitým
+   začne nové, staré sa po prvej kontrole ticho ukončí. */
+let ttsEpoch=0;
+function stopSpeech(){
+  ttsEpoch++;
+  try{speechSynthesis.cancel();}catch(e){}
+  speaking=false;
+}
 // Skutočné objekty možností aktuálnej otázky. Predtým sa pri „Znova"
 // skladali nanovo z HTML, čím sa stratil príznak `correct` — správna
 // odpoveď povedaná hlasom sa potom vyhodnotila ako nesprávna.
@@ -965,45 +990,45 @@ function buildGeneralQuestions(){
   safety.forEach(x=>addPic(list,"gen",x[0],x[1],x[2],x[3],"bezpečnosť","stredná",x[4]));
   const facts=[
     ["Čo potrebuje rastlina, aby rástla?","💧","Vodu",[["🧱","Tehlu"],["🧦","Ponožku"]],"príroda","Rastliny potrebujú vodu, svetlo a zeminu."],
-    ["Ktorý predmet otvorí dvere so zámkom?","🔑","Kľúč",[["🥄","Lyžica"],["⚽","Lopta"]],"domácnosť","Kľúč pasuje do zámku a dvere otvorí."],
-    ["Ktoré zviera znáša vajíčka na farme?","🐔","Sliepka",[["🐄","Krava"],["🐕","Pes"]],"zvieratá","Sliepka znáša vajíčka."],
-    ["Čím si chránime oči pred slnkom?","🕶️","Slnečnými okuliarmi",[["🧤","Rukavicami"],["🧦","Ponožkami"]],"bežný život","Okuliare tienia oči pred silným svetlom."],
+    ["Prečo dávame jedlo do chladničky?","🦠","Aby sa nepokazilo",[["🍬","Aby bolo sladšie"],["🔥","Aby sa uvarilo"]],"domácnosť","V chlade sa jedlo kazí pomalšie — baktériám, ktoré ho kazia, sa v chlade nedarí."],
+    ["Ktoré zviera sa v zime ukladá na zimný spánok?","🐻","Medveď",[["🦊","Líška"],["🐺","Vlk"]],"zvieratá","Medveď prespí zimu v brlohu. Líška ani vlk nespia — celú zimu hľadajú potravu."],
+    ["Čo si musíš dať na hlavu, keď ideš na bicykli?","🪖","Prilbu",[["🧢","Šiltovku"],["🕶️","Slnečné okuliare"]],"bežný život","Prilba drží pri páde hlavu v bezpečí. Šiltovka ani okuliare ju neochránia."],
     ["Ktorý dopravný prostriedok jazdí po koľajniciach?","🚆","Vlak",[["✈️","Lietadlo"],["🚲","Bicykel"]],"doprava","Vlak jazdí po koľajniciach."],
-    ["Čo používame pri umývaní rúk?","🧼","Mydlo",[["✏️","Ceruzku"],["🎈","Balón"]],"hygiena","Mydlo pomáha umyť špinu z rúk."],
-    ["Ktorá časť tela nám pomáha vidieť?","👀","Oči",[["👂","Uši"],["🦶","Chodidlá"]],"telo","Očami sa pozeráme."],
-    ["Kde si zvyčajne čistíme zuby?","🚿","V kúpeľni",[["🌳","V lese"],["🚗","V aute"]],"hygiena","Zuby si čistíme v kúpeľni pri umývadle."],
+    ["Prečo si ruky umývame mydlom a nie len vodou?","🧼","Zmyje aj to, čo očami nevidíme",[["👃","Aby ruky voňali"],["💧","Aby boli mokré"]],"hygiena","Na rukách sú drobné baktérie, ktoré očami nevidíme. Voda sama ich nezmyje, mydlo áno."],
+    ["Ktorý orgán v tele rozvádza krv?","❤️","Srdce",[["🫁","Pľúca"],["🧠","Mozog"]],"telo","Srdce tlčie celý deň a tlačí krv do celého tela. Pľúca dýchajú a mozog myslí."],
+    ["Ako dlho si máme čistiť zuby?","⏳","Asi dve minúty",[["⚡","Päť sekúnd"],["🕐","Celú hodinu"]],"hygiena","Dve minúty stačia, aby sa zuby naozaj vyčistili. Päť sekúnd je málo a hodina je zbytočne veľa."],
     ["Koľko dní má týždeň?","📅","7 dní",[["📅","3 dni"],["📅","1 deň"]],"čas","Týždeň má sedem dní."],
     ["Ktorý deň býva po pondelku?","📅","Utorok",[["📅","Nedeľa"],["📅","Piatok"]],"čas","Po pondelku nasleduje utorok."],
-    ["Čo robíme s knihou?","📖","Čítame",[["🥣","Varíme"],["⚽","Kopeme"]],"škola","Knihu čítame alebo si v nej pozeráme obrázky."],
+    ["Koľko písmen má slovo MAMA?","🔢","4",[["🔢","3"],["🔢","5"]],"škola","M-A-M-A — spočítaj ich po jednom, sú štyri."],
     ["Ktoré ovocie olúpeme skôr, než ho zjeme?","🍌","Banán",[["🍎","Jablko"],["🍓","Jahoda"]],"jedlo","Banán má hrubú šupku, ktorú olúpeme. Jablko aj jahodu môžeme jesť aj so šupkou."],
     ["Čo svieti v noci na oblohe, keď nie je zamračené?","⭐","Hviezdy",[["🌈","Dúha"],["🌧️","Dážď"]],"príroda","Hviezdy vidíme najmä v noci."],
-    ["Čo použijeme, keď chceme niečo vystrihnúť?","✂️","Nožnice",[["🥄","Lyžicu"],["🧃","Džús"]],"škola","Nožnice strihajú papier."],
-    ["Ktoré zviera mňauká?","🐈","Mačka",[["🐄","Krava"],["🐸","Žaba"]],"zvieratá","Mačka robí mňau."],
-    ["Akú farbu majú banány, keď sú zrelé?","🟡","Žltú",[["🟣","Fialovú"],["⚫","Čiernu"]],"farby","Zrelý banán je zvyčajne žltý."],
-    ["Koľko farieb vidíme v dúhe?","🌈","Sedem",[["🌈","Jednu"],["🌈","Dve"]],"farby","V dúhe rozoznávame sedem farieb: červenú, oranžovú, žltú, zelenú, modrú, indigovú a fialovú."],
-    ["Akou farbou svieti semafor, keď môžeš ísť?","🟢","Zelenou",[["🔴","Červenou"],["🟡","Žltou"]],"farby","Na zelenú na semafore môžeme ísť."],
+    ["Čo použijeme, keď chceme zmerať, aký je stôl dlhý?","📏","Pravítko alebo meter",[["⚖️","Váhu"],["⏰","Hodiny"]],"škola","Pravítkom meriame dĺžku, váhou hmotnosť a hodinami čas."],
+    ["Čo raz vyrastie z húsenice?","🦋","Motýľ",[["🐝","Včela"],["🕷️","Pavúk"]],"zvieratá","Húsenica sa zabalí do kukly a po čase z nej vyletí motýľ."],
+    ["Akú farbu dostaneme, keď zmiešame žltú a modrú?","🟢","Zelenú",[["🔴","Červenú"],["🟤","Hnedú"]],"farby","Žltá a modrá spolu dajú zelenú — skús to vodovkami."],
+    ["Koľko farieb vidíme v dúhe?","🌈","Sedem",[["🌈","Tri"],["🌈","Desať"]],"farby","V dúhe rozoznávame sedem farieb: červenú, oranžovú, žltú, zelenú, modrú, indigovú a fialovú."],
+    ["Akú farbu dostaneme, keď zmiešame červenú a bielu?","🌸","Ružovú",[["⚫","Čiernu"],["🟢","Zelenú"]],"farby","Biela každú farbu zosvetlí, preto z červenej vznikne ružová."],
     ["Čím cestujeme po nebi?","✈️","Lietadlom",[["🚲","Bicyklom"],["⛵","Loďou"]],"doprava","Lietadlo lieta vysoko na oblohe."],
     ["Čím cestujeme po vode?","⛵","Loďou",[["🚗","Autom"],["🚆","Vlakom"]],"doprava","Loď alebo čln plávajú po vode."],
     ["Čo poháňa obyčajný bicykel bez motora?","🦵","Naše nohy",[["⛽","Benzín"],["💨","Vietor"]],"doprava","Obyčajný bicykel sa hýbe len vtedy, keď šliapeme do pedálov."],
-    ["Kde v domácnosti uchovávame jedlo studené?","🧊","V chladničke",[["🛁","Vo vani"],["📺","V televízore"]],"domácnosť","Chladnička udržiava jedlo čerstvé a studené."],
-    ["Čím upratujeme podlahu doma?","🧹","Metlou alebo vysávačom",[["🖌️","Štetcom na maľovanie"],["🔨","Kladivom"]],"domácnosť","Na upratovanie podlahy používame metlu alebo vysávač."],
-    ["Kde si doma zvyčajne varíme jedlo?","🍳","V kuchyni",[["🛌","V spálni"],["🚪","Na chodbe"]],"domácnosť","Varenie prebieha v kuchyni, kde máme sporák."],
-    ["Akú farbu má tráva na lúke?","🟢","Zelenú",[["🔴","Červenú"],["⚫","Čiernu"]],"farby","Tráva býva zelená."],
+    ["Čo sa stane s vodou, keď ju dáme do mrazničky?","🧊","Zmrzne na ľad",[["💨","Zmení sa na paru"],["🫗","Zmizne"]],"domácnosť","V mrazničke je pod nulou, tam voda tuhne na ľad. Na paru sa mení až vtedy, keď vrie."],
+    ["Ktorá vec pláva na vode?","🪵","Drevo",[["🪨","Kameň"],["🔑","Kľúč"]],"domácnosť","Drevo je ľahšie než voda, preto pláva. Kameň aj kľúč sú ťažšie a klesnú na dno."],
+    ["Čo je ťažšie — kilo peria alebo kilo kameňov?","⚖️","Vážia rovnako",[["🪨","Kilo kameňov"],["🪶","Kilo peria"]],"logika","Kilo je vždy kilo. Perie len zaberie oveľa viac miesta, ale váži rovnako."],
+    ["Prečo v zime nosíme viac vrstiev oblečenia?","🧥","Medzi vrstvami zostane teplý vzduch",[["🎨","Aby sme boli farební"],["🏃","Aby sme rýchlejšie bežali"]],"počasie","Vzduch medzi vrstvami funguje ako perinka a drží teplo pri tele."],
     ["Kde rastú listy?","🌳","Na strome",[["🚲","Na bicykli"],["🍽️","Na tanieri"]],"príroda","Listy rastú na rastlinách a stromoch."],
-    ["Čo si obujeme, keď ideme von?","👟","Topánky",[["🧢","Čiapku"],["🧤","Rukavice"]],"bežný život","Topánky chránia chodidlá vonku."],
-    ["Ktoré jedlo býva v miske a je teplé?","🥣","Polievka",[["🍭","Lízanka"],["🍪","Keksík"]],"jedlo","Polievka sa často je z misky lyžicou."],
+    ["Koľko nôh má pavúk?","🕷️","8",[["🕷️","6"],["🕷️","10"]],"zvieratá","Pavúk má osem nôh — preto nie je hmyz. Hmyz má šesť nôh."],
+    ["Z čoho sa pečie chlieb?","🌾","Z múky",[["🥛","Z mlieka"],["🍖","Z mäsa"]],"jedlo","Múka sa melie zo zrniek obilia a z nej sa zamiesi cesto na chlieb."],
     ["Čo má malú a veľkú ručičku a ukazuje čas?","⏰","Hodiny",[["🧸","Hračka"],["🌷","Kvet"]],"čas","Hodiny majú dve ručičky a ukazujú nám čas."],
     ["Čo povieš, keď ti niekto pomôže?","🙏","Ďakujem",[["😠","Nič nepoviem"],["🏃","Choď preč"]],"správanie","Keď nám niekto pomôže, poďakujeme sa — povieme ďakujem."],
     ["Ktoré ročné obdobie prichádza po zime?","🌸","Jar",[["❄️","Zima"],["🍂","Jeseň"]],"čas","Po zime prichádza jar."],
-    ["Ktoré zviera žije vo vode a má plutvy?","🐟","Ryba",[["🐕","Pes"],["🐿️","Veverička"]],"zvieratá","Ryby žijú vo vode a plávajú pomocou plutiev."],
-    ["Čo použijeme, keď je vonku dážď?","☔","Dáždnik",[["🕶️","Slnečné okuliare"],["🧣","Šál"]],"bežný život","Dáždnik nás chráni pred dažďom."],
-    ["Koľko prstov máš na jednej ruke?","✋","5",[["✋","4"],["✋","6"]],"telo","Na jednej ruke máme 5 prstov."],
+    ["Čo vyrastie zo žubrienky?","🐸","Žaba",[["🐟","Ryba"],["🦎","Jašterica"]],"zvieratá","Žubrienka sa vylíhne vo vode, potom jej narastú nohy a stane sa z nej žaba."],
+    ["Čo pri búrke zbadáme skôr — blesk alebo hrom?","⚡","Blesk",[["🔊","Hrom"],["🤝","Oboje naraz"]],"počasie","Svetlo letí rýchlejšie ako zvuk. Preto blesk vidíme skôr, než hrom zaznie."],
+    ["Koľko prstov máš na oboch rukách spolu?","🙌","10",[["✋","5"],["🖐️","12"]],"telo","Na jednej ruke päť a na druhej päť — spolu desať."],
     ["Ktorá časť dňa je najtmavšia?","🌙","Noc",[["🌅","Ráno"],["☀️","Poludnie"]],"čas","V noci je vonku tma, preto vtedy spíme."],
     ["Čo robí včela?","🐝","Zbiera peľ a robí med",[["🎨","Maľuje obrázky"],["📚","Číta knihy"]],"zvieratá","Včely zbierajú peľ z kvetov a vyrábajú med."],
     ["Kam patria odpadky, ktoré vyhodíme?","🗑️","Do koša",[["🌳","Na trávu"],["🏞️","Do rieky"]],"príroda","Odpadky patria do koša, aby bola príroda čistá."],
-    ["Čo použijeme na kreslenie čiar?","✏️","Ceruzku",[["🥾","Čižmu"],["🥄","Lyžicu"]],"škola","Ceruzkou kreslíme a píšeme."],
-    ["Ktoré zviera má chobot?","🐘","Slon",[["🦊","Líška"],["🐇","Zajac"]],"zvieratá","Slon má dlhý chobot."],
-    ["Čo si dáme na hlavu, keď fúka a je zima?","🧢","Čiapku",[["🧦","Ponožku"],["👟","Topánku"]],"bežný život","Čiapka hreje hlavu."],
+    ["Ktorá časť rastliny je pod zemou a saje vodu?","🌱","Koreň",[["🌸","Kvet"],["🍃","List"]],"príroda","Koreň drží rastlinu v zemi a saje z nej vodu. Kvet aj list sú nad zemou."],
+    ["Ktoré zviera je na svete najväčšie?","🐋","Modrá veľryba",[["🐘","Slon"],["🦒","Žirafa"]],"zvieratá","Modrá veľryba je najväčšie zviera na svete — je dlhšia ako autobus. Slon je najväčší na zemi, žirafa najvyššia."],
+    ["Ktorá rieka tečie cez Bratislavu?","🌊","Dunaj",[["🏞️","Váh"],["💧","Hron"]],"moja krajina","Cez Bratislavu tečie Dunaj, najväčšia rieka na Slovensku. Váh a Hron tečú inde."],
 
     ["Ako sa cíti človek, ktorý sa smeje a skáče od radosti?","😄","Šťastne",[["😢","Smutne"],["😠","Nahnevane"]],"emócie","Smiech a skákanie ukazujú radosť."],
     ["Čo je dobré urobiť, keď je kamarát smutný?","🤗","Utešiť ho a spýtať sa, čo sa stalo",[["😆","Vysmiať sa mu"],["🙈","Odísť preč"]],"emócie","Keď je niekto smutný, pomôže záujem a milé slovo."],
@@ -1012,7 +1037,7 @@ function buildGeneralQuestions(){
     ["Ako sa cíti človek, keď sa mu niečo podarí?","🏅","Hrdo",[["😔","Sklamane"],["😰","Vystrašene"]],"emócie","Keď sa nám niečo podarí, cítime hrdosť."],
 
     ["V ktorom ročnom období padá zo stromov lístie?","🍂","Na jeseň",[["🌷","Na jar"],["🏖️","V lete"]],"ročné obdobia","Na jeseň stromy zhadzujú listy."],
-    ["Kedy najčastejšie sneží?","❄️","V zime",[["🌻","V lete"],["🍁","Na jeseň"]],"ročné obdobia","Sneh padá, keď je vonku mráz — v zime."],
+    ["Ktoré ročné obdobie prichádza po lete?","🍂","Jeseň",[["🌸","Jar"],["❄️","Zima"]],"ročné obdobia","Poradie je jar, leto, jeseň, zima — po lete teda nasleduje jeseň."],
     ["V ktorom období sú prázdniny pri mori najdlhšie?","☀️","V lete",[["🎄","V zime"],["🌱","Na jar"]],"ročné obdobia","Letné prázdniny sú najdlhšie."],
     ["Kedy začínajú kvitnúť prvé kvety?","🌸","Na jar",[["🥶","V zime"],["🍄","Na jeseň"]],"ročné obdobia","Na jar sa príroda prebúdza a kvitne."],
     ["Koľko ročných období máme počas roka?","🗓️","Štyri",[["🗓️","Dve"],["🗓️","Sedem"]],"ročné obdobia","Jar, leto, jeseň a zima — spolu štyri."],
@@ -1033,8 +1058,8 @@ function buildGeneralQuestions(){
 
     ["Čo je viac: 3 alebo 8?",SVG_NUM,"8",[[SVG_NUM,"3"],[SVG_NUM,"Sú rovnaké"]],"logika","Číslo 8 je väčšie ako 3."],
     ["Ktoré číslo nasleduje hneď po čísle 9?",SVG_NUM,"10",[[SVG_NUM,"8"],[SVG_NUM,"1"]],"logika","Po deviatke nasleduje desiatka."],
-    ["Ktoré z týchto zvierat NIE JE vták?","🐕","Pes",[["🦉","Sova"],["🦆","Kačka"]],"logika","Pes je cicavec, sova aj kačka sú vtáky."],
-    ["Čo do skupiny NEPATRÍ: jablko, hruška, stolička?","🪑","Stolička",[["🍎","Jablko"],["🍐","Hruška"]],"logika","Jablko a hruška sú ovocie, stolička je nábytok."],
+    ["Ktoré z týchto zvierat NIE JE vták?","🦇","Netopier",[["🦉","Sova"],["🦆","Kačka"]],"logika","Netopier síce lieta, ale nemá perie a mláďatá pije mlieko — je to cicavec."],
+    ["Čo do skupiny NEPATRÍ: jablko, hruška, mrkva?","🥕","Mrkva",[["🍎","Jablko"],["🍐","Hruška"]],"logika","Jablko a hruška sú ovocie, mrkva je zelenina."],
     ["Ktoré z týchto zvierat je najväčšie?","🐘","Slon",[["🐁","Myš"],["🐈","Mačka"]],"logika","Slon je z týchto troch zvierat najväčší."],
 
     // ═══ DOPLNENÉ: okruh „logika\u201c mal iba 5 otázok, hoci z neho kvíz berie
@@ -1059,14 +1084,14 @@ function buildGeneralQuestions(){
     ["Ako pozdravíš pani učiteľku, keď ráno prídeš do školy?","👋","Dobré ráno",[["🌙","Dobrú noc"],["🤐","Nepoviem nič"]],"správanie","Ráno pozdravíme „Dobré ráno\u201c alebo „Dobrý deň\u201c.","ľahšia"],
     ["Čo urobíš, keď chceš hračku, ktorú drží kamarát?","🙏","Pekne ho poprosím",[["✊","Zoberiem mu ju"],["😭","Rozplačem sa nahlas"]],"správanie","O veci sa pýtame a prosíme, nevytrhávame ich z rúk.","ľahšia"],
     ["Čo urobíš, keď si niekomu ublížila?","💗","Ospravedlním sa",[["🙈","Budem sa tváriť, že sa nič nestalo"],["😠","Nahnevám sa ešte viac"]],"emócie","Ospravedlnenie je prvý krok, ako veci zase napraviť.","ľahšia"],
-    ["Čím počujeme zvuky okolo seba?","👂","Ušami",[["👀","Očami"],["✋","Rukami"]],"telo","Uši zachytávajú zvuk.","ľahšia"],
-    ["Koľko očí má človek?","👀","Dve",[["👁️","Jedno"],["✋","Päť"]],"telo","Človek má dve oči, vďaka nim vidí priestorovo.","ľahšia"],
+    ["Čo nám pomáha, aby sme sa nepotočili, keď stojíme na jednej nohe?","👂","Orgán rovnováhy v uchu",[["🦴","Kosť v chodidle"],["💪","Svaly v rukách"]],"telo","Hlboko v uchu máme orgán rovnováhy. Preto sa nám točí hlava, keď sa dlho krútime.","výzva"],
+    ["Koľko mliečnych zubov má zvyčajne dieťa?","🦷","20",[["🦷","10"],["🦷","32"]],"telo","Dieťa má dvadsať mliečnych zubov. Dospelý ich má až tridsaťdva.","výzva"],
     ["Kedy je najdôležitejšie umyť si ruky?","🍽️","Pred jedlom",[["🎨","Pred kreslením"],["📺","Pred pozeraním rozprávky"]],"hygiena","Ruky si umývame pred jedlom a po príchode domov.","ľahšia"],
     ["Ktorá desiata je zdravšia?","🍏","Ovocie",[["🍬","Lízanka"],["🍟","Hranolky"]],"jedlo","Ovocie dodá telu vitamíny, sladkosti len cukor.","ľahšia"],
     ["Koľko mesiacov má rok?","🗓️","12",[["🗓️","7"],["🗓️","4"]],"čas","Rok má dvanásť mesiacov — od januára po december. Ročné obdobia sú štyri a dni v týždni sedem.","stredná"],
     ["Kde čakáme na autobus?","🚏","Na zastávke",[["🛣️","Na ceste"],["🌳","V lese"]],"doprava","Na autobus čakáme na zastávke, nikdy nie na vozovke.","ľahšia"],
-    ["Čím polievame kvety?","🚿","Vodou",[["🥛","Mliekom"],["🧃","Džúsom"]],"domácnosť","Rastliny potrebujú čistú vodu.","ľahšia"],
-    ["Čo si oblečieme, keď je vonku mráz?","🧥","Teplú bundu",[["🩳","Kraťasy"],["👙","Plavky"]],"počasie","V mraze sa oblečieme teplo, aby nám nebola zima.","ľahšia"],
+    ["Prečo treba kvetinu v byte polievať, aj keď vonku prší?","🏠","Doma sa k nej dážď nedostane",[["🌧️","Dážď kvetinám škodí"],["💧","Kvetiny vodu nepotrebujú"]],"domácnosť","Dážď padá len vonku. Kvetina v kvetináči má vodu iba od nás.","stredná"],
+    ["Prečo sa v mraze potí okno v teplej izbe?","💨","Teplý vzduch pri studenom skle vytvorí kvapôčky",[["🚿","Niekto ho polial vodou"],["🌧️","Preteká doň dážď"]],"počasie","Teplý vzduch v izbe nesie vodnú paru. Pri studenom skle sa z nej stanú kvapôčky.","výzva"],
     ["Akú farbu má na slovenskej vlajke pruh pod bielym a modrým?","🇸🇰","Červenú",[["🟢","Zelenú"],["🟡","Žltú"]],"moja krajina","Slovenská vlajka má biely, modrý a červený pruh.","stredná"],
     ["Čo robíme, keď v triede chceme niečo povedať?","✋","Zdvihneme ruku",[["📣","Zakričíme"],["🏃","Vstaneme a odídeme"]],"škola","Zdvihnutá ruka je znak, že chceme dostať slovo.","ľahšia"],
   ];
@@ -1106,7 +1131,7 @@ function buildAvatarQuestions(){
     ["Čo sa stane s vodou v Strome duší, keď sa ho Na'vi dotknú?","🌊","Rozžiari sa svetlom",[["🧊","Zamrzne"],["🔥","Začne horieť"]],"príroda","Posvätné miesta na Pandore reagujú na dotyk Na'vi jemným svetlom."],
     ["Kto je mama detí v rodine Sullyovcov?","💙","Neytiri",[["🔬","Grace"],["👧","Kiri"]],"postavy","Neytiri je mama v rodine Sullyovcov."],
     ["Majú Jake a Neytiri deti?","👨‍👩‍👧‍👦","Áno, majú synov aj dcéry",[["🚫","Nie, nemajú žiadne"],["1️⃣","Majú iba jedno"]],"postavy","Jake a Neytiri majú veľkú rodinu — synov aj dcéry."],
-    ["Čo by urobila dobrá ochrankyňa Pandory?","🌿","Chránila prírodu",[["🗑️","Hádzala odpad"],["🔥","Ničila les"]],"hodnoty","Ochrankyňa Pandory sa stará o prírodu."],
+    ["Čo by robila správna strážkyňa Pandory?","🌿","Chránila prírodu",[["🗑️","Hádzala odpad"],["🔥","Ničila les"]],"hodnoty","Ochrankyňa Pandory sa stará o prírodu."],
     ["Ako sa Na'vi medzi sebou dorozumievajú?","🗣️","Vlastnou rečou, ktorú majú len oni",[["🇬🇧","Iba po anglicky"],["🤐","Vôbec sa nedorozumievajú"]],"svet Avatar","Na'vi majú svoj vlastný, špeciálne vytvorený jazyk."],
     ["Koľko prstov má Na'vi na ruke?","✋","4 prsty",[["🖐️","5 prstov"],["👆","3 prsty"]],"postavy","Na'vi majú na rukách len 4 prsty, nie 5 ako ľudia."],
     ["Čo je zvláštne na niektorých horách na Pandore?","🏔️","Vznášajú sa vo vzduchu",[["🌋","Chrlia oheň"],["🧊","Sú z ľadu"]],"príroda","Na Pandore sú hory, ktoré sa vznášajú vysoko vo vzduchu."],
@@ -1184,7 +1209,11 @@ const DIFF_BY_SKILL={
   // ľahšie — okamžite viditeľné, konkrétne veci
   "farby":"ľahšia","zvieratá":"ľahšia","telo":"ľahšia","hygiena":"ľahšia",
   "bežný život":"ľahšia","jedlo":"ľahšia","škola":"ľahšia","domácnosť":"ľahšia",
-  "správanie":"ľahšia","bezpečnosť":"ľahšia",
+  "správanie":"ľahšia",
+  // Bezpečnosť tu bola tiež ako „ľahšia" a keďže dva takéto otázky sú v kvíze
+  // vždy, zaberali polovicu miesta určeného pre ľahké otázky. Nie sú to však
+  // výplňové otázky — sú to nácviky správania, ktoré tam patria vždy.
+  "bezpečnosť":"stredná",
   // stredné — treba si spomenúť alebo krátko premyslieť
   "protiklady":"stredná","čas":"stredná","doprava":"stredná","príroda":"stredná",
   "ročné obdobia":"stredná","počasie":"stredná","emócie":"stredná",
@@ -1229,10 +1258,19 @@ function buildQuestionBank(){
 const QUESTIONS=buildQuestionBank();
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+/* Koľko ľahších, stredných a výziev má mať skupina otázok.
+   Predtým bola takmer tretina kvízu „ľahšia" a boli medzi nimi otázky, ktoré
+   šesťročné dieťa vyrieši bez zamyslenia. Ľahšie preto zostávajú len ako
+   rozohriatie (jedna až dve na skupinu) a výzvy tvoria približne 40 % zvyšku. */
+function pomeryNarocnosti(count){
+  const lahsie=count>=9?2:1;
+  const vyzvy=Math.max(1,Math.round((count-lahsie)*0.42));
+  return {"ľahšia":lahsie,"stredná":Math.max(0,count-lahsie-vyzvy),"výzva":vyzvy};
+}
 function takeBalanced(pool,count){
   const groups={"ľahšia":[],"stredná":[],"výzva":[]};
   pool.forEach(q=>(groups[q.diff]||groups["stredná"]).push(q));
-  const targets=count===12?{"ľahšia":4,"stredná":6,"výzva":2}:count===11?{"ľahšia":3,"stredná":6,"výzva":2}:{"ľahšia":2,"stredná":4,"výzva":1};
+  const targets=pomeryNarocnosti(count);
   let picked=[];
   // vazenyShuffle uprednostní okruhy, ktoré dieťaťu dlhodobo nejdú
   Object.keys(targets).forEach(k=>picked.push(...vazenyShuffle(groups[k]).slice(0,targets[k])));
@@ -1453,35 +1491,49 @@ function setVoiceReady(ready,msg){
 const MOZNOSTI_SLOVOM=["jedna","dva","tri","štyri"];
 async function readFull(q,opts){
   currentOptions=opts;
-  if(!audioOn){setVoiceReady(true,"🎤 Stlač Odpovedz a povedz odpoveď alebo číslo možnosti.");return;}
+  autoMicPokusy=0;
+  if(!audioOn){setVoiceReady(true,"🎤 Povedz odpoveď alebo číslo možnosti.");spustiAutoMic();return;}
   setVoiceReady(false,"🎧 Najprv si vypočuj otázku a odpovede.");
+  // Toto čítanie je odteraz „to platné". Ak medzitým začne ďalšie
+  // (dieťa odpovedalo a appka prešla na novú otázku), toto sa ukončí.
+  const mojaEpocha=++ttsEpoch;
+  const stale=()=>mojaEpocha!==ttsEpoch||answered||!audioOn;
   speaking=true;const cfg=voiceConfig();setNR("🎙️ Čítam otázku…");
   await primeVoices();               // hlasy môžu doraziť až teraz
-  if(answered)return;                // dieťa medzitým odpovedalo
+  if(stale())return;                 // dieťa medzitým odpovedalo
   try{
   const intro=voiceMode==="story" ? "Poďme do Pandory. " : "";
-  await new Promise(r=>spk(intro+q.q,r));await ms(cfg.pause);
+  await new Promise(r=>spk(intro+q.q,r));
+  if(stale())return;
+  await ms(cfg.pause);
+  if(stale())return;
   for(let i=0;i<opts.length;i++){
-    if(!audioOn||!speaking)break;
+    if(stale())return;
     // Dvojbodka tu spôsobovala, že hlas prečítal „jedna ku osem jabĺčok".
     // Poradie hovoríme rovno slovom a vetu ukončíme bodkou.
     const poradie=MOZNOSTI_SLOVOM[i]||String(i+1);
     const label=voiceMode==="focus" ? `${poradie}. ${opts[i].txt}` : `Možnosť ${poradie}. ${opts[i].txt}`;
-    setNR(`🎙️ ${label}`);await new Promise(r=>spk(label,r));await ms(cfg.optionPause);
+    setNR(`🎙️ ${label}`);
+    await new Promise(r=>spk(label,r));
+    if(stale())return;
+    await ms(cfg.optionPause);
   }
   }catch(e){ /* zlyhanie hlasu nesmie zablokovať otázku */ }
+  if(mojaEpocha!==ttsEpoch)return;   // medzitým začalo novšie čítanie
   setNR("");speaking=false;
-  if(!answered)setVoiceReady(true,"🎤 Teraz stlač Odpovedz a povedz napríklad „možnosť jedna“.");
+  if(answered)return;
+  setVoiceReady(true,"🎤 Počúvam — povedz odpoveď alebo napríklad „možnosť jedna“.");
+  spustiAutoMic();                   // mikrofón sa zapne sám, netreba klikať
 }
 function toggleAudio(){
   audioOn=!audioOn;const b=document.getElementById("audioBtn");
   if(audioOn){b.textContent="🔊 Hlas: ZAP";b.classList.remove("off");}
-  else{b.textContent="🔇 Hlas: VYP";b.classList.add("off");speechSynthesis.cancel();setNR("");speaking=false;if(!answered)setVoiceReady(true,"🎤 Hlas čítania je vypnutý. Môžeš odpovedať hlasom.");}
+  else{b.textContent="🔇 Hlas: VYP";b.classList.add("off");stopSpeech();setNR("");if(!answered)setVoiceReady(true,"🎤 Hlas čítania je vypnutý. Môžeš odpovedať hlasom.");}
 }
 function doRepeat(){
   if(answered||!quizRunning)return;
   if(!questions.length||!questions[cur])return;   // kvíz sa ešte načítava
-  speechSynthesis.cancel();speaking=false;
+  stopSpeech();
   // POZOR: možnosti sa berú z currentOptions, nie z HTML. Keby sa skladali
   // z HTML, stratil by sa príznak `correct` a správna hlasová odpoveď
   // po stlačení „Znova" by sa vyhodnotila ako nesprávna.
@@ -1493,7 +1545,7 @@ function setVoiceMode(mode,el){
   document.querySelectorAll(".voice-mode-row .sp-btn").forEach(b=>b.classList.remove("active"));
   el.classList.add("active");
   if(!answered&&quizRunning){
-    speechSynthesis.cancel();speaking=false;setNR("");
+    stopSpeech();setNR("");
     if(questions[cur]&&currentOptions.length)readFull(questions[cur],currentOptions);
   }
 }
@@ -1507,7 +1559,7 @@ function setupRecog(){
     if(answered){
       // otázka je zodpovedaná — čakáme na povel na ďalšiu
       stopRecog();
-      if(isNextCommand(txt)){ speechSynthesis.cancel(); speaking=false; nextQ(); }
+      if(isNextCommand(txt)){ stopSpeech(); nextQ(); }
       else { document.getElementById("voiceStat").textContent='😕 Povedz „ďalej\u201c, ak chceš pokračovať.'; }
       return;
     }
@@ -1516,10 +1568,15 @@ function setupRecog(){
   };
   r.onerror=e=>{
     const vs=document.getElementById("voiceStat");
-    if(vs){
+    const zakazany=e&&(e.error==="not-allowed"||e.error==="service-not-allowed");
+    if(zakazany){
+      // Bez povolenia mikrofónu sa už nesnažíme zapínať ho sám pri každej
+      // otázke — dieťa by pri každej otázke videlo tú istú chybu.
+      micPovoleny=false;
+      if(vs)vs.textContent="🎤 Mikrofón nie je povolený — klikni na odpoveď.";
+    }else if(vs){
       if(answered)vs.textContent="👉 Klikni na „Ďalej →“ alebo povedz „ďalej“.";
-      else if(e&&(e.error==="not-allowed"||e.error==="service-not-allowed"))
-        vs.textContent="🎤 Mikrofón nie je povolený — klikni na odpoveď.";
+      else if(e&&e.error==="no-speech")vs.textContent="🎤 Nič som nepočula — povedz to ešte raz alebo klikni.";
       else vs.textContent="😕 Nerozumela som, skús znova.";
     }
     stopRecog();
@@ -1528,11 +1585,56 @@ function setupRecog(){
   r.onend=()=>{
     const bolaZodpovedana=answered;
     stopRecog();
-    if(!answered){setVoiceReady(true);return;}
+    if(!answered){
+      setVoiceReady(true);
+      // Mikrofón sa po chvíli ticha sám vypne. Kým dieťa neodpovedalo,
+      // ešte raz ho zapneme — do limitu, ktorý drží spustiAutoMic().
+      setTimeout(()=>{if(!answered&&!recogOn&&!speaking)spustiAutoMic();},600);
+      return;
+    }
     // ešte stále čakáme na „ďalej“ — obnov počúvanie (s malou pauzou)
     if(bolaZodpovedana)setTimeout(()=>{if(answered&&!recogOn)listenForNext();},400);
   };
   return r;
+}
+/* Mikrofón sa zapína sám, keď hlas dočíta možnosti. Predtým musel rodič
+   alebo dieťa najprv kliknúť na „Odpovedz" — pri kvíze, ktorý má byť
+   ovládaný hlasom, to bol krok navyše. Tlačidlo zostáva ako ručná
+   možnosť (a ako spôsob, ako počúvanie zastaviť). */
+function spustiAutoMic(){
+  if(!autoMic||!micPovoleny)return;
+  if(!quizRunning||answered||recogOn||speaking)return;
+  if(autoMicPokusy>=2){                 // dva prázdne pokusy stačia
+    setVoiceReady(true,"🎤 Stlač Odpovedz, keď chceš odpovedať hlasom.");
+    return;
+  }
+  autoMicPokusy++;
+  spustiRozpoznavanie(true);
+}
+// Spoločné spustenie rozpoznávania — z tlačidla aj automaticky.
+function spustiRozpoznavanie(automaticky){
+  if(!recog)recog=setupRecog();
+  if(!recog){
+    if(!automaticky)document.getElementById("voiceStat").textContent="😕 Hlasové zadávanie nie je dostupné v tomto prehliadači.";
+    return false;
+  }
+  if(recogOn)return true;
+  recogOn=true;
+  const b=document.getElementById("voiceBtn");
+  if(b){b.disabled=false;b.classList.remove("off");b.classList.add("listening");b.textContent="🔴 Počúvam…";}
+  document.getElementById("voiceStat").textContent=automaticky
+    ? "🎤 Počúvam — povedz odpoveď alebo číslo možnosti."
+    : "🎤 Hovor odpoveď…";
+  try{recog.start();}catch(e){stopRecog();return false;}
+  return true;
+}
+function setAutoMic(zap,el){
+  autoMic=zap;
+  localStorage.setItem("avatarQuizAutoMic",zap?"1":"0");
+  document.querySelectorAll(".mic-mode-row .sp-btn").forEach(b=>b.classList.remove("active"));
+  if(el)el.classList.add("active");
+  if(!zap&&recogOn&&!answered)stopRecog();
+  if(zap&&!answered&&quizRunning&&!speaking&&voiceReady){autoMicPokusy=0;spustiAutoMic();}
 }
 function toggleCfg(){
   const w=document.getElementById("cfgWrap");
@@ -1543,10 +1645,11 @@ function toggleCfg(){
 function toggleVoiceInput(){
   if(!quizRunning)return;
   if(answered){ if(recogOn)stopRecog(); else listenForNext(); return; }
+  if(recogOn){stopRecog();return;}   // druhé stlačenie počúvanie zastaví
   if(speaking||!voiceReady){document.getElementById("voiceStat").textContent="🎧 Počkaj, kým dočítam otázku a odpovede.";return;}
-  if(!recog)recog=setupRecog();
-  if(!recog){document.getElementById("voiceStat").textContent="😕 Hlasové zadávanie nie je dostupné v tomto prehliadači.";return;}
-  if(recogOn){stopRecog();return;}recogOn=true;const b=document.getElementById("voiceBtn");b.classList.add("listening");b.textContent="🔴 Počúvam…";document.getElementById("voiceStat").textContent="🎤 Hovor odpoveď…";try{recog.start();}catch(e){stopRecog();}
+  micPovoleny=true;                  // stlačenie tlačidla = nový pokus aj po zamietnutí
+  autoMicPokusy=0;
+  spustiRozpoznavanie(false);
 }
 function stopRecog(){
   recogOn=false;
@@ -1813,7 +1916,7 @@ function pickMsg(pool,lastRef){
 }
 
 function pickAnswer(btn,opt,isCorrect,q){
-  if(answered)return;answered=true;speaking=false;voiceReady=false;speechSynthesis.cancel();stopRecog();setVoiceReady(false,"");setNR("");
+  if(answered)return;answered=true;voiceReady=false;stopSpeech();stopRecog();setVoiceReady(false,"");setNR("");
   document.querySelectorAll(".ans-btn").forEach(b=>{b.disabled=true;if(b.querySelector(".a-txt").textContent===q.a.txt)b.classList.add("correct");});
   const fb=document.getElementById("feedback");
   answeredLog.push({cat:q.cat,skill:q.skill,ok:isCorrect,q:q.q});
@@ -1872,7 +1975,7 @@ function pct(n,d){return d?Math.round(n/d*100):0;}
 function showEnd(){
   quizRunning=false;
   document.body.classList.add("hotovo");
-  speechSynthesis.cancel();speaking=false;stopRecog();document.getElementById("quizMain").style.display="none";document.getElementById("endWrap").classList.add("show");
+  stopSpeech();stopRecog();document.getElementById("quizMain").style.display="none";document.getElementById("endWrap").classList.add("show");
   clearSaved();                       // dohraný kvíz sa už nemá čím obnovovať
   revealAllTiles();                   // odmena: obrázok sa dokreslí celý
   const endImg=document.getElementById("endImg");
@@ -2113,7 +2216,7 @@ function skipQuestion(){
   updSkipBtn();
   return;
  }
- speechSynthesis.cancel();speaking=false;stopRecog();
+ stopSpeech();stopRecog();
  var cat=questions[cur].cat;
  var usedTxt=new Set(questions.map(function(q){return q.q;}));
  var pool=QUESTIONS.filter(function(q){return q!==undefined&&q!==null&&q.cat===cat&&!usedTxt.has(q.q);});
@@ -2130,7 +2233,7 @@ function skipQuestion(){
  renderQ();
 }
 function resetGame(){
-  speechSynthesis.cancel();speaking=false;stopRecog();clearSaved();
+  stopSpeech();stopRecog();clearSaved();
   imgIdx=nextImageIndex();
   revealOrder=[];                     // nové náhodné poradie odkrývania dielikov
   questions=composeQuiz();
@@ -2141,7 +2244,7 @@ function resetGame(){
   document.getElementById("qNum").textContent=1;document.getElementById("qTot").textContent=questions.length;document.getElementById("endWrap").classList.remove("show");document.getElementById("quizMain").style.display="block";
   buildPuzzle(AVATAR_IMAGES[imgIdx]);updBar();updStats();renderQ();
 }
-function endGame(){speechSynthesis.cancel();speaking=false;stopRecog();showEnd();}
+function endGame(){stopSpeech();stopRecog();showEnd();}
 
 if(speechSynthesis.onvoiceschanged!==undefined)speechSynthesis.onvoiceschanged=()=>{};
 window.addEventListener("load",()=>{
@@ -2166,6 +2269,9 @@ window.addEventListener("load",()=>{
   // Až ten dotyk povolí prehliadaču prehrať hlas (Safari na iPhone inak mlčí).
   primeVoices();
   const ulozene=loadState();
+  // v nastaveniach vyznač, ktorý režim mikrofónu je zapnutý
+  const micBtn=document.getElementById(autoMic?"micAuto":"micRucne");
+  if(micBtn)micBtn.classList.add("active");
   const btnResume=document.getElementById("gateResume");
   if(ulozene&&btnResume){
     btnResume.style.display="block";
