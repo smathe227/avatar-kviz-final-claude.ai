@@ -5,7 +5,7 @@
 //     Vďaka tomu sa po nahratí novej verzie na GitHub appka vždy aktualizuje.
 //   • Obrázky, ikony     → NAJPRV CACHE (menia sa zriedka, načítajú sa okamžite).
 // ════════════════════════════════════════════════
-const VERSION = "v8";
+const VERSION = "v9";
 const CACHE_NAME = "avatar-kviz-" + VERSION;
 
 const ASSETS = [
@@ -26,41 +26,28 @@ const ASSETS = [
   "avatar-assets/avatar_08.jpg",
   "avatar-assets/avatar_09.jpg",
   "avatar-assets/avatar_10.jpg",
-  "avatar-assets/avatar_11.jpg",
   "avatar-assets/avatar_12.jpg",
   "avatar-assets/avatar_13.jpg",
   "avatar-assets/avatar_14.jpg",
-  "avatar-assets/avatar_15.jpg",
   "avatar-assets/avatar_16.webp",
   "avatar-assets/avatar_17.jpg",
   "avatar-assets/avatar_18.jpg",
-  "avatar-assets/avatar_19.jpg",
   "avatar-assets/avatar_20.jpg",
-  "avatar-assets/avatar_21.jpg",
-  "avatar-assets/avatar_22.jpg",
-  "avatar-assets/avatar_23.jpg",
-  "avatar-assets/avatar_24.jpg",
-  "avatar-assets/avatar_25.jpg",
   "avatar-assets/avatar_26.jpg",
   "avatar-assets/avatar_27.jpg",
   "avatar-assets/avatar_28.jpg",
-  "avatar-assets/avatar_29.jpg",
-  "avatar-assets/avatar_30.jpg",
-  "avatar-assets/avatar_31.jpg",
   "avatar-assets/avatar_32.jpg",
-  "avatar-assets/avatar_33.jpg",
-  "avatar-assets/avatar_34.jpg",
-  "avatar-assets/avatar_35.jpg",
-  "avatar-assets/avatar_36.jpg",
-  "avatar-assets/avatar_37.jpg",
-  "avatar-assets/avatar_38.jpg",
-  "avatar-assets/avatar_39.jpg",
 ];
+
+// Pri inštalácii sa sťahuje len to, bez čoho appka nenaštartuje.
+// Obrázky puzzle pribudnú do cache postupne, keď sa naozaj zobrazia —
+// inak by prvé spustenie stiahlo na mobilných dátach všetkých 39 fotiek naraz.
+const ZAKLAD = ASSETS.filter(a => !/avatar_\d+\.(jpg|webp)$/.test(a));
 
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ASSETS))
+      .then(cache => cache.addAll(ZAKLAD))
       .catch(() => {})   // keď je jeden súbor nedostupný, inštalácia nespadne
   );
   self.skipWaiting();
