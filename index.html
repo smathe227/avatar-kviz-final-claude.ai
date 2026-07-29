@@ -72,41 +72,57 @@ body::after{
 }
 
 /* ── HEADER ── */
-.hdr{text-align:center;padding:10px 4px 6px;max-width:700px;margin:0 auto}
-.hdr h1{font-family:var(--font);font-size:clamp(1.7rem,6vw,2.6rem);
-  color:#ecfeff;text-shadow:0 3px 14px rgba(6,182,212,.75),0 0 34px rgba(52,211,153,.45),0 0 60px rgba(139,92,246,.35)}
-.hdr .sub{font-size:clamp(.8rem,2.5vw,.95rem);color:#bae6fd;font-weight:800;margin-top:3px}
+.hdr{text-align:center;padding:6px 4px 4px;max-width:760px;margin:0 auto}
+.hdr h1{font-family:var(--font);font-size:clamp(1.15rem,4.4vw,2.1rem);letter-spacing:.01em;
+  color:#ecfeff;text-shadow:0 2px 12px rgba(6,182,212,.7),0 0 28px rgba(52,211,153,.4)}
+.hdr .sub{font-size:clamp(.72rem,2.2vw,.9rem);color:#93c5fd;font-weight:700;margin-top:2px;opacity:.85}
+@media(max-width:760px){.hdr .sub{display:none}}
 
 /* ── TOPBAR ── */
-.topbar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
-  max-width:700px;margin:0 auto 8px}
-.pill{background:linear-gradient(180deg,rgba(8,47,73,.86),rgba(15,23,42,.9));border:1.5px solid rgba(125,211,252,.45);
-  border-radius:999px;padding:5px 13px;font-family:var(--font);
-  font-size:clamp(.78rem,2.5vw,.9rem);color:#e0f2fe;box-shadow:0 0 16px rgba(14,165,233,.14)}
-.pill strong{color:#fef08a}
+.topbar{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;
+  max-width:760px;margin:0 auto 7px}
+.pill{background:linear-gradient(180deg,rgba(10,52,78,.78),rgba(4,14,31,.86));
+  border:1px solid rgba(125,211,252,.3);
+  border-radius:11px;padding:5px 11px;font-family:var(--font);font-weight:800;
+  font-size:clamp(.72rem,2.3vw,.86rem);color:#cbe9ff;
+  box-shadow:inset 0 1px 0 rgba(186,230,253,.12)}
+.pill strong{color:#fde68a;font-weight:900}
+/* Rekord a odkryté dieliky patria k obrázku — na telefóne ich tu netreba,
+   inak sa pruh láme do dvoch riadkov a vytláča otázku pod okraj. */
+@media(max-width:760px){.pill.pill-vedlajsi{display:none}}
 
 /* ── CONTROL BUTTONS ── */
-.ctrl-row{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;
-  max-width:700px;margin:0 auto 7px}
-.btn{border:1px solid rgba(224,242,254,.22);border-radius:999px;padding:10px 16px;
-  font-family:var(--font);font-size:clamp(.82rem,2.8vw,.95rem);
-  cursor:pointer;color:#fff;box-shadow:0 6px 16px rgba(0,0,0,.4);
-  transition:transform .15s,box-shadow .15s,filter .15s;min-width:90px}
-.btn:hover{transform:translateY(-1px);filter:saturate(1.1);box-shadow:0 10px 28px rgba(14,165,233,.24)}
+/* Predtým malo každé tlačidlo inú sýtu farbu (modrá, ružová, zelená, žltá)
+   a spolu s pilulkami zaberali takmer tretinu obrazovky. Teraz majú spoločný
+   tmavý sklenený základ a farbou sa odlišuje len okraj a text — výrazné
+   zostáva jediné tlačidlo, to hlasové, ktoré je hlavná akcia. */
+.ctrl-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+  max-width:760px;margin:0 auto 6px}
+.btn{border:1.5px solid rgba(125,211,252,.28);border-radius:13px;padding:8px 13px;
+  font-family:var(--font);font-weight:800;font-size:clamp(.76rem,2.5vw,.88rem);
+  cursor:pointer;color:#dbeafe;
+  background:linear-gradient(180deg,rgba(12,58,84,.8),rgba(5,18,38,.9));
+  box-shadow:0 3px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(186,230,253,.13);
+  transition:transform .15s,box-shadow .18s,border-color .18s,filter .18s;min-width:0}
+.btn:hover:not(:disabled){transform:translateY(-1px);border-color:rgba(125,211,252,.62);
+  box-shadow:0 7px 18px rgba(14,165,233,.26),inset 0 1px 0 rgba(186,230,253,.2)}
 .btn:active{transform:scale(.96)}
-.btn-audio{background:linear-gradient(135deg,#38bdf8,#6366f1)}
-.btn-audio.off{background:linear-gradient(135deg,#64748b,#475569)}
-.btn-voice{background:linear-gradient(135deg,#f472b6,#a855f7);font-size:1.1rem;min-width:110px}
-.btn-voice.listening{background:linear-gradient(135deg,#ef4444,#f97316);animation:pulse 1s infinite}
-.btn-repeat{background:linear-gradient(135deg,#22c55e,#16a34a)}
-.btn-reset{background:linear-gradient(135deg,#fb923c,#f97316);color:#0f172a}
-.btn-end{background:linear-gradient(135deg,#f97316,#ef4444)}
-.btn-skip{background:linear-gradient(135deg,#fbbf24,#eab308);color:#0f172a}
+.btn-audio{border-color:rgba(56,189,248,.5);color:#bae6fd}
+.btn-audio.off{border-color:rgba(148,163,184,.4);color:#94a3b8;filter:saturate(.5)}
+.btn-voice{background:linear-gradient(135deg,#0e7490,#6d28d9);
+  border-color:rgba(167,139,250,.65);color:#fff;font-size:clamp(.8rem,2.7vw,.95rem);
+  box-shadow:0 5px 16px rgba(109,40,217,.4),inset 0 1px 0 rgba(233,213,255,.25)}
+.btn-voice.listening{background:linear-gradient(135deg,#dc2626,#ea580c);
+  border-color:#fca5a5;animation:pulse 1s infinite}
+.btn-repeat{border-color:rgba(52,211,153,.48);color:#a7f3d0}
+.btn-skip{border-color:rgba(251,191,36,.5);color:#fde68a}
+.btn-reset{border-color:rgba(251,146,60,.55);color:#fed7aa}
+.btn-end{border-color:rgba(248,113,113,.55);color:#fecaca}
 
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
 
 /* ── SPEED ROW ── */
-.btn-cfg{background:linear-gradient(135deg,#334155,#1e293b);margin:0 auto 6px;display:block}
+.btn-cfg{border-color:rgba(148,163,184,.4);color:#cbd5e1;padding:8px 11px;font-size:1rem}
 .cfg-wrap{max-height:0;overflow:hidden;opacity:0;transition:max-height .28s ease,opacity .22s ease}
 .cfg-wrap.open{max-height:260px;opacity:1}
 .speed-row{display:flex;align-items:center;gap:6px;justify-content:center;
@@ -121,8 +137,8 @@ body::after{
 .voice-mode-row .sp-btn.active{background:#34d399;color:#052e16}
 
 /* ── LAYOUT: left + right ── */
-.shell{max-width:980px;margin:0 auto;display:grid;
-  grid-template-columns:1.05fr .95fr;gap:12px}
+.shell{max-width:1000px;margin:0 auto;display:grid;
+  grid-template-columns:1.05fr .95fr;gap:12px;align-items:start}
 
 @media(max-width:760px){
   .shell{grid-template-columns:1fr}
@@ -142,7 +158,10 @@ body::after{
 /* ── PUZZLE ── */
 .puz-wrap{background:linear-gradient(180deg,rgba(2,6,23,.62),rgba(8,47,73,.52));border-radius:18px;
   border:1.5px solid rgba(103,232,249,.42);padding:11px;box-shadow:inset 0 0 24px rgba(6,182,212,.1)}
-.puz-title{font-family:var(--font);font-size:.92rem;color:#cffafe;margin-bottom:7px}
+.puz-title{font-family:var(--font);font-weight:800;font-size:.9rem;color:#cffafe;
+  margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.puz-title b{font-size:.8rem;color:#fde68a;background:rgba(2,6,23,.66);
+  border:1px solid rgba(251,191,36,.35);border-radius:9px;padding:3px 9px;white-space:nowrap}
 .puz-grid{position:relative;width:100%;max-width:420px;
   aspect-ratio:4/3;margin:0 auto;border-radius:14px;overflow:hidden;
   background:rgb(2,6,23) center/contain no-repeat;box-shadow:0 0 0 1px rgba(186,230,253,.24),0 20px 38px rgba(0,0,0,.45)}
@@ -150,8 +169,8 @@ body::after{
   background:linear-gradient(180deg,rgba(103,232,249,.08),rgba(0,0,0,.1) 45%,rgba(2,6,23,.24))}
 .covers{position:absolute;inset:0}
 .cov{position:absolute;
-  background:linear-gradient(135deg,rgba(8,47,73,.98),rgba(6,78,59,.96));
-  border:1px solid rgba(103,232,249,.55);
+  background:linear-gradient(135deg,rgba(10,56,86,.97),rgba(6,78,59,.95));
+  border:1px solid rgba(103,232,249,.42);
   display:flex;align-items:center;justify-content:center;
   transition:opacity .35s,transform .35s,filter .35s;cursor:default;box-shadow:inset 0 0 12px rgba(125,211,252,.15)}
 .cov-n{color:#ffffff;font-family:var(--font);
@@ -167,21 +186,34 @@ body::after{
   transition:width .35s}
 
 /* ── QUIZ RIGHT ── */
-.q-head{display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;margin-bottom:7px}
-.q-badge{background:rgba(2,6,23,.72);border:1.5px solid rgba(103,232,249,.34);
-  border-radius:999px;padding:5px 11px;font-weight:900;font-size:.8rem}
+.q-head{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:8px}
+.q-badge{background:rgba(2,6,23,.66);border:1px solid rgba(103,232,249,.28);
+  border-radius:10px;padding:4px 9px;font-weight:800;font-size:.74rem;color:#cbe9ff;white-space:nowrap}
+.q-badge:last-child{margin-left:auto}
+/* Na telefóne by sa tri odznaky zlomili do dvoch riadkov a vytláčali otázku.
+   Etapu vynecháme — postup už ukazuje pruh nad otázkou. */
+@media(max-width:560px){#stageTxt{display:none}}
+/* Postup kvízom — dieťa hneď vidí, koľko toho ešte zostáva. */
+.q-progress{height:7px;border-radius:999px;background:rgba(2,6,23,.75);
+  border:1px solid rgba(125,211,252,.22);overflow:hidden;margin-bottom:9px}
+.q-progress span{display:block;height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,#22d3ee,#34d399,#a3e635);
+  box-shadow:0 0 12px rgba(52,211,153,.55);transition:width .45s ease}
 
 /* question text */
-.q-text{font-family:var(--font);
-  font-size:clamp(1.05rem,3.5vw,1.55rem);
-  color:#fff;margin:6px 0;line-height:1.3;
-  background:linear-gradient(180deg,rgba(2,6,23,.68),rgba(8,47,73,.58));border-radius:14px;padding:12px 13px;
-  border-left:4px solid var(--c1);box-shadow:0 0 24px rgba(103,232,249,.12)}
+.q-text{font-family:var(--font);font-weight:800;
+  font-size:clamp(1.1rem,3.9vw,1.6rem);
+  color:#f0f9ff;margin:0 0 4px;line-height:1.34;
+  background:linear-gradient(160deg,rgba(11,60,88,.82),rgba(3,12,28,.86));
+  border-radius:16px;padding:14px 15px 15px 17px;
+  border-left:5px solid var(--c1);
+  box-shadow:0 8px 22px rgba(0,0,0,.42),inset 0 1px 0 rgba(186,230,253,.14),0 0 30px rgba(103,232,249,.1)}
 
 /* ── MATH DISPLAY ── */
-.math-box{display:none;background:linear-gradient(180deg,rgba(64,45,10,.72),rgba(2,6,23,.7));
-  border-radius:16px;border:1.5px solid rgba(254,240,138,.45);
-  padding:10px;margin:8px 0;text-align:center}
+.math-box{display:none;background:linear-gradient(160deg,rgba(88,60,10,.6),rgba(3,12,28,.8));
+  border-radius:16px;border:1.5px solid rgba(254,240,138,.4);
+  padding:11px 10px;margin:9px 0 2px;text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.4),inset 0 1px 0 rgba(254,243,199,.16)}
 .math-row{display:flex;align-items:center;justify-content:center;
   gap:8px;flex-wrap:wrap;font-family:var(--font)}
 .m-group{display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -194,49 +226,95 @@ body::after{
 .m-eq{color:#a5b4fc;font-size:clamp(1.5rem,5vw,2.2rem);font-weight:900}
 
 /* ── ANSWER GRID ── */
-.ans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+/* ═══ ODPOVEDE — hlavný prvok celej obrazovky ═══
+   Predtým to boli tmavé obdĺžniky s tenkým rámom, ktoré takmer splývali
+   s pozadím a nebolo na nich vidieť, že sa dá kliknúť. Teraz majú výraznejší
+   povrch, jasné stavy a v rohu číslo, ktoré sedí s tým, čo hovorí hlas
+   („možnosť jedna") aj s klávesami 1–4. */
+.ans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px;counter-reset:odp}
 .ans-grid.two-col{grid-template-columns:repeat(2,1fr)}
 @media(max-width:400px){.ans-grid{grid-template-columns:repeat(2,1fr)}}
 
 .ans-btn{
-  background:linear-gradient(180deg,rgba(8,47,73,.78),rgba(15,23,42,.88));
-  border:2.5px solid rgba(103,232,249,.22);
-  border-radius:16px;padding:10px 7px;
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  cursor:pointer;transition:transform .18s,border-color .2s,background .2s,box-shadow .2s;
-  min-height:92px;position:relative;overflow:hidden;
+  background:linear-gradient(168deg,rgba(15,79,107,.8),rgba(9,32,58,.92) 58%,rgba(4,14,32,.95));
+  border:2px solid rgba(103,232,249,.32);
+  border-radius:19px;padding:15px 8px 12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;
+  transition:transform .16s,border-color .2s,background .2s,box-shadow .2s,opacity .2s,filter .2s;
+  min-height:108px;position:relative;overflow:hidden;padding-top:19px;
+  box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(186,230,253,.16);
 }
-.ans-btn::after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:2px;background:linear-gradient(90deg,transparent,#67e8f9,#34d399,transparent);opacity:.55}
-.ans-btn:active{transform:scale(.96)}
-.ans-btn:hover:not(:disabled){border-color:var(--c1);background:linear-gradient(180deg,rgba(14,116,144,.5),rgba(15,23,42,.88));box-shadow:0 0 24px rgba(103,232,249,.2)}
-.ans-btn:disabled{cursor:not-allowed}
-.ans-btn.correct{border-color:#86efac;background:linear-gradient(180deg,rgba(34,197,94,.3),rgba(15,23,42,.88));
-  animation:popIn .35s ease;box-shadow:0 0 26px rgba(74,222,128,.32)}
-.ans-btn.wrong{border-color:#fb7185;background:linear-gradient(180deg,rgba(244,63,94,.25),rgba(15,23,42,.88))}
+/* jemný svetelný nádych zhora — dodá tlačidlu tvar */
+.ans-btn::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:17px;
+  background:radial-gradient(120% 65% at 50% -12%,rgba(125,211,252,.22),transparent 62%)}
+/* číslo možnosti */
+.ans-btn::before{
+  counter-increment:odp;content:counter(odp);
+  position:absolute;left:8px;top:8px;z-index:2;
+  min-width:21px;height:21px;padding:0 4px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font);font-size:.72rem;font-weight:900;
+  color:#7dd3fc;background:rgba(2,6,23,.8);border:1px solid rgba(125,211,252,.42);
+}
+.ans-btn:hover:not(:disabled){transform:translateY(-2px);border-color:#67e8f9;
+  background:linear-gradient(168deg,rgba(22,110,142,.85),rgba(10,38,66,.92) 58%,rgba(4,14,32,.95));
+  box-shadow:0 12px 26px rgba(6,182,212,.32),inset 0 1px 0 rgba(186,230,253,.26)}
+.ans-btn:active:not(:disabled){transform:scale(.97)}
+.ans-btn:disabled{cursor:default}
+/* neoznačené možnosti po odpovedi stlmíme, nech je jasné, čo bolo vybraté */
+.ans-btn:disabled:not(.correct):not(.wrong){opacity:.4;filter:saturate(.45)}
 
-@keyframes popIn{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+.ans-btn.correct{border-color:#4ade80;
+  background:linear-gradient(168deg,rgba(34,197,94,.5),rgba(5,46,22,.92));
+  box-shadow:0 0 0 3px rgba(74,222,128,.26),0 12px 30px rgba(34,197,94,.34);
+  animation:popIn .42s ease}
+.ans-btn.correct::before{content:"✓";color:#052e16;background:#4ade80;border-color:#bbf7d0}
+.ans-btn.wrong{border-color:#fb7185;
+  background:linear-gradient(168deg,rgba(244,63,94,.42),rgba(48,8,22,.92));
+  box-shadow:0 0 0 3px rgba(251,113,133,.22),0 10px 26px rgba(244,63,94,.3);
+  animation:triasenie .42s ease}
+.ans-btn.wrong::before{content:"✕";color:#4c0519;background:#fb7185;border-color:#fecdd3}
 
-.a-ico{font-size:clamp(1.8rem,6vw,2.6rem);line-height:1;display:block}
+@keyframes popIn{0%{transform:scale(1)}45%{transform:scale(1.09)}100%{transform:scale(1)}}
+@keyframes triasenie{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+.a-ico{font-size:clamp(2rem,6.6vw,2.8rem);line-height:1;display:block;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.55))}
+/* Farebné odpovede dostanú skutočnú farebnú guľôčku namiesto emoji —
+   emoji kruhy sa na rôznych zariadeniach vykresľujú rôzne a niekde
+   vyzerajú ako sivé bodky. */
+.a-swatch{width:clamp(30px,9vw,42px);height:clamp(30px,9vw,42px);border-radius:50%;
+  border:2px solid rgba(255,255,255,.55);
+  box-shadow:inset 0 -6px 12px rgba(0,0,0,.4),0 3px 10px rgba(0,0,0,.5)}
 .a-num{color:#ffffff;font-family:var(--font);
-  font-size:clamp(1.6rem,6vw,2.4rem);font-weight:900;
-  text-shadow:0 2px 8px rgba(0,0,0,.8);line-height:1}
-.a-apples{font-size:clamp(.7rem,2.5vw,1.05rem);line-height:1.3;
-  max-width:100%;word-break:break-all;text-align:center;display:block}
-.a-txt{font-family:var(--font);font-size:clamp(.7rem,2.3vw,.88rem);
-  color:#e5e7eb;text-align:center;line-height:1.2;display:block}
+  font-size:clamp(1.75rem,6.4vw,2.5rem);font-weight:900;
+  text-shadow:0 2px 10px rgba(0,0,0,.85);line-height:1}
+.a-apples{font-size:clamp(.72rem,2.6vw,1.05rem);line-height:1.25;
+  max-width:100%;word-break:break-all;text-align:center;display:block;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.a-txt{font-family:var(--font);font-weight:800;font-size:clamp(.76rem,2.5vw,.94rem);
+  color:#eff6ff;text-align:center;line-height:1.22;display:block;
+  text-shadow:0 1px 4px rgba(0,0,0,.6)}
 
 /* ── FEEDBACK ── */
-.feedback{min-height:34px;text-align:center;font-family:var(--font);
-  font-size:clamp(1rem,3.5vw,1.25rem);margin-top:7px;line-height:1.35}
-.feedback small{display:inline-block;margin-top:3px;font-size:.78em;opacity:.9}
-.fb-ok{color:#86efac;text-shadow:0 0 14px rgba(74,222,128,.45)}.fb-bad{color:#fda4af;text-shadow:0 0 12px rgba(251,113,133,.35)}
+/* Prázdna spätná väzba už nezaberá miesto — dovtedy tam ostávala diera. */
+.feedback{min-height:0;text-align:center;font-family:var(--font);font-weight:800;
+  font-size:clamp(1rem,3.5vw,1.22rem);line-height:1.35;margin:0}
+.feedback:not(:empty){margin-top:10px;padding:10px 12px;border-radius:14px}
+.feedback small{display:inline-block;margin-top:3px;font-size:.78em;opacity:.92;font-weight:700}
+.fb-ok:not(:empty){color:#bbf7d0;background:linear-gradient(180deg,rgba(34,197,94,.24),rgba(5,46,22,.4));
+  border:1px solid rgba(74,222,128,.45);box-shadow:0 0 22px rgba(74,222,128,.2)}
+.fb-bad:not(:empty){color:#fecdd3;background:linear-gradient(180deg,rgba(244,63,94,.2),rgba(48,8,22,.4));
+  border:1px solid rgba(251,113,133,.42);box-shadow:0 0 20px rgba(251,113,133,.16)}
 
 /* ── NEXT BTN ── */
-.next-btn{display:none;margin:10px auto 0;border:none;border-radius:999px;
-  padding:12px 28px;font-family:var(--font);
-  background:linear-gradient(135deg,#06b6d4,#22c55e);
-  color:#fff;font-size:clamp(.95rem,3vw,1.1rem);cursor:pointer;
-  box-shadow:0 8px 22px rgba(56,189,248,.4)}
+.next-btn{display:none;margin:12px auto 0;border:1px solid rgba(190,242,100,.5);border-radius:999px;
+  padding:13px 32px;font-family:var(--font);font-weight:900;
+  background:linear-gradient(135deg,#0891b2,#16a34a);
+  color:#fff;font-size:clamp(.98rem,3.1vw,1.14rem);cursor:pointer;
+  box-shadow:0 8px 24px rgba(22,163,74,.42),inset 0 1px 0 rgba(220,252,231,.3)}
 .next-btn.show{animation:readyPulse 1.7s ease-in-out infinite}
 @keyframes readyPulse{0%,100%{box-shadow:0 8px 22px rgba(56,189,248,.35)}50%{box-shadow:0 10px 30px rgba(52,211,153,.55)}}
 .next-btn.show{display:block}
@@ -250,12 +328,12 @@ body::after{
   font-family:var(--font);min-height:16px;margin-top:3px}
 
 /* ── INFO BOX ── */
-.info-box{margin-top:9px;background:linear-gradient(180deg,rgba(2,6,23,.7),rgba(6,78,59,.36));border-radius:16px;
-  border:1.5px solid rgba(52,211,153,.32);padding:9px 12px}
-.info-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
-.info-ico{font-size:1.9rem}
-.info-txt{font-family:var(--font);font-size:.88rem;color:#c7d2fe}
-.info-body{font-size:.78rem;color:#94a3b8;line-height:1.45}
+.info-box{margin-top:11px;background:linear-gradient(180deg,rgba(2,6,23,.62),rgba(6,78,59,.26));
+  border-radius:14px;border:1px solid rgba(52,211,153,.24);padding:8px 11px;opacity:.9}
+.info-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.info-ico{font-size:1.2rem}
+.info-txt{font-family:var(--font);font-weight:800;font-size:.8rem;color:#a5f3fc}
+.info-body{font-size:.74rem;color:#94a3b8;line-height:1.42}
 
 /* ── END SCREEN ── */
 .end-wrap{display:none;padding:6px 2px}
@@ -286,7 +364,8 @@ body::after{
 
 .learn-box{display:none;margin-top:8px;background:rgba(8,47,73,.86);border:1.5px solid rgba(125,211,252,.45);border-radius:14px;padding:9px 11px;color:#e0f2fe;font-weight:900;line-height:1.35;font-size:.86rem}
 .learn-box.show{display:block}
-.badge-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;min-height:28px;margin-top:7px}
+.badge-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;min-height:0;margin:0}
+.badge-row:not(:empty){margin-top:8px}
 .mini-badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:4px 9px;background:rgba(251,191,36,.16);border:1px solid rgba(251,191,36,.45);color:#fde68a;font-family:var(--font);font-size:.72rem}
 .end-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 @media(max-width:520px){.end-grid{grid-template-columns:1fr}}
@@ -321,6 +400,11 @@ body::after{
 /* ── ODMENA NA KONCI: celý odkrytý obrázok ── */
 .end-img{width:100%;max-width:420px;margin:0 auto 10px;display:block;border-radius:16px;
   border:1.5px solid rgba(125,211,252,.4);box-shadow:0 14px 34px rgba(0,0,0,.55)}
+/* Na širokej obrazovke je odkryté puzzle hneď vedľa — ten istý obrázok
+   dvakrát vedľa seba pôsobí ako chyba. */
+@media(min-width:761px){.end-img{display:none}}
+/* Po dohraní už ovládanie kvízu nemá čo robiť — na konci sa neodpovedá. */
+body.hotovo .ctrl-row,body.hotovo #cfgWrap,body.hotovo .pill-vedlajsi{display:none}
 
 /* ── NÁPOVEDA KU KLÁVESNICI (len na väčších obrazovkách) ── */
 .key-hint{display:none;text-align:center;font-size:.74rem;color:#7dd3fc;opacity:.75;margin-top:5px}
@@ -334,24 +418,24 @@ body::after{
 /* ── MALÉ TELEFÓNY — musí byť na konci, aby prebilo základné pravidlá ── */
 @media(max-width:420px){
   /* Na malých telefónoch šetríme každý pixel, aby odpovede zostali na obrazovke */
-  #mathBox{padding:5px 8px}
+  #mathBox{padding:6px 8px;margin:7px 0 2px}
   #mathBox .m-apple{font-size:.85rem}
-  /* Nápoveda ZOSTÁVA viditeľná — je pod odpoveďami, takže ich nevytláča,
-     a práve v nej sa dieťa dozvie o hlasovom príkaze „ďalej“. */
-  .info-box{padding:9px 11px;font-size:.8rem}
-  /* Nižšie tlačidlá odpovedí — inak sa pri matematike nezmestia na obrazovku */
-  .ans-btn{min-height:70px;padding:7px 6px;gap:3px;border-radius:14px}
+  .info-box{padding:7px 10px}
+  .ans-btn{min-height:88px;padding:12px 6px 9px;gap:4px;border-radius:16px}
   /* Namiesto pevných dvoch stĺpcov nech sa zmestí toľko, koľko sa reálne dá —
      tri odpovede tak zostanú v jednom riadku a nepretečú pod okraj. */
   .ans-grid{grid-template-columns:repeat(auto-fit,minmax(92px,1fr))!important;gap:7px}
-  .a-ico{font-size:1.5rem}
-  .a-txt{font-size:.86rem}
-  .q-head{margin-bottom:4px}
-  .hdr h1{font-size:1.25rem}
-  .hdr .sub{font-size:.72rem}
-  .btn{padding:8px 12px;font-size:.8rem}
-  .pill{padding:4px 9px;font-size:.72rem}
-  .puz-title{font-size:.85rem}
+  .ans-btn::before{left:6px;top:6px;min-width:18px;height:18px;font-size:.66rem;border-radius:6px}
+  .a-ico{font-size:1.7rem}
+  .a-txt{font-size:.82rem}
+  .a-num{font-size:1.55rem}
+  .q-head{margin-bottom:6px}
+  .q-text{padding:11px 12px 12px 14px}
+  .hdr h1{font-size:1.12rem}
+  .btn{padding:7px 11px;font-size:.75rem;border-radius:11px}
+  .pill{padding:4px 8px;font-size:.7rem}
+  .puz-title{font-size:.82rem}
+  .pleft{padding:10px 11px 12px}.pright{padding:11px 12px 14px}
 }
 </style>
 </head>
@@ -381,8 +465,8 @@ body::after{
   <div class="pill">⭐ Body: <strong id="score">0</strong></div>
   <div class="pill">❓ Otázka: <strong id="qNum">1</strong> / <strong id="qTot">30</strong></div>
   <div class="pill">🔥 Séria: <strong id="streakInfo">0</strong></div>
-  <div class="pill">🏅 Rekord: <strong id="bestInfo">0</strong></div>
-  <div class="pill">🖼️ Odkryté: <strong id="revInfo">0/30</strong></div>
+  <div class="pill pill-vedlajsi">🏅 Rekord: <strong id="bestInfo">0</strong></div>
+  <div class="pill pill-vedlajsi">🖼️ Odkryté: <strong id="revInfo">0/30</strong></div>
 </div>
 
 <!-- CONTROLS -->
@@ -391,10 +475,10 @@ body::after{
   <button class="btn btn-voice" id="voiceBtn" onclick="toggleVoiceInput()">🎤 Hovor!</button>
   <button class="btn btn-repeat" onclick="doRepeat()">🔁 Znova</button>
   <button class="btn btn-skip" id="skipBtn" onclick="confirmClick('skipBtn',skipQuestion)">⏭️ Preskočiť (5)</button>
+  <button class="btn btn-cfg" id="cfgBtn" onclick="toggleCfg()" aria-label="Nastavenia">⚙️</button>
 </div>
 
 <!-- SPEED -->
-<button class="btn btn-cfg" id="cfgBtn" onclick="toggleCfg()">⚙️ Nastavenia</button>
 <div id="cfgWrap" class="cfg-wrap">
 <div class="speed-row">
   <span class="speed-lbl">🎤 Tempo:</span>
@@ -420,7 +504,7 @@ body::after{
   <!-- LEFT: PUZZLE -->
   <div class="panel pleft">
     <div class="puz-wrap">
-      <div class="puz-title">🌌 Pandora obrázok – 30 dielikov</div>
+      <div class="puz-title"><span>🌌 Obrázok z Pandory</span><b id="revInfo2">0/30</b></div>
       <div class="puz-grid" id="puzGrid">
         <div class="overlay"></div>
         <div class="covers" id="covWrap"></div>
@@ -437,6 +521,7 @@ body::after{
 
     <!-- QUIZ MAIN -->
     <div id="quizMain">
+      <div class="q-progress"><span id="qFill"></span></div>
       <div class="q-head">
         <div class="q-badge" id="stageTxt">🌱 Štart!</div>
         <div class="q-badge" id="catTxt"></div>
@@ -472,7 +557,7 @@ body::after{
           <div class="info-ico">🔥</div>
           <div class="info-txt">Avatar Puzzle Dobrodružstvo</div>
         </div>
-        <div class="info-body">Klikni na odpoveď, alebo stlač 🎤 a povedz ju nahlas. Po vysvetlení stačí povedať <strong>„ďalej“</strong> a pokračuje ďalšia otázka — klikať netreba. Na konci dostaneš presný tréningový prehľad.</div>
+        <div class="info-body">Klikni na odpoveď alebo ju povedz nahlas cez 🎤. Po vysvetlení stačí povedať <strong>„ďalej“</strong>.</div>
       </div>
     </div>
 
@@ -1212,7 +1297,16 @@ function revealAllTiles(){
   const covers=[...document.querySelectorAll(".cov:not(.gone)")];
   covers.forEach((c,i)=>setTimeout(()=>c.classList.add("gone"),120+i*45));
 }
-function updBar(){document.getElementById("revInfo").textContent=`${revd}/${TILES}`;document.getElementById("puzFill").style.width=(revd/TILES*100)+"%";}
+function updBar(){
+  const txt=`${revd}/${TILES}`;
+  document.getElementById("revInfo").textContent=txt;
+  const r2=document.getElementById("revInfo2"); if(r2)r2.textContent=txt;
+  document.getElementById("puzFill").style.width=(revd/TILES*100)+"%";
+}
+function updProgress(){
+  const f=document.getElementById("qFill");
+  if(f&&questions.length)f.style.width=(cur/questions.length*100)+"%";
+}
 function updStats(){
   document.getElementById("score").textContent=score;
   document.getElementById("streakInfo").textContent=streak;
@@ -1221,12 +1315,20 @@ function updStats(){
 
 // Zoznam hlasov sa v prehliadači načítava asynchrónne. Kým nie je hotový,
 // prvá otázka by sa prečítala náhradným systémovým hlasom.
-let cachedVoice=null, cachedVoiceCount=0;
+let cachedVoice=null, cachedVoiceCount=0, voicesPromise=null;
+// Čakanie na hlasy prebieha NA POZADÍ. Predtým sa naň čakalo pred vykreslením
+// otázky, takže po stlačení „Začíname" svietilo aj poldruha sekundy prázdne
+// „Načítavam…". Teraz sa otázka ukáže hneď a čaká len samotné čítanie nahlas.
 function primeVoices(cb){
-  const hotovo=()=>{cachedVoice=null;if(cb)cb();};
-  if(speechSynthesis.getVoices().length){hotovo();return;}
-  let t=setTimeout(hotovo,1500);
-  speechSynthesis.onvoiceschanged=()=>{clearTimeout(t);speechSynthesis.onvoiceschanged=null;hotovo();};
+  if(!voicesPromise){
+    voicesPromise=new Promise(res=>{
+      if(speechSynthesis.getVoices().length){res();return;}
+      const t=setTimeout(res,1500);
+      speechSynthesis.onvoiceschanged=()=>{clearTimeout(t);speechSynthesis.onvoiceschanged=null;res();};
+    }).then(()=>{cachedVoice=null;});
+  }
+  if(cb)voicesPromise.then(cb);
+  return voicesPromise;
 }
 function bestVoice(){
   const voices=speechSynthesis.getVoices();
@@ -1331,7 +1433,10 @@ function spk(txt,cb){
   let hotovo=false;
   const koniec=()=>{if(hotovo)return;hotovo=true;cb&&cb();};
   u.onend=koniec;u.onerror=koniec;
-  speechSynthesis.speak(u);
+  // Čítanie nahlas nesmie nikdy zhodiť zvyšok hry. Keď hlasový engine
+  // zlyhá (stáva sa to na niektorých zariadeniach), pokračujeme ďalej
+  // bez zvuku — inak by sa neobjavilo ani tlačidlo „Ďalej".
+  try{ speechSynthesis.speak(u); }catch(e){ koniec(); }
 }
 function ms(n){return new Promise(r=>setTimeout(r,n));}
 function setNR(t){document.getElementById("nowRdg").textContent=t;}
@@ -1350,6 +1455,9 @@ async function readFull(q,opts){
   if(!audioOn){setVoiceReady(true,"🎤 Stlač Odpovedz a povedz odpoveď alebo číslo možnosti.");return;}
   setVoiceReady(false,"🎧 Najprv si vypočuj otázku a odpovede.");
   speaking=true;const cfg=voiceConfig();setNR("🎙️ Čítam otázku…");
+  await primeVoices();               // hlasy môžu doraziť až teraz
+  if(answered)return;                // dieťa medzitým odpovedalo
+  try{
   const intro=voiceMode==="story" ? "Poďme do Pandory. " : "";
   await new Promise(r=>spk(intro+q.q,r));await ms(cfg.pause);
   for(let i=0;i<opts.length;i++){
@@ -1360,6 +1468,7 @@ async function readFull(q,opts){
     const label=voiceMode==="focus" ? `${poradie}. ${opts[i].txt}` : `Možnosť ${poradie}. ${opts[i].txt}`;
     setNR(`🎙️ ${label}`);await new Promise(r=>spk(label,r));await ms(cfg.optionPause);
   }
+  }catch(e){ /* zlyhanie hlasu nesmie zablokovať otázku */ }
   setNR("");speaking=false;
   if(!answered)setVoiceReady(true,"🎤 Teraz stlač Odpovedz a povedz napríklad „možnosť jedna“.");
 }
@@ -1404,7 +1513,17 @@ function setupRecog(){
     matchVoiceAnswer(txt);
     stopRecog();
   };
-  r.onerror=()=>{document.getElementById("voiceStat").textContent="😕 Nerozumela som, skús znova.";stopRecog();if(!answered)setVoiceReady(true);};
+  r.onerror=e=>{
+    const vs=document.getElementById("voiceStat");
+    if(vs){
+      if(answered)vs.textContent="👉 Klikni na „Ďalej →“ alebo povedz „ďalej“.";
+      else if(e&&(e.error==="not-allowed"||e.error==="service-not-allowed"))
+        vs.textContent="🎤 Mikrofón nie je povolený — klikni na odpoveď.";
+      else vs.textContent="😕 Nerozumela som, skús znova.";
+    }
+    stopRecog();
+    if(!answered)setVoiceReady(true);
+  };
   r.onend=()=>{
     const bolaZodpovedana=answered;
     stopRecog();
@@ -1585,10 +1704,23 @@ function matchVoiceAnswer(spoken){
   document.getElementById("voiceStat").textContent="😕 Nerozumela som, klikni na odpoveď.";
 }
 
+// Emoji farebných kruhov sa na rôznych zariadeniach vykresľujú rôzne — niekde
+// vyzerajú ako sivé bodky a otázka o farbách stratí zmysel. Nahradíme ich
+// skutočnou farebnou guľôčkou.
+const FARBY={"🔴":"#ef4444","🟠":"#f97316","🟡":"#facc15","🟢":"#22c55e","🔵":"#3b82f6",
+  "🟣":"#a855f7","🟤":"#92400e","⚫":"#111827","⚪":"#f8fafc","🟥":"#ef4444",
+  "🟧":"#f97316","🟨":"#facc15","🟩":"#22c55e","🟦":"#3b82f6","🟪":"#a855f7","⬜":"#e2e8f0"};
+function ikonaOdpovede(opt){
+  const farba=FARBY[opt.img];
+  if(farba)return `<span class="a-swatch" style="background:${farba}"></span>`;
+  return `<span class="a-ico">${opt.img||SVG_DOT}</span>`;
+}
 function makeBtn(opt,isMath){
   const b=document.createElement("button");b.className="ans-btn";
-  if(isMath){const n=opt.apples||0;const appleStr=n?"🍎".repeat(Math.min(n,10)):"";b.innerHTML=`<span class="a-num">${n}</span><span class="a-apples">${appleStr}</span><span class="a-txt">${opt.txt}</span>`;}
-  else b.innerHTML=`<span class="a-ico">${opt.img||SVG_DOT}</span><span class="a-txt">${opt.txt}</span>`;
+  if(isMath){
+    const n=opt.apples||0;const appleStr=n?"🍎".repeat(Math.min(n,10)):"";
+    b.innerHTML=`<span class="a-num">${n}</span><span class="a-apples">${appleStr}</span><span class="a-txt">${opt.txt}</span>`;
+  } else b.innerHTML=`${ikonaOdpovede(opt)}<span class="a-txt">${opt.txt}</span>`;
   return b;
 }
 function showMath(m){
@@ -1623,7 +1755,8 @@ function renderQ(){
   document.getElementById("qText").textContent=q.q;
   document.getElementById("feedback").textContent="";document.getElementById("feedback").className="feedback";
   document.getElementById("nextBtn").className="next-btn";document.getElementById("voiceStat").textContent="";setNR("");
-  document.getElementById("qNum").textContent=cur+1;document.getElementById("qTot").textContent=questions.length;updStats();
+  document.getElementById("qNum").textContent=cur+1;document.getElementById("qTot").textContent=questions.length;
+  updStats();updProgress();
   const isMath=q.type==="math";if(isMath)showMath(q.mathQ);else hideMath();
   const opts=shuffle([{...q.a,correct:true},...q.w.map(x=>({...x,correct:false}))]);
   const grid=document.getElementById("ansGrid");grid.innerHTML="";grid.className="ans-grid"+(opts.length>3?" two-col":"");
@@ -1737,6 +1870,7 @@ function nextQ(){
 function pct(n,d){return d?Math.round(n/d*100):0;}
 function showEnd(){
   quizRunning=false;
+  document.body.classList.add("hotovo");
   speechSynthesis.cancel();speaking=false;stopRecog();document.getElementById("quizMain").style.display="none";document.getElementById("endWrap").classList.add("show");
   clearSaved();                       // dohraný kvíz sa už nemá čím obnovovať
   revealAllTiles();                   // odmena: obrázok sa dokreslí celý
@@ -1887,7 +2021,8 @@ function zavriBranu(){
 }
 function startFresh(){
   zavriBranu();odomkniHlas();clearSaved();
-  primeVoices(()=>{revealOrder=[];resetGame();});
+  primeVoices();                     // beží na pozadí, hru nezdržuje
+  revealOrder=[];resetGame();
 }
 function startResume(){
   const d=loadState();
@@ -1895,7 +2030,8 @@ function startResume(){
   const obnovene=d.qs.map(t=>QUESTIONS.find(x=>x.q===t)).filter(Boolean);
   if(obnovene.length!==d.qs.length){startFresh();return;}   // banka sa medzitým zmenila
   zavriBranu();odomkniHlas();
-  primeVoices(()=>{
+  primeVoices();
+  (()=>{
     questions=obnovene;
     cur=d.cur;score=d.score;corr=d.corr;wrong=d.wrong;streak=d.streak;
     bestStreak=d.bestStreak;revd=d.revd;skipsLeft=d.skipsLeft;
@@ -1907,6 +2043,7 @@ function startResume(){
     revealOrder=(Array.isArray(d.revealOrder)&&d.revealOrder.length===TILES)
                 ? d.revealOrder : shuffle([...Array(TILES).keys()]);
     quizRunning=true;
+    document.body.classList.remove("hotovo");
     document.getElementById("endWrap").classList.remove("show");
     document.getElementById("quizMain").style.display="block";
     document.getElementById("qTot").textContent=questions.length;
@@ -1923,7 +2060,7 @@ function startResume(){
       const b=document.createElement("span");b.className="mini-badge";b.textContent=l;row.appendChild(b);
     });
     renderQ();
-  });
+  })();
 }
 
 function nextImageIndex(){
@@ -1998,6 +2135,7 @@ function resetGame(){
   questions=composeQuiz();
   cur=0;score=0;corr=0;wrong=0;streak=0;bestStreak=0;revd=0;wrongByQ=[];answeredLog=[];earnedBadges=new Set();lastPraise=-1;lastEncourage=-1;lastStreakPraise=-1;skipsLeft=SKIP_LIMIT;updSkipBtn();
   quizRunning=true;
+  document.body.classList.remove("hotovo");
   document.getElementById("badgeRow").innerHTML="";
   document.getElementById("qNum").textContent=1;document.getElementById("qTot").textContent=questions.length;document.getElementById("endWrap").classList.remove("show");document.getElementById("quizMain").style.display="block";
   buildPuzzle(AVATAR_IMAGES[imgIdx]);updBar();updStats();renderQ();
