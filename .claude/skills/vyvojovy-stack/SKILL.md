@@ -11,32 +11,34 @@ Destilát guidu *„5 Claude Code Skills"* (Synvii AI, 29. 7. 2026), prispôsobe
 
 ---
 
-## Vzťah k `kontrolovaná-slučka`
+## Deľba práce medzi zručnosťami
 
-Tieto dve zručnosti sa **nesmú prekrývať**:
+Tieto zručnosti sa **nesmú prekrývať**. Každá vlastní inú fázu:
 
-| | |
-|---|---|
-| **`kontrolovaná-slučka`** | AKO dokazovať, že je hotovo. Návrh slučky, merateľný dôkaz, rozpočet kôl, priznanie neovereného. |
-| **`vyvojovy-stack`** (táto) | V AKOM PORADÍ pracovať a čo si pripraviť predtým. |
+| Fáza | Zručnosť | Čo vlastní |
+|---|---|---|
+| PRED | **`rozhovor-pred-stavanim`** | Zisťovanie zadania. Jedna otázka naraz, cieľ, obmedzenia, hraničné prípady, slepé miesta, zhrnutie a čakanie na OK. |
+| POČAS | **`vyvojovy-stack`** (táto) | Poradie vrstiev, dizajnová disciplína, hygiena kontextu, bezpečnosť pri inštalácii. |
+| PO | **`kontrolovana-slucka`** | Dokazovanie hotovosti. Návrh slučky, merateľný dôkaz, rozpočet kôl, priznanie neovereného. |
 
-Pri overovaní výsledku vždy prenechaj slovo `kontrolovanej-slučke`. Nevymýšľaj vlastný spôsob dokazovania.
+**Táto zručnosť nezisťuje zadanie ani nedokazuje hotovosť.** Keď treba vyjasniť, čo sa vlastne stavia, odovzdaj slovo `rozhovoru-pred-stavaním`. Keď treba overiť výsledok, odovzdaj ho `kontrolovanej-slučke`. Nevymýšľaj vlastnú verziu ani jedného.
 
 ---
 
 ## Poradie vrstiev
 
 ```
-KONTEXT → PLÁN → (medzera v znalostiach?) → IMPLEMENTÁCIA → DÔKAZ → DIZAJN → POZOROVANIE
+ROZHOVOR → KONTEXT → PLÁN → (medzera?) → IMPLEMENTÁCIA → DÔKAZ → DIZAJN → POZOROVANIE
 ```
 
-1. **Kontext** — načítaj len fakty, ktoré menia toto rozhodnutie. Nie celú históriu projektu.
-2. **Plán** — cieľ, rozsah, kroky, acceptance criteria. Pred zásahom do súborov, nie po ňom.
-3. **Medzera** — ak plán odhalí odbornú dieru, hľadaj zručnosť. Inštaluj až po kontrole (viď nižšie).
-4. **Implementácia** — po malých úlohách, každá ukončená dôkazom.
-5. **Dôkaz** — odovzdaj `kontrolovanej-slučke`.
-6. **Dizajn** — až keď funkčnosť a informačná architektúra sedia. Nikdy namiesto nich.
-7. **Pozorovanie** — čo si opakovane opravoval? Navrhni najviac **jednu** testovateľnú zmenu.
+1. **Rozhovor** — patrí `rozhovoru-pred-stavaním`. Bez jasného zadania nepokračuj.
+2. **Kontext** — načítaj len fakty, ktoré menia toto rozhodnutie. Nie celú históriu projektu.
+3. **Plán** — kroky v poradí a acceptance criteria. Vychádza zo zhrnutia odsúhlaseného v rozhovore.
+4. **Medzera** — ak plán odhalí odbornú dieru, hľadaj zručnosť. Inštaluj až po kontrole (viď nižšie).
+5. **Implementácia** — po malých úlohách, každá ukončená dôkazom.
+6. **Dôkaz** — odovzdaj `kontrolovanej-slučke`.
+7. **Dizajn** — až keď funkčnosť a informačná architektúra sedia. Nikdy namiesto nich.
+8. **Pozorovanie** — čo si opakovane opravoval? Navrhni najviac **jednu** testovateľnú zmenu.
 
 ### Kedy vrstvy preskočiť
 
