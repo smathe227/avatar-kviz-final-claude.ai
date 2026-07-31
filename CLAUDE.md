@@ -34,9 +34,22 @@
 
 ## Postup práce
 
-Pre tento projekt sú k dispozícii dve zručnosti v `.claude/skills/`:
+V `.claude/skills/` je päť zručností. Každá vlastní inú fázu — nemiešaj ich.
 
-1. **`rozhovor-pred-stavanim`** — použi ju **skôr**, než začneš stavať čokoľvek zložitejšie.
-2. **`kontrolovana-slucka`** — použi ju **po** dokončení práce na overenie dôkazom.
+| Kedy | Zručnosť | Na čo |
+|------|----------|-------|
+| **Pred** | `rozhovor-pred-stavanim` | Vyjasniť zadanie. Jedna otázka naraz, potom zhrnutie a čakanie na moje OK. |
+| **Počas** | `vyvojovy-stack` | Poradie krokov, dizajnová disciplína, hygiena kontextu, bezpečnosť pri inštalácii. |
+| **Po** | `kontrolovana-slucka` | Overenie dôkazom namiesto sebahodnotenia. |
+| Podľa potreby | `find-skills` | Nájsť zručnosť, keď v projekte chýba metodika. Nič neinštaluj bez môjho súhlasu. |
+| Podľa potreby | `task-observer` | Všímať si, čo opravujem opakovane. Len návrhy, nikdy automatické zmeny. |
 
-Prvá je prevencia, druhá je kontrola. Pri väčšej úlohe patria obe.
+Prvé tri sú jadro: prevencia, priebeh, kontrola. Pri väčšej úlohe patria všetky tri.
+
+**Overovací skript.** Pri zmenách v `index.html` spusti pred vyhlásením hotovosti:
+
+```
+python3 .claude/skills/kontrolovana-slucka/scripts/over_html_appku.py
+```
+
+Jeho výstup má prednosť pred tvojím dojmom. Návratový kód 0 znamená, že prešli strojové kontroly — nie že appka funguje. Obsah aj tak prečítaj očami.
